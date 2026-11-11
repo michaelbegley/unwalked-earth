@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unwalked Earth</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* One visual world, dark by choice: an inked chart where the unknown is left as bare paper.
+     Layout: globe fills the left, a fixed reading column on the right; stacks on phones. */
+  --sea:#0b1520;
+  --ink:#101c28;
+  --panel:#13212e;
+  --line:#26394a;
+  --text:#e6ebe6;
+  --muted:#93a4ad;
+  --paper:#fff3d2;
+  --ochre:#dfa23c;
+  --teal:#3f8f93;
+  --display:"Bricolage Grotesque","Trebuchet MS",sans-serif;
+  --body:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--sea);color:var(--text);font:15px/1.5 var(--body);display:grid;grid-template-columns:minmax(0,1fr) 380px}
+#stage{position:relative;min-height:0;min-width:0;overflow:hidden}
+#globe{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+#globe.drag{cursor:grabbing}
+#zoom{position:absolute;left:16px;bottom:16px;display:flex;flex-direction:column;gap:6px}
+#zoom button{width:38px;height:38px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--text);font:500 18px var(--mono);cursor:pointer}
+#zoom button:hover{border-color:var(--teal)}
+#legend{position:absolute;right:16px;bottom:16px;width:220px;font:12px var(--mono);color:var(--muted)}
+#legend .bar{height:10px;border-radius:5px;border:1px solid var(--line);background:linear-gradient(90deg,#24343f,#2f5f68 30%,#3f8f93 48%,#dfa23c 72%,#fff3d2)}
+#legend .ends{display:flex;justify-content:space-between;margin-top:4px}
+#hint{position:absolute;left:16px;top:14px;font:12px var(--mono);color:var(--muted)}
+aside{background:var(--panel);border-left:1px solid var(--line);overflow-y:auto;padding:22px 20px 28px;display:flex;flex-direction:column;gap:22px}
+h1{font:700 30px/1.05 var(--display);margin:0;letter-spacing:-.01em;text-wrap:balance}
+h2{font:500 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+p{margin:0}
+.lede{color:var(--muted);margin-top:8px}
+.big{font:700 40px/1 var(--display);color:var(--paper);font-variant-numeric:tabular-nums}
+.statline{color:var(--muted);font-size:14px;margin-top:6px}
+.statline b{color:var(--text);font-weight:600}
+label{display:block;font-size:14px;margin:12px 0 4px}
+input[type=range]{width:100%;accent-color:var(--ochre)}
+#read{font:13px/1.6 var(--mono);border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--ink);min-height:118px}
+#read .k{color:var(--muted)}
+#read .s{color:var(--paper);font-weight:500}
+ol,ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px}
+.spot{display:grid;grid-template-columns:26px 1fr auto;gap:8px;align-items:baseline;width:100%;text-align:left;background:none;border:1px solid transparent;border-radius:8px;padding:6px 8px;color:var(--text);font:14px/1.35 var(--body);cursor:pointer}
+.spot:hover,.spot:focus-visible{border-color:var(--teal);background:var(--ink);outline:none}
+.spot .n{font:500 12px var(--mono);color:var(--ochre)}
+.spot .d{display:block;color:var(--muted);font-size:12.5px}
+.spot .sc{font:500 13px var(--mono);color:var(--paper);font-variant-numeric:tabular-nums}
+.notes li{color:var(--muted);font-size:13.5px;padding-left:14px;position:relative}
+.notes li::before{content:"";position:absolute;left:0;top:.62em;width:6px;height:1px;background:var(--muted)}
+.notes b{color:var(--text);font-weight:500}
+button:focus-visible,input:focus-visible{outline:2px solid var(--ochre);outline-offset:2px}
+@media (max-width:860px){
+  html,body{height:auto}
+  body{display:block}
+  #stage{height:min(100vw,70vh)}
+  aside{border-left:0;border-top:1px solid var(--line);overflow:visible}
+  #legend{width:150px}
+}
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="globe" aria-label="Globe shaded by how likely it is that no person has ever stood there"></canvas>
+  <div id="hint">Drag to turn. Scroll or pinch to zoom.</div>
+  <div id="zoom"><button id="zin" type="button" aria-label="Zoom in">+</button><button id="zout" type="button" aria-label="Zoom out">&minus;</button></div>
+  <div id="legend"><div class="bar"></div><div class="ends"><span>0 walked</span><span>100 unwalked</span></div></div>
+</div>
+<aside>
+  <header>
+    <h1>Unwalked Earth</h1>
+    <p class="lede">A guess at where no person has ever stood. Land gets brighter the farther it sits from every road, town, river and coast, and the harder the ground is to live on.</p>
+  </header>
+
+  <section>
+    <h2>How much is left</h2>
+    <div class="big" id="pct">–</div>
+    <p class="statline" id="pctline"></p>
+    <label for="thr">Highlight land scoring <b id="thrv">50</b> or more</label>
+    <input id="thr" type="range" min="0" max="95" step="5" value="50">
+  </section>
+
+  <section>
+    <h2>Under the pointer</h2>
+    <div id="read"><span class="k">Point at the globe, or tap it, to read one spot.</span></div>
+  </section>
+
+  <section>
+    <h2>Farthest-out land in this model</h2>
+    <ol id="spots"></ol>
+  </section>
+
+  <section>
+    <h2>Reference points</h2>
+    <ul id="refs"></ul>
+  </section>
+
+  <section>
+    <h2>How the score works</h2>
+    <ul class="notes">
+      <li><b>Way in.</b> Distance to the nearest road, railway, town of 1,000+ people, airport, port or research station. Rivers and coasts count as slower ways in.</li>
+      <li><b>Ground.</b> Ice sheets and Antarctica can reach 100. Sand desert tops out near 75, very high ground near 85, forest, steppe and tundra near 55, because people have lived on or crossed that ground for thousands of years.</li>
+      <li><b>Lights.</b> Any glow at night pulls the score down.</li>
+      <li><b>Grain.</b> Each cell is about 10 km across. The score is about the cell, so a walked valley and an unclimbed cliff beside it share one number.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Where it is wrong</h2>
+    <ul class="notes">
+      <li>It is a model, with no record of real footsteps behind it. Nobody keeps that record.</li>
+      <li>The road layer skips desert tracks and logging roads, so central Australia and the Sahara score too high.</li>
+      <li>Hunters, herders and nomads ranged far from any town. The ground ceilings only roughly allow for that.</li>
+      <li>Most expedition routes across Antarctica and Greenland are missing. Only the supply track to the South Pole is drawn.</li>
+      <li>Oceans are left out. Almost none of the seafloor has been visited in person.</li>
+    </ul>
+    <p class="statline" style="margin-top:10px">Data: Natural Earth 1:10m layers, GeoNames towns, a NASA night-lights image and a coarse elevation image. Version 1, built 11 Nov 2026.</p>
+  </section>
+</aside>
+
+<img id="tex" alt="" style="display:none" src="__TEX__">
+<script>
+const META=__META__;
+const REFS=[
+ {name:"Gangkhar Puensum, Bhutan",lat:28.05,lon:90.45,d:"About 7,570 m. Widely cited as the highest mountain never climbed."},
+ {name:"Southern Pole of Inaccessibility",lat:-82.1,lon:54.97,d:"The Antarctic point farthest from any coast. A Soviet team reached it in 1958."},
+ {name:"Lake Vostok, Antarctica",lat:-77.5,lon:106,d:"A lake under roughly 4 km of ice. Drilled into, never entered."},
+ {name:"North Sentinel Island",lat:11.55,lon:92.24,d:"The opposite case. People live here; outsiders stay away."},
+ {name:"Point Nemo",lat:-48.88,lon:-123.39,d:"The ocean point farthest from land. Ships cross it; nobody stays."},
+ {name:"Challenger Deep",lat:11.37,lon:142.59,d:"Deepest seafloor. Only a few dozen people have been down."}
+];
+const cv=document.getElementById('globe'),ctx=cv.getContext('2d'),stage=document.getElementById('stage');
+const TW=4096,TH=2048;let T=null;
+const st={lon:35,lat:18,k:1,thr:50,spin:!matchMedia('(prefers-reduced-motion: reduce)').matches};
+const off=document.createElement('canvas'),octx=off.getContext('2d');
+let dpr=1,cw=0,ch=0,R0=0;
+
+// colour ramp: explored ground is inked, unknown ground is bare paper
+const STOPS=[[0,36,52,63],[30,47,95,104],[48,63,143,147],[72,223,162,60],[100,255,243,210]];
+function ramp(s){for(let i=1;i<STOPS.length;i++){if(s<=STOPS[i][0]){const a=STOPS[i-1],b=STOPS[i],t=(s-a[0])/(b[0]-a[0]);return[a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t,a[3]+(b[3]-a[3])*t]}}return STOPS[4].slice(1)}
+const LUT=new Uint8Array(256*3);
+function buildLUT(){for(let r=1;r<256;r++){const s=(r-1)/2.54;let c=ramp(s);if(s<st.thr){c=[36+(c[0]-36)*.22,52+(c[1]-52)*.22,63+(c[2]-63)*.22]}LUT[r*3]=c[0];LUT[r*3+1]=c[1];LUT[r*3+2]=c[2]}LUT[0]=11;LUT[1]=21;LUT[2]=32}
+
+function size(){dpr=Math.min(window.devicePixelRatio||1,1.5);const r=stage.getBoundingClientRect();cw=Math.max(200,Math.round(r.width*dpr));ch=Math.max(200,Math.round(r.height*dpr));cv.width=cw;cv.height=ch;R0=Math.min(cw,ch)*0.46;draw(1)}
+const RAD=Math.PI/180;
+function draw(q){
+  if(!T)return;
+  const w=Math.max(2,Math.round(cw*q)),h=Math.max(2,Math.round(ch*q));
+  if(off.width!==w||off.height!==h){off.width=w;off.height=h}
+  const img=octx.createImageData(w,h),px=new Uint32Array(img.data.buffer);
+  const R=R0*st.k*q,cx=w/2,cy=h/2,sp=Math.sin(st.lat*RAD),cp=Math.cos(st.lat*RAD),l0=st.lon*RAD;
+  const BG=0xff20150b; // --sea, little-endian ABGR
+  const x0=Math.max(0,Math.floor(cx-R)),x1=Math.min(w,Math.ceil(cx+R)),y0=Math.max(0,Math.floor(cy-R)),y1=Math.min(h,Math.ceil(cy+R));
+  px.fill(BG);
+  const iR=1/R,TWO=Math.PI*2;
+  for(let j=y0;j<y1;j++){
+    const y=(cy-j-.5)*iR,yy=y*y;let o=j*w+x0;
+    for(let i=x0;i<x1;i++,o++){
+      const x=(i+.5-cx)*iR,rr=x*x+yy;if(rr>=1)continue;
+      const z=Math.sqrt(1-rr);
+      const la=Math.asin(y*cp+z*sp);
+      let lo=l0+Math.atan2(x,z*cp-y*sp);
+      lo-=TWO*Math.floor((lo+Math.PI)/TWO);
+      let tx=((lo+Math.PI)/TWO*TW)|0;if(tx>=TW)tx=TW-1;
+      let ty=((Math.PI/2-la)/Math.PI*TH)|0;if(ty>=TH)ty=TH-1;
+      const r=T[(ty*TW+tx)*4]*3,sh=.62+.38*z;
+      px[o]=0xff000000|((LUT[r+2]*sh)<<16)|((LUT[r+1]*sh)<<8)|(LUT[r]*sh);
+    }
+  }
+  octx.putImageData(img,0,0);
+  ctx.imageSmoothingEnabled=q<1;
+  ctx.drawImage(off,0,0,cw,ch);
+  overlay();
+}
+function proj(lat,lon){const p=lat*RAD,dl=(lon-st.lon)*RAD,sp=Math.sin(st.lat*RAD),cp=Math.cos(st.lat*RAD),c=Math.cos(p);
+  const z=sp*Math.sin(p)+cp*c*Math.cos(dl);const R=R0*st.k;
+  return[cw/2+c*Math.sin(dl)*R,ch/2-(cp*Math.sin(p)-sp*c*Math.cos(dl))*R,z]}
+function unproj(mx,my){const R=R0*st.k,x=(mx-cw/2)/R,y=(ch/2-my)/R,rr=x*x+y*y;if(rr>=1)return null;const z=Math.sqrt(1-rr),sp=Math.sin(st.lat*RAD),cp=Math.cos(st.lat*RAD);
+  let lo=st.lon+Math.atan2(x,z*cp-y*sp)/RAD;lo=((lo+540)%360)-180;return[Math.asin(y*cp+z*sp)/RAD,lo]}
+function overlay(){
+  const R=R0*st.k;
+  ctx.lineWidth=1*dpr;ctx.strokeStyle='rgba(147,164,173,.35)';ctx.beginPath();ctx.arc(cw/2,ch/2,R,0,7);ctx.stroke();
+  ctx.strokeStyle='rgba(230,235,230,.28)';ctx.lineWidth=.8*dpr;ctx.beginPath();
+  for(const b of META.borders){let pen=false;for(let i=0;i<b.length;i+=2){const p=proj(b[i+1],b[i]);if(p[2]>0.02){pen?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]);pen=true}else pen=false}}
+  ctx.stroke();
+  ctx.font=`500 ${11*dpr}px "IBM Plex Mono",monospace`;ctx.textAlign='center';ctx.textBaseline='middle';
+  META.spots.forEach((s,i)=>{const p=proj(s.lat,s.lon);if(p[2]<.05)return;ctx.beginPath();ctx.arc(p[0],p[1],9*dpr,0,7);ctx.fillStyle='rgba(16,28,40,.85)';ctx.fill();ctx.strokeStyle='#dfa23c';ctx.lineWidth=1.5*dpr;ctx.stroke();ctx.fillStyle='#fff3d2';ctx.fillText(i+1,p[0],p[1]+.5*dpr)});
+  REFS.forEach(s=>{const p=proj(s.lat,s.lon);if(p[2]<.05)return;const d=5*dpr;ctx.beginPath();ctx.moveTo(p[0],p[1]-d);ctx.lineTo(p[0]+d,p[1]);ctx.lineTo(p[0],p[1]+d);ctx.lineTo(p[0]-d,p[1]);ctx.closePath();ctx.fillStyle='#101c28';ctx.fill();ctx.strokeStyle='#e6ebe6';ctx.lineWidth=1.3*dpr;ctx.stroke()});
+}
+// redraw scheduling: quick half-res while moving, full when it settles
+let raf=0,settle=0;
+function kick(){if(!raf)raf=requestAnimationFrame(()=>{raf=0;draw(.5)});clearTimeout(settle);settle=setTimeout(()=>draw(1),140)}
+// spin until touched
+let last=0;function spin(t){if(!st.spin)return;if(last){st.lon=((st.lon+(t-last)*.004+540)%360)-180;draw(.5)}last=t;requestAnimationFrame(spin)}
+function stopSpin(){if(st.spin){st.spin=false;draw(1)}}
+
+// pointer handling
+const ptrs=new Map();let pinch0=0,k0=1,moved=false;
+function pos(e){const r=cv.getBoundingClientRect();return[(e.clientX-r.left)*dpr,(e.clientY-r.top)*dpr]}
+cv.addEventListener('pointerdown',e=>{stopSpin();cv.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,[e.clientX,e.clientY]);moved=false;cv.classList.add('drag');if(ptrs.size===2){const a=[...ptrs.values()];pinch0=Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1]);k0=st.k}});
+cv.addEventListener('pointermove',e=>{
+  if(!ptrs.has(e.pointerId)){read(...pos(e));return}
+  const p=ptrs.get(e.pointerId),dx=e.clientX-p[0],dy=e.clientY-p[1];ptrs.set(e.pointerId,[e.clientX,e.clientY]);
+  if(ptrs.size===2){const a=[...ptrs.values()];const d=Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1]);st.k=Math.min(7,Math.max(.8,k0*d/pinch0));kick();return}
+  if(Math.abs(dx)+Math.abs(dy)>2)moved=true;
+  const f=dpr/(R0*st.k)/RAD;st.lon=((st.lon-dx*f+540)%360)-180;st.lat=Math.max(-89.5,Math.min(89.5,st.lat+dy*f));kick()});
+function up(e){if(ptrs.has(e.pointerId)){ptrs.delete(e.pointerId);if(!moved)read(...pos(e))}if(!ptrs.size)cv.classList.remove('drag')}
+cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+cv.addEventListener('wheel',e=>{e.preventDefault();stopSpin();st.k=Math.min(7,Math.max(.8,st.k*Math.exp(-e.deltaY*.0015)));kick()},{passive:false});
+document.getElementById('zin').onclick=()=>{stopSpin();st.k=Math.min(7,st.k*1.5);draw(1)};
+document.getElementById('zout').onclick=()=>{stopSpin();st.k=Math.max(.8,st.k/1.5);draw(1)};
+
+const WAYS=['road or railway','town, airport or station','coast','river'];
+const fmt=n=>Math.round(n).toLocaleString('en-US');
+function ll(lat,lon){return Math.abs(lat).toFixed(2)+'°'+(lat<0?'S':'N')+'  '+Math.abs(lon).toFixed(2)+'°'+(lon<0?'W':'E')}
+function read(mx,my){
+  const el=document.getElementById('read'),g=unproj(mx,my);if(!g||!T)return;
+  const tx=Math.min(TW-1,((g[1]+180)/360*TW)|0),ty=Math.min(TH-1,((90-g[0])/180*TH)|0),o=(ty*TW+tx)*4,r=T[o];
+  if(!r){el.innerHTML=`<span class="k">${ll(g[0],g[1])}</span><br>Open water. Not scored.`;return}
+  const s=Math.round((r-1)/2.54),acc=Math.pow(T[o+1]/8,2),b=T[o+2],ice=b&4,elev=(b>>3)*300;
+  el.innerHTML=`<span class="k">${ll(g[0],g[1])}</span><br><span class="k">Unwalked score </span><span class="s">${s} / 100</span><br><span class="k">Nearest way in </span>${acc<8?'under 10':'about '+fmt(Math.round(acc/(acc>100?10:5))*(acc>100?10:5))} km<br><span class="k">That way in is a </span>${WAYS[b&3]}<br><span class="k">Ground </span>${ice?'permanent ice':'ice-free'}${elev>=300?', about '+fmt(elev)+' m up':', low'}`;
+}
+function fly(lat,lon,k){stopSpin();const a={lon:st.lon,lat:st.lat,k:st.k},dl=((lon-a.lon+540)%360)-180,t0=performance.now(),dur=matchMedia('(prefers-reduced-motion: reduce)').matches?1:700;
+  (function step(t){let u=Math.min(1,(t-t0)/dur);u=u*u*(3-2*u);st.lon=((a.lon+dl*u+540)%360)-180;st.lat=a.lat+(lat-a.lat)*u;st.k=a.k+(k-a.k)*u;if(u<1){draw(.5);requestAnimationFrame(step)}else draw(1)})(t0)}
+
+// panel
+function stat(){const t=st.thr,p=META.cum[t],px=META.cumx[t];document.getElementById('thrv').textContent=t;
+  document.getElementById('pct').textContent=p.toFixed(p<10?1:0)+'% of land';
+  document.getElementById('pctline').innerHTML=`scores ${t} or more. That is about <b>${(META.land_km2*p/100/1e6).toFixed(1)} million km²</b>. Leave out Antarctica and it drops to <b>${px.toFixed(1)}%</b>.`}
+document.getElementById('thr').addEventListener('input',e=>{st.thr=+e.target.value;buildLUT();stat();kick()});
+const tc=s=>s.replace(/\b([A-Z’'])([A-Z’'.]+)\b/g,(m,a,b)=>a+b.toLowerCase());
+document.getElementById('spots').innerHTML=META.spots.map((s,i)=>`<li><button class="spot" type="button" data-i="${i}"><span class="n">${i+1}</span><span>${tc(s.region||s.country)}${s.region&&s.country&&tc(s.region)!==s.country?', '+s.country:''}<span class="d">${fmt(s.access)} km from any way in. Nearest named place: ${s.town}, ${fmt(s.town_km)} km.</span></span><span class="sc">${s.score}</span></button></li>`).join('');
+document.getElementById('refs').innerHTML=REFS.map((s,i)=>`<li><button class="spot" type="button" data-r="${i}"><span class="n">&#9671;</span><span>${s.name}<span class="d">${s.d}</span></span><span class="sc"></span></button></li>`).join('');
+document.querySelector('aside').addEventListener('click',e=>{const b=e.target.closest('.spot');if(!b)return;const s=b.dataset.i!==undefined?META.spots[+b.dataset.i]:REFS[+b.dataset.r];fly(s.lat,s.lon,Math.max(st.k,2.2));if(matchMedia('(max-width:860px)').matches)stage.scrollIntoView({behavior:'smooth'})});
+
+// boot
+const tex=document.getElementById('tex');
+function boot(){const c=document.createElement('canvas');c.width=TW;c.height=TH;const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(tex,0,0);T=x.getImageData(0,0,TW,TH).data;buildLUT();stat();size();if(st.spin)requestAnimationFrame(spin)}
+if(tex.complete&&tex.naturalWidth)boot();else tex.addEventListener('load',boot);
+new ResizeObserver(()=>{if(T)size()}).observe(stage);
+</script>
+</body>
+</html>
