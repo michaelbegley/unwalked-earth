@@ -1091,15 +1091,11 @@ function live(lat, lon, titles, score) {
       hi = score !== null && score >= 50;
     $("pevline").textContent = any
       ? hi
-        ? "The map says probably not. The records say somebody was."
-        : "Yes. The records agree."
-      : !all
-        ? "Nothing found, but not every source answered."
-        : score === null
-          ? "Nothing on record within 10 km."
-          : hi
-            ? "No photos, sightings or articles within 10 km. This one might be real."
-            : "Nothing on record within 10 km, even this close to a way in.";
+        ? "Probably. There are records within 10 km, so this score looks too high."
+        : "Yes. People have left records within 10 km."
+      : all
+        ? "No record of it within 10 km."
+        : "Nothing found, but not every source answered.";
     if (spot) {
       const names = [
           "photos on Wikimedia Commons",
