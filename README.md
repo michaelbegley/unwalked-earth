@@ -39,6 +39,7 @@ No build step and no dependencies. Open `index.html` from any static server.
 - [Malaria Atlas Project](https://malariaatlas.org/project-resources/accessibility-to-healthcare/): travel time to cities (Weiss et al. 2018)
 - [OurAirports](https://ourairports.com/data/): airports and airstrips, open and closed
 - [COMNAP](https://github.com/PolarGeospatialCenter/comnap-antarctic-facilities): Antarctic facilities
+- [Leihy and others, 2020](https://doi.org/10.26180/5c32bf1b041ea): recorded visits in Antarctica, 1819 to 2018 (CC BY-NC 4.0)
 - [Wikidata](https://www.wikidata.org/): mines and archaeological sites
 - [GeoNames](https://www.geonames.org/): towns of 1,000 or more
 - NASA night lights

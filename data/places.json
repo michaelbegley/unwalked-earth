@@ -371,7 +371,7 @@
       "name": "Antarctica",
       "line": "Antarctica never had a native population and almost all of it lies under thick ice. Records show people have still crossed much of it, and the largest untouched areas are in the central interior.",
       "people": "Nobody is native to Antarctica. A Russian expedition under Bellingshausen and Lazarev first saw it in January 1820, sealers from the ship of John Davis probably landed in February 1821, and the first confirmed landing was at Cape Adare in 1895. Today about 4,000 to 5,000 people work there in summer and about 1,000 in winter.",
-      "empty": "The least visited ground is in the central interior, away from the coast and the Antarctic Peninsula where most stations sit. A 2020 study in Nature of about 2.7 million activity records found that less than 32 percent of the continent is free from human interference. That is a lower share than this map shows in orange, so the map is probably too generous here.",
+      "empty": "The least visited ground is in the central interior, away from the coast and the Antarctic Peninsula where most stations sit. A 2020 study in Nature of about 2.7 million activity records found that less than 32 percent of the continent is free from human interference. This map uses the same records. Land within about 60 km of one is not orange, which leaves about 23 percent of the continent.",
       "facts": [
         {
           "label": "First sighting",
@@ -416,6 +416,10 @@
         {
           "title": "Pathways across Antarctica: 200 years of human impact, Manaaki Whenua Landcare Research",
           "url": "https://www.landcareresearch.co.nz/news/pathways-across-antarctica-200-years-of-human-impact/"
+        },
+        {
+          "title": "Antarctic human activity records, Leihy and others, Monash University, 2020 (CC BY-NC 4.0)",
+          "url": "https://doi.org/10.26180/5c32bf1b041ea"
         }
       ],
       "lat": -80,

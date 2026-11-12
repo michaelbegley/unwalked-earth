@@ -9,6 +9,7 @@ Put the downloads in `tools/source/`:
 - `2015_accessibility_to_cities_v1.0.tif` from the Malaria Atlas Project
 - `airports.csv` from OurAirports
 - `comnap.csv` from the COMNAP facilities repo
+- `Human_activity_records_complete.shp` from https://doi.org/10.26180/5c32bf1b041ea, used by `antarctica.py` (run last, with the path to the file)
 - `wikidata.csv`: mines and archaeological sites with coordinates
 - `earth-topology.png`, `earth-night.jpg`, `earth-blue-marble.jpg`
 
