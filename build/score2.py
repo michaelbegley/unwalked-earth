@@ -24,8 +24,11 @@ pts=[];pn=[]
 for r in rows:
     try: pts.append((float(r['Longitude (DD)']),float(r['Latitude (DD)']))); pn.append(r['English Name'].strip())
     except: pass
+for r in csv.DictReader(open('/home/claude/data/oa/airports.csv',encoding='utf-8')):
+    try: pts.append((float(r['longitude_deg']),float(r['latitude_deg']))); pn.append(r['name'].strip()+(' (closed airstrip)' if r['type']=='closed' else ''))
+    except: pass
 pts.append((-38.4592,72.5796)); pn.append('Summit Station')  # staffed year-round since 2003; coordinates not confirmed in the fact check
-pts=np.array(pts); print('comnap pts',len(pts))
+pts=np.array(pts); print('extra pts',len(pts))
 def xyz(lo,la):
     lo,la=np.radians(lo),np.radians(la); return np.c_[np.cos(la)*np.cos(lo),np.cos(la)*np.sin(lo),np.sin(la)]
 P=xyz(lon[ix],lat[iy]); d,i=cKDTree(xyz(pts[:,0],pts[:,1])).query(P,workers=-1); dkm=2*6371*np.arcsin(np.clip(d/2,0,1))
