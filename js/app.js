@@ -184,10 +184,17 @@ function size() {
   canvasH = Math.max(200, Math.round(innerHeight * dpr));
   canvas.width = canvasW;
   canvas.height = canvasH;
+  place();
+  sky();
+  draw(1);
+}
+// where the globe sits and how big it is, in the space the card leaves free
+function place() {
   const r = card.getBoundingClientRect();
   if (sheet.matches) {
     // with the panel pulled all the way up, keep the globe where it sits at the resting height
-    const free = (r.top + Math.max(0, stops().rest - drop) - 8) * dpr;
+    const free =
+      Math.max(120, r.top + Math.max(0, stops().rest - drop) - 8) * dpr;
     baseRadius = Math.min(canvasW, free) * 0.46;
     centerX = canvasW / 2;
     centerY = free / 2 + 4 * dpr;
@@ -197,8 +204,6 @@ function size() {
     centerX = left + (canvasW - left) / 2;
     centerY = canvasH / 2;
   }
-  sky();
-  draw(1);
 }
 const RAD = Math.PI / 180;
 function sunAt(ms) {
@@ -1005,11 +1010,9 @@ function stops() {
     peek: Math.max(0, h - PEEK),
   };
 }
-function setDrop(px, animate) {
+let sliding = 0;
+function putDrop(px) {
   drop = px;
-  card.style.transition = animate
-    ? "transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1)"
-    : "none";
   card.style.transform = px ? "translateY(" + px + "px)" : "";
   card.classList.toggle("down", px > 0);
   document.body.classList.toggle(
@@ -1017,10 +1020,33 @@ function setDrop(px, animate) {
     sheet.matches && px === 0 && stops().rest > 0,
   );
   if (px > 0) card.scrollTop = 0;
-  if (animate)
-    setTimeout(() => {
-      if (world) size();
-    }, 300);
+}
+// move the panel; "live" keeps the globe growing and shrinking with it
+function setDrop(px, animate, live) {
+  const id = ++sliding;
+  card.style.transition = "none";
+  if (!animate || calm || !world) {
+    putDrop(px);
+    if ((live || animate) && world) {
+      place();
+      if (live) drawMoving();
+      else draw(1);
+    }
+    return;
+  }
+  const from = drop,
+    began = performance.now();
+  (function step(now) {
+    if (id !== sliding) return;
+    const t = Math.max(0, Math.min(1, (now - began) / 280)),
+      u = 1 - Math.pow(1 - t, 3);
+    putDrop(t < 1 ? from + (px - from) * u : px);
+    place();
+    if (t < 1) {
+      drawMoving();
+      requestAnimationFrame(step);
+    } else draw(1);
+  })(began);
 }
 function setStop(name, animate) {
   at = name;
@@ -1073,7 +1099,11 @@ function setStop(name, animate) {
         setTime(touch.date, false);
       touch.dir = t.clientY - touch.last || touch.dir;
       touch.last = t.clientY;
-      setDrop(Math.max(0, Math.min(stops().peek, touch.from + dy)), false);
+      setDrop(
+        Math.max(0, Math.min(stops().peek, touch.from + dy)),
+        false,
+        true,
+      );
     },
     { passive: false },
   );
