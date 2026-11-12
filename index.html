@@ -59,7 +59,7 @@
         "description": "A map of where nobody has stood, probably."
       }
     </script>
-    <link rel="stylesheet" href="css/style.css?v=27" />
+    <link rel="stylesheet" href="css/style.css?v=28" />
   </head>
   <body>
     <canvas id="sky" aria-hidden="true"></canvas>
@@ -141,11 +141,15 @@
           <i class="live"></i><span id="online"></span>
         </p>
         <p class="count ends">
-          <span id="version">v0.55</span>
+          <span id="version">v0.56</span>
           <button class="textlink" id="feedbacklink" type="button">
             Feedback
           </button>
         </p>
+        <div class="below">
+          <h3>Top countries</h3>
+          <ol class="wlist" id="wlist2"></ol>
+        </div>
       </section>
 
       <section id="place" hidden>
@@ -289,7 +293,7 @@
         </div>
         <h2>Top countries</h2>
         <p class="lede">Orange land by country.</p>
-        <ol id="wlist"></ol>
+        <ol class="wlist" id="wlist"></ol>
       </section>
 
       <section id="feedback" hidden>
@@ -468,6 +472,6 @@
 
     <img id="tex" alt="" style="display: none" src="data/world.png" />
     <img id="ntex" alt="" style="display: none" src="data/names.png" />
-    <script src="js/app.js?v=28" defer></script>
+    <script src="js/app.js?v=29" defer></script>
   </body>
 </html>

@@ -987,13 +987,21 @@ $("aprompt").onclick = async () => {
 // height, and nearly full screen. Drag the grey bar or the panel itself; it only scrolls
 // once it is all the way up.
 const PEEK = 76;
-let drop = 0;
+let drop = 0,
+  at = "rest";
 function stops() {
   const h = card.offsetHeight,
-    rest = h - Math.round(innerHeight * 0.62);
+    open = [...card.querySelectorAll("section")].find((s) => !s.hidden),
+    // at rest the panel shows its content, up to two thirds of the screen
+    below = open && open.querySelector(".below"),
+    content =
+      (below && below.offsetParent
+        ? below.offsetTop - open.offsetTop
+        : (open ? open.offsetHeight : 0) + $("grab").offsetHeight) + 16,
+    rest = h - Math.min(content, Math.round(innerHeight * 0.66));
   return {
     full: 0,
-    rest: sheet.matches && rest > 80 ? rest : 0,
+    rest: sheet.matches && rest > 40 ? rest : 0,
     peek: Math.max(0, h - PEEK),
   };
 }
@@ -1004,11 +1012,19 @@ function setDrop(px, animate) {
     : "none";
   card.style.transform = px ? "translateY(" + px + "px)" : "";
   card.classList.toggle("down", px > 0);
+  document.body.classList.toggle(
+    "sheetfull",
+    sheet.matches && px === 0 && stops().rest > 0,
+  );
   if (px > 0) card.scrollTop = 0;
   if (animate)
     setTimeout(() => {
       if (world) size();
     }, 300);
+}
+function setStop(name, animate) {
+  at = name;
+  setDrop(stops()[name], animate);
 }
 {
   let touch = null;
@@ -1017,7 +1033,7 @@ function setDrop(px, animate) {
     (e) => {
       touch = null;
       if (!sheet.matches || e.touches.length !== 1) return;
-      if (e.target.closest("textarea, input[type=range]")) return;
+      if (e.target.closest("textarea")) return;
       const t = e.touches[0];
       touch = {
         x: t.clientX,
@@ -1026,6 +1042,8 @@ function setDrop(px, animate) {
         dir: 0,
         from: drop,
         moving: false,
+        // a swipe that starts on the time slider should move the panel, not the date
+        date: e.target.closest("input[type=range]") ? +$("time").value : null,
       };
     },
     { passive: true },
@@ -1051,6 +1069,8 @@ function setDrop(px, animate) {
         touch.moving = true;
       }
       e.preventDefault();
+      if (touch.date !== null && +$("time").value !== touch.date)
+        setTime(touch.date, false);
       touch.dir = t.clientY - touch.last || touch.dir;
       touch.last = t.clientY;
       setDrop(Math.max(0, Math.min(stops().peek, touch.from + dy)), false);
@@ -1061,35 +1081,44 @@ function setDrop(px, animate) {
     if (!touch || !touch.moving) return (touch = null);
     // settle on the next stop in the direction of the last movement
     const s = stops(),
-      list = [...new Set([s.full, s.rest, s.peek])].sort((a, b) => a - b),
+      names = ["full", "rest", "peek"],
       next =
         touch.dir > 0
-          ? list.find((v) => v >= drop - 1)
-          : [...list].reverse().find((v) => v <= drop + 1);
+          ? names.find((n) => s[n] >= drop - 1)
+          : [...names].reverse().find((n) => s[n] <= drop + 1);
     touch = null;
-    setDrop(next === undefined ? s.rest : next, true);
+    setStop(next || "rest", true);
   };
   card.addEventListener("touchend", end);
   card.addEventListener("touchcancel", end);
   // a tap or a key on the grey bar: up one stop, or down from the top
-  const step = () => {
-    const s = stops();
-    setDrop(drop > s.rest ? s.rest : drop > 0 ? 0 : s.rest || s.peek, true);
-  };
+  const step = () =>
+    setStop(at === "peek" ? "rest" : at === "rest" ? "full" : "rest", true);
   $("grab").addEventListener("click", step);
   $("grab").addEventListener("keydown", (e) => {
     if (e.key !== "Enter" && e.key !== " ") return;
     e.preventDefault();
     step();
   });
-  sheet.addEventListener("change", () => setDrop(0, false));
+  sheet.addEventListener("change", () => setStop("rest", false));
+  // content that arrives late (saved places, the count) changes the resting height
+  if (window.ResizeObserver) {
+    const watch = new ResizeObserver(() => {
+      if (touch || !sheet.matches || at === "full") return;
+      const want = stops()[at];
+      if (Math.abs(want - drop) < 1) return;
+      setDrop(want, false);
+      if (world) size();
+    });
+    card.querySelectorAll("section").forEach((s) => watch.observe(s));
+  }
 }
 function show(which) {
   for (const id of ["intro", "place", "about", "where", "feedback"])
     $(id).hidden = id !== which;
   card.classList.toggle("tall", which === "place");
   card.scrollTop = 0;
-  setDrop(stops().rest, false);
+  setStop("rest", false);
   if (which !== "place") {
     view.sel = null;
     view.arc = null;
@@ -1792,19 +1821,21 @@ $("fbsend").onclick = () => {
     });
 };
 function fillWhere() {
-  $("wlist").innerHTML = (META.top || [])
+  $("wlist").innerHTML = $("wlist2").innerHTML = (META.top || [])
     .map(
       (c, i) =>
         `<li><button type="button" data-w="${i}"><div class="r"><b>${c.n}</b><span>${c.km2 >= 1e6 ? (c.km2 / 1e6).toFixed(1) + " million" : number(c.km2)} km², ${c.pct}%</span></div><i><u style="width:${Math.max(1, c.pct)}%"></u></i></button></li>`,
     )
     .join("");
 }
-$("wlist").addEventListener("click", (e) => {
-  const b = e.target.closest("button");
-  if (!b) return;
-  const c = META.top[+b.dataset.w];
-  fly(c.lat, c.lon, c.km2 > 1e6 ? 1.6 : 3);
-});
+for (const id of ["wlist", "wlist2"])
+  $(id).addEventListener("click", (e) => {
+    const b = e.target.closest("button");
+    if (!b) return;
+    const c = META.top[+b.dataset.w];
+    if (at === "full") setStop("rest", true);
+    fly(c.lat, c.lon, c.km2 > 1e6 ? 1.6 : 3);
+  });
 $("plink").onclick = async () => {
   const b = $("plink");
   try {

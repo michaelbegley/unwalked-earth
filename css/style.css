@@ -68,7 +68,8 @@ button {
     0 12px 40px rgba(0, 0, 0, 0.1);
   padding: 20px;
 }
-#grab {
+#grab,
+.below {
   display: none;
 }
 #card section[hidden] {
@@ -541,13 +542,13 @@ dd {
 #asat {
   display: block;
 }
-#wlist {
+.wlist {
   list-style: none;
   margin: 16px 0 0;
   padding: 0;
   border-top: 1px solid var(--line);
 }
-#wlist button {
+.wlist button {
   display: block;
   width: 100%;
   text-align: left;
@@ -556,23 +557,23 @@ dd {
   background: none;
   padding: 8px 0;
 }
-#wlist button:hover b {
+.wlist button:hover b {
   color: var(--blue);
 }
-#wlist .r {
+.wlist .r {
   display: flex;
   justify-content: space-between;
   gap: 16px;
   font-size: 14px;
 }
-#wlist b {
+.wlist b {
   font-weight: 500;
 }
-#wlist span {
+.wlist span {
   color: var(--soft);
   font-variant-numeric: tabular-nums;
 }
-#wlist i {
+.wlist i {
   display: block;
   height: 4px;
   border-radius: 2px;
@@ -580,7 +581,7 @@ dd {
   margin-top: 8px;
   overflow: hidden;
 }
-#wlist i u {
+.wlist i u {
   display: block;
   height: 100%;
   background: #ff9500;
@@ -643,7 +644,8 @@ dd {
     top: auto;
     bottom: 12px;
     width: auto;
-    max-height: calc(100% - 116px);
+    height: calc(100% - 68px);
+    max-height: none;
     padding: 0 16px 16px;
     scrollbar-width: none;
     overscroll-behavior: contain;
@@ -672,6 +674,14 @@ dd {
   #card.down {
     overflow: hidden;
   }
+  /* shown when the front panel is pulled up */
+  .below {
+    display: block;
+    margin-top: 28px;
+  }
+  .below .wlist {
+    margin-top: 8px;
+  }
   .top {
     top: 24px;
     margin: 0 -16px 0;
@@ -680,8 +690,13 @@ dd {
   #card::-webkit-scrollbar {
     display: none;
   }
-  #card.tall {
-    height: calc(100% - 116px);
+  /* pulled to the top, the panel covers the zoom buttons */
+  #zoom {
+    transition: opacity 0.2s;
+  }
+  .sheetfull #zoom {
+    opacity: 0;
+    pointer-events: none;
   }
   .score {
     margin-top: 12px;
