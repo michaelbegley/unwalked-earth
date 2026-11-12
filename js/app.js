@@ -903,10 +903,9 @@ function live(lat, lon, titles, score) {
   im.onload = () => {
     if (id !== request) return;
     im.classList.add("on");
-    cap.textContent =
-      (tried
-        ? "NASA Blue Marble. About 220 km across."
-        : "Sentinel-2, EOX. About 45 km across.";
+    cap.textContent = tried
+      ? "NASA Blue Marble. About 220 km across."
+      : "Sentinel-2, EOX. About 45 km across.";
   };
   im.onerror = () => {
     if (id !== request) return;
@@ -1255,9 +1254,7 @@ function selectLL(la, lo, label) {
       " is " +
       $("pfar").textContent.toLowerCase() +
       " away." +
-      (reach < 0.15
-        ? " Too close to be unwalked."
-        : " On distance alone that would score about " + ds + ".");
+      (reach < 0.15 ? " Too close to be unwalked." : " On distance alone that would score about " + ds + ".");
     $("pwhy2").textContent =
       reach < 0.15
         ? ""
@@ -1282,8 +1279,7 @@ function selectLL(la, lo, label) {
           (days === 1 ? " day" : " days") +
           " on foot each way.",
       );
-      if (b & 4)
-        keep.push("Permanent ice. Nothing grows.");
+      if (b & 4) keep.push("Permanent ice. Nothing grows.");
       else if (ratio >= 0.68 && elev < 3000) keep.push("Bare desert, with no reliable water on the surface.");
       if (elev >= 3000)
         keep.push(
