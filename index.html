@@ -59,7 +59,7 @@
         "description": "A map of where nobody has stood, probably."
       }
     </script>
-    <link rel="stylesheet" href="css/style.css?v=25" />
+    <link rel="stylesheet" href="css/style.css?v=26" />
   </head>
   <body>
     <canvas id="sky" aria-hidden="true"></canvas>
@@ -69,6 +69,14 @@
     ></canvas>
 
     <aside id="card">
+      <div
+        id="grab"
+        role="button"
+        tabindex="0"
+        aria-label="Show or hide the panel"
+      >
+        <i></i>
+      </div>
       <section id="intro">
         <h1><img src="icon.svg?v=5" alt="" />unwalked.earth</h1>
         <p class="lede">
@@ -133,7 +141,7 @@
           <i class="live"></i><span id="online"></span>
         </p>
         <p class="count ends">
-          <span id="version">v0.52</span>
+          <span id="version">v0.53</span>
           <button class="textlink" id="feedbacklink" type="button">
             Feedback
           </button>
@@ -460,6 +468,6 @@
 
     <img id="tex" alt="" style="display: none" src="data/world.png" />
     <img id="ntex" alt="" style="display: none" src="data/names.png" />
-    <script src="js/app.js?v=25" defer></script>
+    <script src="js/app.js?v=26" defer></script>
   </body>
 </html>

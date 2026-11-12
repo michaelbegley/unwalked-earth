@@ -68,6 +68,9 @@ button {
     0 12px 40px rgba(0, 0, 0, 0.1);
   padding: 20px;
 }
+#grab {
+  display: none;
+}
 #card section[hidden] {
   display: none;
 }
@@ -641,13 +644,37 @@ dd {
     bottom: 12px;
     width: auto;
     max-height: 66%;
-    padding: 16px 16px 16px;
+    padding: 0 16px 16px;
     border-radius: 20px;
+    will-change: transform;
+  }
+  /* the grey bar: drag or tap it to drop the panel out of the way */
+  #grab {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    height: 24px;
+    margin: 0 -16px;
+    background: var(--card);
+    touch-action: none;
+    cursor: grab;
+  }
+  #grab i {
+    width: 36px;
+    height: 5px;
+    border-radius: 3px;
+    background: #c7c7cc;
+  }
+  #card.down {
+    overflow: hidden;
   }
   .top {
-    top: -16px;
-    margin: -16px -16px 0;
-    padding: 16px 16px 0;
+    top: 24px;
+    margin: 0 -16px 0;
+    padding: 0 16px 0;
   }
   #card.tall {
     height: 66%;

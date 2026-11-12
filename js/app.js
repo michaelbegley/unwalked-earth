@@ -981,7 +981,67 @@ $("aprompt").onclick = async () => {
     b.textContent = "Select all and copy";
   }
 };
+// on phones the panel can be dropped down to show more of the globe
+const PEEK = 76;
+let drop = 0;
+function setDrop(px, animate) {
+  drop = px;
+  card.style.transition = animate
+    ? "transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1)"
+    : "none";
+  card.style.transform = px ? "translateY(" + px + "px)" : "";
+  card.classList.toggle("down", px > 0);
+  if (px > 0) card.scrollTop = 0;
+  if (animate)
+    setTimeout(() => {
+      if (world) size();
+    }, 300);
+}
+{
+  const grab = $("grab");
+  let startY = 0,
+    startDrop = 0,
+    lastY = 0,
+    dir = 0,
+    dragging = false,
+    moved = false;
+  const most = () => Math.max(0, card.offsetHeight - PEEK);
+  grab.addEventListener("pointerdown", (e) => {
+    dragging = true;
+    moved = false;
+    startY = lastY = e.clientY;
+    startDrop = drop;
+    grab.setPointerCapture(e.pointerId);
+  });
+  grab.addEventListener("pointermove", (e) => {
+    if (!dragging) return;
+    if (Math.abs(e.clientY - startY) > 6) moved = true;
+    if (!moved) return;
+    dir = e.clientY - lastY || dir;
+    lastY = e.clientY;
+    setDrop(
+      Math.max(0, Math.min(most(), startDrop + e.clientY - startY)),
+      false,
+    );
+  });
+  const end = () => {
+    if (!dragging) return;
+    dragging = false;
+    // a tap flips it; a drag settles the way it was last moving
+    const down = moved ? (dir ? dir > 0 : drop > most() / 2) : !drop;
+    setDrop(down ? most() : 0, true);
+  };
+  grab.addEventListener("pointerup", end);
+  grab.addEventListener("pointercancel", end);
+  grab.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    e.preventDefault();
+    setDrop(drop ? 0 : most(), true);
+  });
+  sheet.addEventListener("change", () => setDrop(0, false));
+}
 function show(which) {
+  if (drop) setDrop(0, false);
   for (const id of ["intro", "place", "about", "where", "feedback"])
     $(id).hidden = id !== which;
   card.classList.toggle("tall", which === "place");
