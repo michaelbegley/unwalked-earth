@@ -26,7 +26,7 @@ begin
   on conflict (slot) do update set n = public.visit_slots.n + 1;
   insert into public.visit_sources (day, src, n)
   values ((now() at time zone 'America/Chicago')::date, s, 1)
-  on conflict (day, src) do update set n = public.visit_sources.n + 1;
+  on conflict on constraint visit_sources_pkey do update set n = public.visit_sources.n + 1;
 end;
 $$;
 
