@@ -4,7 +4,7 @@ A globe that guesses where nobody has ever stood.
 
 https://unwalked.earth/
 
-Plain land has been walked. Orange land probably hasn't. Tap anywhere to see the score for that spot, why it got it, and whether anything is on record nearby.
+Plain land has been walked. Orange land probably hasn't. Tap anywhere to see the score for that spot, why it got it, and whether anything is on record nearby. Orange starts at a score of 50 out of 100.
 
 ## Time slider
 
@@ -30,8 +30,9 @@ It's a guess from distance. Nobody keeps a record of everywhere people have stoo
 index.html      the page
 css/style.css   styles
 js/app.js       the globe and the card
-data/           score texture, place-name lookup, stats
-tools/          scripts that build data/ from the sources
+data/           score map, place names, researched place cards, first-arrival dates
+stats/          visit totals
+tools/          scripts that build data/, and the SQL for the visit count and feedback box
 v1/             the first version, kept for comparison
 ```
 

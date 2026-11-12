@@ -743,6 +743,14 @@ dd {
 
 /* fingers need bigger targets than a mouse, and iOS zooms the page on inputs under 16px */
 @media (pointer: coarse) {
+  /* small text links get a taller area to tap, without moving */
+  #feedbacklink,
+  #savedlist button {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    margin-top: -12px;
+    margin-bottom: -12px;
+  }
   .time input {
     height: 28px;
   }

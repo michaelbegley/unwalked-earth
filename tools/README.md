@@ -24,8 +24,12 @@ python score.py                 # final scores
 python export.py                # data/world.png and data/meta.json
 python names.py                 # data/names.png and data/names.json
 python stats.py                 # adds the country ranking to meta.json
+python antarctica.py source/Human_activity_records_complete.shp   # recorded visits in Antarctica
+cd .. && python tools/time.py   # data/time.png and data/time.json, for the time slider
 ```
 
 Needs numpy, scipy, Pillow, shapely and rasterio.
 
 The paths were tidied after the last full run, so expect to fix one or two if you rebuild from scratch.
+
+`visits.sql`, `visits-by-source.sql` and `feedback.sql` set up the visit count and the feedback box in Supabase. Run them in that order in the SQL editor.

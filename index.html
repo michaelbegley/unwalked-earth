@@ -59,7 +59,7 @@
         "description": "A map of where nobody has stood, probably."
       }
     </script>
-    <link rel="stylesheet" href="css/style.css?v=28" />
+    <link rel="stylesheet" href="css/style.css?v=29" />
   </head>
   <body>
     <canvas id="sky" aria-hidden="true"></canvas>
@@ -141,7 +141,7 @@
           <i class="live"></i><span id="online"></span>
         </p>
         <p class="count ends">
-          <span id="version">v0.56</span>
+          <span id="version">v0.57</span>
           <button class="textlink" id="feedbacklink" type="button">
             Feedback
           </button>
@@ -328,7 +328,7 @@
           mine, archaeological site, river or coast. In Antarctica any recorded
           visit counts too. The map measures how far each patch of land, about
           10 km across, is from the nearest one. 100 km counts as far. Past 300
-          km it stops mattering.
+          km it stops mattering. Orange starts at a score of 50 out of 100.
         </p>
         <h3>What holds a score down</h3>
         <p>
@@ -344,8 +344,9 @@
         <p>
           The score is a guess from distance. When you tap a spot, the page also
           asks four public sources what is on record within 10 km: photos,
-          wildlife records, iNaturalist sightings and Wikipedia articles. If
-          anything comes back, somebody was there.
+          wildlife records, iNaturalist sightings and Wikipedia articles. Three
+          or more records, a sighting or an article means somebody was there.
+          One or two is a maybe. Photos from orbit and maps are not counted.
         </p>
         <h3>Time</h3>
         <p>
@@ -436,7 +437,8 @@
         <p>No cookies. No accounts. Saved places stay on your device.</p>
         <p>
           Each visit adds one to a count, and one to the kind of site it came
-          from, like Reddit or Google. Nothing about you is kept.
+          from, like Reddit or Google. Nothing about you is kept. The number
+          online is visits in the last 30 minutes.
         </p>
         <p>
           Feedback is stored as the text you send. No name or address goes with
@@ -472,6 +474,6 @@
 
     <img id="tex" alt="" style="display: none" src="data/world.png" />
     <img id="ntex" alt="" style="display: none" src="data/names.png" />
-    <script src="js/app.js?v=29" defer></script>
+    <script src="js/app.js?v=30" defer></script>
   </body>
 </html>

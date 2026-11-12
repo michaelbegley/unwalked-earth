@@ -1709,6 +1709,11 @@ function selectLL(la, lo, label) {
 function fly(lat, lon, k) {
   stopSpin();
   halt();
+  // a zoom still easing (after Back, say) would fight this move
+  if (zoomFrame) {
+    cancelAnimationFrame(zoomFrame);
+    zoomFrame = 0;
+  }
   const tok = motion,
     a = { lon: view.lon, lat: view.lat, k: view.k },
     dl = ((lon - a.lon + 540) % 360) - 180,
@@ -1716,7 +1721,8 @@ function fly(lat, lon, k) {
     dur = calm ? 1 : 700;
   (function step(t) {
     if (tok !== motion) return;
-    let u = Math.min(1, (t - t0) / dur);
+    // a frame can be stamped a moment before t0, so keep u from going negative
+    let u = Math.max(0, Math.min(1, (t - t0) / dur));
     u = u * u * (3 - 2 * u);
     view.lon = ((a.lon + dl * u + 540) % 360) - 180;
     view.lat = a.lat + (lat - a.lat) * u;
@@ -1920,7 +1926,7 @@ function lucky() {
     tl = Math.max(-89.5, Math.min(89.5, lat));
   (function step(t) {
     if (tok !== motion) return;
-    const u = Math.min(1, (t - t0) / dur),
+    const u = Math.max(0, Math.min(1, (t - t0) / dur)),
       e = 1 - Math.pow(1 - u, 3);
     view.lon = ((a.lon + dl * e + 540) % 360) - 180;
     view.lat = a.lat + (tl - a.lat) * e;
