@@ -46,6 +46,9 @@ body{background:var(--sea);color:var(--text);font:15px/1.5 var(--body);display:g
 #legend{position:absolute;right:16px;bottom:16px;width:220px;font:12px var(--mono);color:var(--muted)}
 #legend .bar{height:10px;border-radius:5px;border:1px solid var(--line);background:linear-gradient(90deg,#24343f,#2f5f68 30%,#3f8f93 48%,#dfa23c 72%,#fff3d2)}
 #legend .ends{display:flex;justify-content:space-between;margin-top:4px}
+#pop{position:absolute;left:16px;top:44px;max-width:min(320px,calc(100% - 32px));background:var(--panel);border:1px solid var(--ochre);border-radius:8px;padding:10px 12px;font:13px/1.5 var(--body);display:none;z-index:3}
+#pop b{display:block;font:600 14.5px var(--body);color:var(--paper)}
+#pop .d{color:var(--muted)}
 #hint{position:absolute;left:16px;top:14px;font:12px var(--mono);color:var(--muted)}
 aside{background:var(--panel);border-left:1px solid var(--line);overflow-y:auto;padding:22px 20px 28px;display:flex;flex-direction:column;gap:22px}
 h1{font:700 30px/1.05 var(--display);margin:0;letter-spacing:-.01em;text-wrap:balance}
@@ -60,6 +63,8 @@ input[type=range]{width:100%;accent-color:var(--ochre)}
 #read{font:13px/1.6 var(--mono);border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--ink);min-height:118px}
 #read .k{color:var(--muted)}
 #read .s{color:var(--paper);font-weight:500}
+#read b{display:block;color:var(--paper);font-weight:500}
+#read .d{color:var(--muted)}
 ol,ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px}
 .spot{display:grid;grid-template-columns:26px 1fr auto;gap:8px;align-items:baseline;width:100%;text-align:left;background:none;border:1px solid transparent;border-radius:8px;padding:6px 8px;color:var(--text);font:14px/1.35 var(--body);cursor:pointer}
 .spot:hover,.spot:focus-visible{border-color:var(--teal);background:var(--ink);outline:none}
@@ -82,7 +87,8 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--ochre);outline-
 <body>
 <div id="stage">
   <canvas id="globe" aria-label="Globe shaded by how likely it is that no person has ever stood there"></canvas>
-  <div id="hint">Drag to turn. Scroll or pinch to zoom.</div>
+  <div id="hint">Drag to turn. Pinch or scroll to zoom. Tap a marker.</div>
+  <div id="pop" role="status"></div>
   <div id="zoom"><button id="zin" type="button" aria-label="Zoom in">+</button><button id="zout" type="button" aria-label="Zoom out">&minus;</button></div>
   <div id="legend"><div class="bar"></div><div class="ends"><span>0 walked</span><span>100 unwalked</span></div></div>
 </div>
@@ -224,7 +230,7 @@ cv.addEventListener('pointermove',e=>{
   if(ptrs.size===2){const a=[...ptrs.values()];const d=Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1]);st.k=Math.min(7,Math.max(.8,k0*d/pinch0));kick();return}
   if(Math.abs(dx)+Math.abs(dy)>2)moved=true;
   const f=dpr/(R0*st.k)/RAD;st.lon=((st.lon-dx*f+540)%360)-180;st.lat=Math.max(-89.5,Math.min(89.5,st.lat+dy*f));kick()});
-function up(e){if(ptrs.has(e.pointerId)){ptrs.delete(e.pointerId);if(!moved)read(...pos(e))}if(!ptrs.size)cv.classList.remove('drag')}
+function up(e){if(ptrs.has(e.pointerId)){ptrs.delete(e.pointerId);if(!moved){const p=pos(e);if(!pick(p[0],p[1]))read(p[0],p[1])}}if(!ptrs.size)cv.classList.remove('drag')}
 cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
 cv.addEventListener('wheel',e=>{e.preventDefault();stopSpin();st.k=Math.min(7,Math.max(.8,st.k*Math.exp(-e.deltaY*.0015)));kick()},{passive:false});
 document.getElementById('zin').onclick=()=>{stopSpin();st.k=Math.min(7,st.k*1.5);draw(1)};
@@ -240,6 +246,14 @@ function read(mx,my){
   const s=Math.round((r-1)/2.54),acc=Math.pow(T[o+1]/8,2),b=T[o+2],ice=b&4,elev=(b>>3)*300;
   el.innerHTML=`<span class="k">${ll(g[0],g[1])}</span><br><span class="k">Unwalked score </span><span class="s">${s} / 100</span><br><span class="k">Nearest way in </span>${acc<8?'under 10':'about '+fmt(Math.round(acc/(acc>100?10:5))*(acc>100?10:5))} km<br><span class="k">That way in is a </span>${WAYS[b&3]}<br><span class="k">Ground </span>${ice?'permanent ice':'ice-free'}${elev>=300?', about '+fmt(elev)+' m up':', low'}`;
 }
+function spotName(s){return tc(s.region||s.country)+(s.region&&s.country&&tc(s.region)!==s.country?', '+s.country:'')}
+function spotHTML(s,i){return `<b>${i+1}. ${spotName(s)}</b>Unwalked score ${s.score} / 100<br><span class="d">${fmt(s.access)} km from any way in. Nearest named place: ${s.town}, ${fmt(s.town_km)} km. ${ll(s.lat,s.lon)}</span>`}
+function refHTML(s){return `<b>${s.name}</b><span class="d">${s.d} ${ll(s.lat,s.lon)}</span>`}
+function showPop(h){const p=document.getElementById('pop');if(h){p.innerHTML=h;p.style.display='block';document.getElementById('read').innerHTML=h}else p.style.display='none'}
+function pick(mx,my){let best=null,bd=18*dpr;
+  META.spots.forEach((s,i)=>{const p=proj(s.lat,s.lon);if(p[2]<.05)return;const d=Math.hypot(p[0]-mx,p[1]-my);if(d<bd){bd=d;best=spotHTML(s,i)}});
+  REFS.forEach(s=>{const p=proj(s.lat,s.lon);if(p[2]<.05)return;const d=Math.hypot(p[0]-mx,p[1]-my);if(d<bd){bd=d;best=refHTML(s)}});
+  showPop(best);return !!best}
 function fly(lat,lon,k){stopSpin();const a={lon:st.lon,lat:st.lat,k:st.k},dl=((lon-a.lon+540)%360)-180,t0=performance.now(),dur=matchMedia('(prefers-reduced-motion: reduce)').matches?1:700;
   (function step(t){let u=Math.min(1,(t-t0)/dur);u=u*u*(3-2*u);st.lon=((a.lon+dl*u+540)%360)-180;st.lat=a.lat+(lat-a.lat)*u;st.k=a.k+(k-a.k)*u;if(u<1){draw(.5);requestAnimationFrame(step)}else draw(1)})(t0)}
 
@@ -248,10 +262,10 @@ function stat(){const t=st.thr,p=META.cum[t],px=META.cumx[t];document.getElement
   document.getElementById('pct').textContent=p.toFixed(p<10?1:0)+'% of land';
   document.getElementById('pctline').innerHTML=`scores ${t} or more. That is about <b>${(META.land_km2*p/100/1e6).toFixed(1)} million km²</b>. Leave out Antarctica and it drops to <b>${px.toFixed(1)}%</b>.`}
 document.getElementById('thr').addEventListener('input',e=>{st.thr=+e.target.value;buildLUT();stat();kick()});
-const tc=s=>s.replace(/\b([A-Z’'])([A-Z’'.]+)\b/g,(m,a,b)=>a+b.toLowerCase());
+var tc=s=>s.replace(/\b([A-Z’'])([A-Z’'.]+)\b/g,(m,a,b)=>a+b.toLowerCase());
 document.getElementById('spots').innerHTML=META.spots.map((s,i)=>`<li><button class="spot" type="button" data-i="${i}"><span class="n">${i+1}</span><span>${tc(s.region||s.country)}${s.region&&s.country&&tc(s.region)!==s.country?', '+s.country:''}<span class="d">${fmt(s.access)} km from any way in. Nearest named place: ${s.town}, ${fmt(s.town_km)} km.</span></span><span class="sc">${s.score}</span></button></li>`).join('');
 document.getElementById('refs').innerHTML=REFS.map((s,i)=>`<li><button class="spot" type="button" data-r="${i}"><span class="n">&#9671;</span><span>${s.name}<span class="d">${s.d}</span></span><span class="sc"></span></button></li>`).join('');
-document.querySelector('aside').addEventListener('click',e=>{const b=e.target.closest('.spot');if(!b)return;const s=b.dataset.i!==undefined?META.spots[+b.dataset.i]:REFS[+b.dataset.r];fly(s.lat,s.lon,Math.max(st.k,2.2));if(matchMedia('(max-width:860px)').matches)stage.scrollIntoView({behavior:'smooth'})});
+document.querySelector('aside').addEventListener('click',e=>{const b=e.target.closest('.spot');if(!b)return;const s=b.dataset.i!==undefined?META.spots[+b.dataset.i]:REFS[+b.dataset.r];fly(s.lat,s.lon,Math.max(st.k,2.2));showPop(b.dataset.i!==undefined?spotHTML(s,+b.dataset.i):refHTML(s));if(matchMedia('(max-width:860px)').matches)stage.scrollIntoView({behavior:'smooth'})});
 
 // boot
 const tex=document.getElementById('tex');
