@@ -1,5 +1,5 @@
 import csv, io, re, json, collections, sys
-txt=open('/home/claude/dl/wd/wd.csv',encoding='utf-8').read()
+txt=open('source/wikidata.csv',encoding='utf-8').read()
 parts=re.split(r'^#(\w+)\r?\n',txt,flags=re.M)
 T={'Q195339':'research station','Q211748':'oil field','Q74047':'ghost town','Q182676':'mountain hut'}
 out=[]; cnt=collections.Counter()
@@ -15,4 +15,4 @@ for k,body in zip(parts[1::2],parts[2::2]):
 print(cnt, len(out))
 print('south of 60S:',collections.Counter(o[2] for o in out if o[1]<-60))
 print([o for o in out if o[1]<-60 and o[2]=='research station'][:8])
-json.dump(out,open('v2/wd.json','w'))
+json.dump(out,open('out/wikidata.json','w'))

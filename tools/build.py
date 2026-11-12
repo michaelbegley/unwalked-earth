@@ -4,7 +4,7 @@ from PIL import Image, ImageDraw
 from scipy.spatial import cKDTree
 from scipy import ndimage as ndi
 
-D = '/home/claude/data/'
+D = 'source/'
 W, H = 4096, 2048
 R_EARTH = 6371.0
 
@@ -85,7 +85,7 @@ print('road pts', len(roads))
 import csv
 cities = []
 names = []
-for r in csv.DictReader(open('/home/claude/work/cities.tsv'), delimiter='\t', quoting=csv.QUOTE_NONE):
+for r in csv.DictReader(open('source/cities.tsv'), delimiter='\t', quoting=csv.QUOTE_NONE):
     cities.append((float(r['lon']), float(r['lat']))); names.append((r['name'], r['country'], int(r['pop'] or 0)))
 for f in load('ne_10m_populated_places_simple'):
     x, y = f['geometry']['coordinates'][:2]
@@ -155,10 +155,10 @@ score = np.clip(score, 0, 100)
 
 S = np.zeros((H, W), np.float32); S[idx] = score
 A = np.zeros((H, W), np.float32); A[idx] = access
-np.savez_compressed('/home/claude/work/grid.npz', S=S, A=A, land=land, ice=ice, elev=elev.astype('float32'),
+np.savez_compressed('out/grid_base.npz', S=S, A=A, land=land, ice=ice, elev=elev.astype('float32'),
                     d_road=d_road.astype('float32'), d_town=d_town.astype('float32'), d_river=d_river.astype('float32'),
                     d_coast=d_coast.astype('float32'), i_town=i_town, which=which.astype('uint8'), iy=idx[0], ix=idx[1])
-json.dump(names, open('/home/claude/work/townnames.json', 'w'))
+json.dump(names, open('out/townnames_base.json', 'w'))
 
 # quick report
 area = np.cos(np.radians(la))

@@ -1,7 +1,7 @@
 import json, numpy as np
 from PIL import Image, ImageDraw
 from shapely.geometry import shape
-D='/home/claude/data/'; W,H=2048,1024
+D='source/'; W,H=2048,1024
 def px(r): return [((x+180)/360*W,(90-y)/180*H) for x,y,*_ in r]
 def polys(g):
     if g['type']=='Polygon': yield g['coordinates']
@@ -29,8 +29,8 @@ for f in rf:
 c=np.array(ci).astype(np.uint16); r=np.array(ri).astype(np.uint16)
 print(len(cn),len(rn),c.max(),r.max())
 img=np.dstack([(c&255),(r&255),((c>>8)<<4)|(r>>8)]).astype(np.uint8)
-Image.fromarray(img).save('site/names.png',optimize=True)
-json.dump(dict(c=cn,r=rn),open('site/names.json','w'),ensure_ascii=False,separators=(',',':'))
+Image.fromarray(img).save('../data/names.png',optimize=True)
+json.dump(dict(c=cn,r=rn),open('../data/names.json','w'),ensure_ascii=False,separators=(',',':'))
 def at(lt,ln):
     y=int((90-lt)/180*H);x=int((ln+180)/360*W);print(lt,ln,'|',rn[r[y,x]],'|',cn[c[y,x]])
 for a in [(19.9,50.1),(-80,-120),(72,-40),(34,86),(-25.5,136.5),(41.3,-99),(66.7,140.3),(-5,-65),(64.4,-131),(22,8),(-77.5,106)]: at(*a)

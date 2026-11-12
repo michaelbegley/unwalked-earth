@@ -1,31 +1,46 @@
 # Unwalked Earth
 
-A globe that guesses where nobody has ever stood. Orange land has probably never been walked.
+A globe that guesses where nobody has ever stood.
 
-**Live:** https://michaelbegley.github.io/unwalked-earth/
+https://michaelbegley.github.io/unwalked-earth/
 
-Tap anywhere to see that spot's score, how far it is from the nearest way in, and links to look it up.
+Plain land has been walked. Orange land probably hasn't. Tap anywhere to see the score for that spot, why it got it, and whether anything is on record nearby.
 
-## How the score works
+## How a place gets its score
 
-Every patch of land about 10 km across gets a score from 0 to 100.
+Every patch of land about 10 km across gets a number from 0 to 100.
 
-- **Way in.** Distance to the nearest road, track, railway, town of 1,000+ people, airstrip, research station, river or coast.
-- **Ground.** Ice can reach 100. Sand desert tops out near 75, very high ground near 85, everything else near 55.
+- **Distance.** How far it is from the nearest road, track, railway, town, airstrip, research station, mine, archaeological site, river or coast.
+- **Ground.** Ice can reach 100. Open desert and very high country stop near 75. Forest, grassland and tundra stop near 55, because people have lived on or crossed that ground for thousands of years.
 - **Lights.** Any glow at night pulls the score down.
 
-## Where it is wrong
+When you tap a spot the page also checks four public sources for anything recorded within 10 km: photos on Wikimedia Commons, wildlife records on GBIF, sightings on iNaturalist and articles on Wikipedia.
 
-It is a guess made from distance. Nobody keeps a record of real footsteps. It only knows about camps, mines and expedition routes that are in its data, and a fact check found several that were not. Oceans are not scored.
+## Where it's wrong
 
-## Rebuild
+It's a guess from distance. Nobody keeps a record of everywhere people have stood. The map only knows the camps, mines and expedition routes that are in its data, and some are missing. The oceans aren't scored.
 
-1. `build/build.py` makes the base grid from Natural Earth and GeoNames.
-2. `build/tt.py` shrinks the travel-time GeoTIFF to the same grid.
-3. `build/score2.py` folds in travel time, Antarctic facilities and airstrips.
-4. `build/export.py` writes the score texture and stats. `build/names.py` writes the place-name lookup.
-5. `build/assemble.py` inlines everything into `build/template.html` to produce `index.html`.
+## Layout
+
+```
+index.html      the page
+css/style.css   styles
+js/app.js       the globe and the card
+data/           score texture, place-name lookup, stats
+tools/          scripts that build data/ from the sources
+v1/             the first version, kept for comparison
+```
+
+No build step and no dependencies. Open `index.html` from any static server.
 
 ## Data
 
-Natural Earth 1:10m vectors, the Malaria Atlas Project travel-time-to-cities map (Weiss et al. 2018), OurAirports, Wikidata mines and archaeological sites, the COMNAP Antarctic facilities list, GeoNames towns (npm `all-the-cities`), and night-lights and elevation textures from the three-globe examples.
+- [Natural Earth](https://www.naturalearthdata.com/): land, roads, railways, rivers, ice
+- [Malaria Atlas Project](https://malariaatlas.org/project-resources/accessibility-to-healthcare/): travel time to cities (Weiss et al. 2018)
+- [OurAirports](https://ourairports.com/data/): airports and airstrips, open and closed
+- [COMNAP](https://github.com/PolarGeospatialCenter/comnap-antarctic-facilities): Antarctic facilities
+- [Wikidata](https://www.wikidata.org/): mines and archaeological sites
+- [GeoNames](https://www.geonames.org/): towns of 1,000 or more
+- NASA night lights
+
+Pictures on tap are Sentinel-2 cloudless by [EOX](https://s2maps.eu/) and NASA Blue Marble.

@@ -2,15 +2,15 @@ import json, numpy as np
 from PIL import Image
 from shapely.geometry import shape, Point
 from shapely.strtree import STRtree
-g=np.load('grid.npz'); S=g['S']; A=g['A']; land=g['land']; ice=g['ice']; elev=g['elev']
+g=np.load('out/grid.npz'); S=g['S']; A=g['A']; land=g['land']; ice=g['ice']; elev=g['elev']
 H,W=S.shape; iy=g['iy']; ix=g['ix']
-names=json.load(open('townnames.json'))
+names=json.load(open('out/townnames.json'))
 which=np.zeros((H,W),np.uint8); which[iy,ix]=g['which']
 # texture
 Rc=np.where(land, np.clip(np.round(S*2.54)+1,1,255),0).astype(np.uint8)
 Gc=np.clip(np.round(np.sqrt(A)*8),0,255).astype(np.uint8)
 Bc=(which | (ice.astype(np.uint8)<<2) | (np.clip(elev/300,0,31).astype(np.uint8)<<3)).astype(np.uint8)
-Image.fromarray(np.dstack([Rc,Gc,Bc])).save('site/world.png',optimize=True)
+Image.fromarray(np.dstack([Rc,Gc,Bc])).save('../data/world.png',optimize=True)
 # area histogram
 lat=90-(np.arange(H)+0.5)*180/H; LAT=np.repeat(lat[:,None],W,1)
 a=np.cos(np.radians(LAT))[land]; s=S[land]; la=LAT[land]
@@ -20,9 +20,9 @@ km2=510.1e6*np.pi/2/ (W*H) # per-cell area at equator: (2piR/W)*(piR/H)
 cell=(2*np.pi*6371/W)*(np.pi*6371/H)
 land_km2=float((a*cell).sum())
 # top spots
-cf=json.load(open('/home/claude/data/ne_10m_admin_0_countries.geojson'))['features']
+cf=json.load(open('source/ne_10m_admin_0_countries.geojson'))['features']
 cg=[shape(f['geometry']) for f in cf]; ct=STRtree(cg)
-rf=[f for f in json.load(open('/home/claude/data/ne_10m_geography_regions_polys.geojson'))['features']]
+rf=[f for f in json.load(open('source/ne_10m_geography_regions_polys.geojson'))['features']]
 rg=[shape(f['geometry']) for f in rf]; rt=STRtree(rg)
 lon=-180+(np.arange(W)+0.5)*360/W
 Dt=np.zeros((H,W),np.float32); Dt[iy,ix]=g['d_town']; It=np.zeros((H,W),np.int64); It[iy,ix]=g['i_town']
@@ -54,7 +54,7 @@ for o in order[:2_000_000:1]:
 for s in spots: print(s['lat'],s['lon'],s['score'],s['access'],s['country'],s['region'],s['town'],s['town_km'],s['ice'])
 # borders
 bl=[]
-for f in json.load(open('/home/claude/data/ne_50m_admin_0_boundary_lines_land.geojson'))['features']:
+for f in json.load(open('source/ne_50m_admin_0_boundary_lines_land.geojson'))['features']:
     gm=f['geometry']; ls=[gm['coordinates']] if gm['type']=='LineString' else gm['coordinates']
     for l in ls:
         out=[l[0]]
@@ -62,5 +62,5 @@ for f in json.load(open('/home/claude/data/ne_50m_admin_0_boundary_lines_land.ge
             if abs(p[0]-out[-1][0])+abs(p[1]-out[-1][1])>0.08: out.append(p)
         if out[-1]!=l[-1]: out.append(l[-1])
         bl.append([round(v,2) for p in out for v in p[:2]])
-json.dump(dict(cum=cum,cumx=cumx,land_km2=round(land_km2),spots=spots,borders=bl),open('site/meta.json','w'),separators=(',',':'))
+json.dump(dict(cum=cum,cumx=cumx,land_km2=round(land_km2),borders=bl),open('../data/meta.json','w'),separators=(',',':'))
 print(cum[25],cum[50],cum[75],cumx[25],cumx[50],cumx[75],land_km2)
