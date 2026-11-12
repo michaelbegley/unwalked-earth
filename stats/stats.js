@@ -1,4 +1,5 @@
-const STATS = "https://cpzhsztczixiidxypvmb.supabase.co/rest/v1/rpc/visit_stats",
+const STATS =
+    "https://cpzhsztczixiidxypvmb.supabase.co/rest/v1/rpc/visit_stats",
   KEY = "sb_publishable_M8UMcKf1BrHMbCuCVJ1P3g_-Bwnwd2W";
 const $ = (id) => document.getElementById(id),
   number = (n) => Number(n).toLocaleString("en-US");
@@ -33,11 +34,28 @@ async function load() {
         reddit: "Reddit",
         hn: "Hacker News",
         google: "Google",
+        search: "Other search engines",
+        ai: "AI assistants",
+        facebook: "Facebook",
+        instagram: "Instagram",
+        threads: "Threads",
+        tiktok: "TikTok",
+        youtube: "YouTube",
+        linkedin: "LinkedIn",
+        bluesky: "Bluesky",
+        discord: "Discord",
+        github: "GitHub",
+        text: "Text message",
+        email: "Email",
         other: "Other sites",
         direct: "Direct",
       },
       top = Math.max(1, ...(d.sources || []).map((x) => x.visits));
-    $("from").replaceChildren(...(d.sources || []).map((x) => row(NAMES[x.src] || x.src, x.visits, top)));
+    $("from").replaceChildren(
+      ...(d.sources || []).map((x) =>
+        row(NAMES[x.src] || x.src, x.visits, top),
+      ),
+    );
     const most = Math.max(1, ...d.days.map((x) => x.visits));
     $("days").replaceChildren(
       ...d.days.map((x) =>
@@ -52,7 +70,10 @@ async function load() {
         ),
       ),
     );
-    $("when").textContent = "Updated " + new Date().toLocaleTimeString("en-US") + ". Refreshes every minute.";
+    $("when").textContent =
+      "Updated " +
+      new Date().toLocaleTimeString("en-US") +
+      ". Refreshes every minute.";
   } catch (e) {
     $("when").textContent = "Could not load the numbers. " + e.message;
   }

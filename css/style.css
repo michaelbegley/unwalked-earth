@@ -7,7 +7,9 @@
   --fill: #f0f0f3;
   --blue: #0071e3;
   --warm: #e37200;
-  --face: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Helvetica, Arial, sans-serif;
+  --face:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Helvetica,
+    Arial, sans-serif;
   color-scheme: light;
 }
 * {
@@ -76,6 +78,13 @@ h1 {
   letter-spacing: -0.01em;
   margin: 0;
 }
+h1 img {
+  height: 0.72em;
+  height: 1cap;
+  width: auto;
+  margin-right: 0.25em;
+  vertical-align: baseline;
+}
 h2 {
   font-size: 22px;
   line-height: 1.2;
@@ -109,7 +118,13 @@ p {
   height: 8px;
   border-radius: 4px;
   box-shadow: inset 0 0 0 1px var(--line);
-  background: linear-gradient(90deg, #eeece6 15%, #fbddb2 42%, #ff9f0a 68%, #e24600);
+  background: linear-gradient(
+    90deg,
+    #eeece6 15%,
+    #fbddb2 42%,
+    #ff9f0a 68%,
+    #e24600
+  );
 }
 .hint {
   margin-top: 12px;
@@ -190,6 +205,11 @@ p {
   margin-top: 16px;
   padding-top: 16px;
   border-top: 1px solid var(--line);
+}
+.count {
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--soft);
 }
 .half {
   border: 0;

@@ -1,4 +1,4 @@
--- Adds a per-day tally by where a visit came from (x, reddit, hn, google, other, direct).
+-- Adds a per-day tally by where a visit came from (x, reddit, google, text and so on).
 -- Still no IP address, no visitor id, no page address. Only the name of the source group is kept.
 
 create table if not exists public.visit_sources (
@@ -19,7 +19,7 @@ security definer
 set search_path = public
 as $$
 declare
-  s text := case when src in ('x', 'reddit', 'hn', 'google', 'direct') then src else 'other' end;
+  s text := case when src in ('x', 'reddit', 'hn', 'google', 'search', 'ai', 'facebook', 'instagram', 'threads', 'tiktok', 'youtube', 'linkedin', 'bluesky', 'discord', 'github', 'text', 'email', 'direct') then src else 'other' end;
 begin
   insert into public.visit_slots (slot, n)
   values (to_timestamp(floor(extract(epoch from now()) / 600) * 600), 1)

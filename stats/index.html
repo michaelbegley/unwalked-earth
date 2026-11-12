@@ -4,11 +4,13 @@
     <meta charset="utf-8" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'none'; connect-src https://cpzhsztczixiidxypvmb.supabase.co; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'"
+      content="default-src 'none'; img-src 'self'; connect-src https://cpzhsztczixiidxypvmb.supabase.co; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'"
     />
     <meta name="referrer" content="no-referrer" />
     <meta name="robots" content="noindex, nofollow" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="../favicon.ico?v=5" sizes="48x48" />
+    <link rel="icon" href="../icon.svg?v=5" type="image/svg+xml" />
     <title>Unwalked Earth visits</title>
     <link rel="stylesheet" href="stats.css?v=2" />
   </head>
@@ -26,11 +28,14 @@
       <h2>Last 30 days</h2>
       <ul id="days"></ul>
       <p class="soft">
-        A visit is one browser tab opening the site. Reloads in the same tab are not counted again, and
-        neither are browsers that ask not to be tracked. Days are Central time. "Direct" means the visitor
-        typed the address, used a bookmark, or came from an app that does not say where it sent them.
+        A visit is one browser tab opening the site. Reloads in the same tab are
+        not counted again, and neither are browsers that ask not to be tracked.
+        Days are Central time. "Direct" means the visitor typed the address,
+        used a bookmark, or came from an app that does not say where it sent
+        them. Text message and email only count when the link ends in ?from=text
+        or ?from=email.
       </p>
     </main>
-    <script src="stats.js?v=2" defer></script>
+    <script src="stats.js?v=3" defer></script>
   </body>
 </html>

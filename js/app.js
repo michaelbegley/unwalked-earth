@@ -39,7 +39,11 @@ function ramp(s) {
       const a = RAMP[i - 1],
         b = RAMP[i],
         t = (s - a[0]) / (b[0] - a[0]);
-      return [a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t, a[3] + (b[3] - a[3]) * t];
+      return [
+        a[1] + (b[1] - a[1]) * t,
+        a[2] + (b[2] - a[2]) * t,
+        a[3] + (b[3] - a[3]) * t,
+      ];
     }
   }
   return [226, 70, 0];
@@ -79,7 +83,12 @@ function pyramid(base) {
         land[y * w + x] = (sum + 2) >> 2;
         if (sum)
           mean[y * w + x] =
-            (up.mean[i] * a + up.mean[i + 1] * b + up.mean[i + uw] * c + up.mean[i + uw + 1] * d) / sum + 0.5;
+            (up.mean[i] * a +
+              up.mean[i + 1] * b +
+              up.mean[i + uw] * c +
+              up.mean[i + uw + 1] * d) /
+              sum +
+            0.5;
       }
     }
     out.push({ land, mean });
@@ -154,7 +163,11 @@ function sky() {
       a = 0.25 + rnd() * 0.65,
       w = rnd();
     x.fillStyle =
-      w > 0.9 ? `rgba(190,210,255,${a})` : w < 0.08 ? `rgba(255,232,205,${a})` : `rgba(255,255,255,${a})`;
+      w > 0.9
+        ? `rgba(190,210,255,${a})`
+        : w < 0.08
+          ? `rgba(255,232,205,${a})`
+          : `rgba(255,255,255,${a})`;
     x.beginPath();
     x.arc(px, py, r, 0, 7);
     x.fill();
@@ -162,7 +175,9 @@ function sky() {
 }
 
 // the card becomes a bottom sheet on phones and upright tablets; keep in step with style.css
-const sheet = matchMedia("(max-width: 700px), (max-width: 1000px) and (orientation: portrait)");
+const sheet = matchMedia(
+  "(max-width: 700px), (max-width: 1000px) and (orientation: portrait)",
+);
 function size() {
   dpr = Math.min(window.devicePixelRatio || 1, sheet.matches ? 2 : 1.5);
   canvasW = Math.max(200, Math.round(innerWidth * dpr));
@@ -189,16 +204,24 @@ function sunAt(ms) {
   // where the sun is overhead: [lat, lon], good to a few degrees
   const d = new Date(ms),
     day =
-      (Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) - Date.UTC(d.getUTCFullYear(), 0, 0)) /
+      (Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) -
+        Date.UTC(d.getUTCFullYear(), 0, 0)) /
       864e5;
   const hrs = d.getUTCHours() + d.getUTCMinutes() / 60;
-  return [-23.44 * Math.cos((2 * Math.PI * (day + 10)) / 365), ((180 - 15 * hrs + 540) % 360) - 180];
+  return [
+    -23.44 * Math.cos((2 * Math.PI * (day + 10)) / 365),
+    ((180 - 15 * hrs + 540) % 360) - 180,
+  ];
 }
 function isDay(lat, lon) {
   const s = sunAt(Date.now()),
     a = lat * RAD,
     b = s[0] * RAD;
-  return Math.sin(a) * Math.sin(b) + Math.cos(a) * Math.cos(b) * Math.cos((lon - s[1]) * RAD) > 0;
+  return (
+    Math.sin(a) * Math.sin(b) +
+      Math.cos(a) * Math.cos(b) * Math.cos((lon - s[1]) * RAD) >
+    0
+  );
 }
 // While the globe is moving it is drawn a little smaller and scaled up. How much smaller
 // follows the device: fast ones stay sharp, slow ones stay smooth.
@@ -306,7 +329,13 @@ function draw(q) {
           sum = w0 + w1 + w2 + w3;
         f = sum / 255;
         if (sum > 0)
-          r = Math.max(1, ((mean[at] * w0 + mean[bt] * w1 + mean[ct] * w2 + mean[dt] * w3) / sum + 0.5) | 0);
+          r = Math.max(
+            1,
+            ((mean[at] * w0 + mean[bt] * w1 + mean[ct] * w2 + mean[dt] * w3) /
+              sum +
+              0.5) |
+              0,
+          );
         // tighten the coast as you zoom in, so it stays a clean line
         if (lv === 0) f = (f - 0.5) * crisp + 0.5;
         f = f < 0 ? 0 : f > 1 ? 1 : f;
@@ -332,7 +361,14 @@ function paint(q) {
   lastQ = q;
   ctx.clearRect(0, 0, canvasW, canvasH);
   const RR = baseRadius * view.k,
-    halo = ctx.createRadialGradient(centerX, centerY, RR * 0.98, centerX, centerY, RR * 1.07);
+    halo = ctx.createRadialGradient(
+      centerX,
+      centerY,
+      RR * 0.98,
+      centerX,
+      centerY,
+      RR * 1.07,
+    );
   halo.addColorStop(0, "rgba(120,175,255,.55)");
   halo.addColorStop(1, "rgba(120,175,255,0)");
   ctx.fillStyle = halo;
@@ -351,7 +387,11 @@ function proj(lat, lon) {
     c = Math.cos(p);
   const z = sp * Math.sin(p) + cp * c * Math.cos(dl);
   const R = baseRadius * view.k;
-  return [centerX + c * Math.sin(dl) * R, centerY - (cp * Math.sin(p) - sp * c * Math.cos(dl)) * R, z];
+  return [
+    centerX + c * Math.sin(dl) * R,
+    centerY - (cp * Math.sin(p) - sp * c * Math.cos(dl)) * R,
+    z,
+  ];
 }
 function unproj(mx, my) {
   const R = baseRadius * view.k,
@@ -397,7 +437,9 @@ function overlay() {
   if (view.arc) {
     const a = vec(view.arc[0], view.arc[1]),
       b = vec(view.arc[2], view.arc[3]),
-      om = Math.acos(Math.max(-1, Math.min(1, a[0] * b[0] + a[1] * b[1] + a[2] * b[2])));
+      om = Math.acos(
+        Math.max(-1, Math.min(1, a[0] * b[0] + a[1] * b[1] + a[2] * b[2])),
+      );
     if (om > 1e-4) {
       ctx.beginPath();
       let pen = false;
@@ -512,7 +554,8 @@ function zoomTo(k, anchor) {
   (function step() {
     view.k += (zoomGoal - view.k) * 0.22;
     if (Math.abs(zoomGoal - view.k) < 0.004 * view.k) view.k = zoomGoal;
-    if (zoomAnchor) hold(zoomAnchor[0], zoomAnchor[1], zoomAnchor[2], zoomAnchor[3]);
+    if (zoomAnchor)
+      hold(zoomAnchor[0], zoomAnchor[1], zoomAnchor[2], zoomAnchor[3]);
     if (view.k === zoomGoal) {
       zoomFrame = 0;
       draw(1);
@@ -561,7 +604,11 @@ function pos(e) {
 }
 function mid() {
   const a = [...pointers.values()];
-  return [(a[0][0] + a[1][0]) / 2, (a[0][1] + a[1][1]) / 2, Math.hypot(a[0][0] - a[1][0], a[0][1] - a[1][1])];
+  return [
+    (a[0][0] + a[1][0]) / 2,
+    (a[0][1] + a[1][1]) / 2,
+    Math.hypot(a[0][0] - a[1][0], a[0][1] - a[1][1]),
+  ];
 }
 canvas.addEventListener("pointerdown", (e) => {
   canvas.style.cursor = "";
@@ -629,7 +676,10 @@ function up(e) {
   if (e.type !== "pointerup") return;
   if (!moved) {
     const now = performance.now();
-    if (now - lastTap[0] < 320 && Math.hypot(p[0] - lastTap[1], p[1] - lastTap[2]) < 30 * dpr) {
+    if (
+      now - lastTap[0] < 320 &&
+      Math.hypot(p[0] - lastTap[1], p[1] - lastTap[2]) < 30 * dpr
+    ) {
       const g = unproj(p[0], p[1]);
       zoomTo(view.k * 2, g ? [g[0], g[1], p[0], p[1]] : null);
       lastTap = [0, 0, 0];
@@ -672,10 +722,22 @@ $("zin").onclick = () => zoomTo((zoomFrame ? zoomGoal : view.k) * 1.7);
 $("zout").onclick = () => zoomTo((zoomFrame ? zoomGoal : view.k) / 1.7);
 addEventListener("keydown", (e) => {
   const tag = (e.target && e.target.tagName) || "";
-  if (tag === "INPUT" || tag === "TEXTAREA" || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (
+    tag === "INPUT" ||
+    tag === "TEXTAREA" ||
+    e.metaKey ||
+    e.ctrlKey ||
+    e.altKey
+  )
+    return;
   const step = 18 / view.k,
     k = e.key;
-  if (k === "ArrowLeft" || k === "ArrowRight" || k === "ArrowUp" || k === "ArrowDown") {
+  if (
+    k === "ArrowLeft" ||
+    k === "ArrowRight" ||
+    k === "ArrowUp" ||
+    k === "ArrowDown"
+  ) {
     e.preventDefault();
     stopSpin();
     halt();
@@ -684,8 +746,10 @@ addEventListener("keydown", (e) => {
     if (k === "ArrowUp") view.lat = Math.min(89.5, view.lat + step);
     if (k === "ArrowDown") view.lat = Math.max(-89.5, view.lat - step);
     kick();
-  } else if (k === "+" || k === "=") zoomTo((zoomFrame ? zoomGoal : view.k) * 1.7);
-  else if (k === "-" || k === "_") zoomTo((zoomFrame ? zoomGoal : view.k) / 1.7);
+  } else if (k === "+" || k === "=")
+    zoomTo((zoomFrame ? zoomGoal : view.k) * 1.7);
+  else if (k === "-" || k === "_")
+    zoomTo((zoomFrame ? zoomGoal : view.k) / 1.7);
   else if (k === "r" || k === "R") lucky();
   else if (k === " " && tag !== "BUTTON") {
     e.preventDefault();
@@ -695,7 +759,12 @@ addEventListener("keydown", (e) => {
   }
 });
 
-const WAYS_IN = ["Road, railway or track", "Town, airstrip, mine or other site", "Coast", "River"];
+const WAYS_IN = [
+  "Road, railway or track",
+  "Town, airstrip, mine or other site",
+  "Coast",
+  "River",
+];
 const number = (n) => Math.round(n).toLocaleString("en-US");
 const coords = (lat, lon) =>
   Math.abs(lat).toFixed(2) +
@@ -722,7 +791,10 @@ function nearest(lat, lon) {
       const i = list[j],
         y = (i / WORLD_W) | 0,
         x = i - y * WORLD_W,
-        w = vec(90 - ((y + 0.5) * 180) / WORLD_H, -180 + ((x + 0.5) * 360) / WORLD_W),
+        w = vec(
+          90 - ((y + 0.5) * 180) / WORLD_H,
+          -180 + ((x + 0.5) * 360) / WORLD_W,
+        ),
         d = v[0] * w[0] + v[1] * w[1] + v[2] * w[2];
       if (d > best) {
         best = d;
@@ -747,9 +819,16 @@ function compass(la1, lo1, la2, lo2) {
         Math.sin(d) * Math.cos(b),
         Math.cos(a) * Math.sin(b) - Math.sin(a) * Math.cos(b) * Math.cos(d),
       ) / RAD;
-  return ["north", "north-east", "east", "south-east", "south", "south-west", "west", "north-west"][
-    Math.round(((th + 360) % 360) / 45) % 8
-  ];
+  return [
+    "north",
+    "north-east",
+    "east",
+    "south-east",
+    "south",
+    "south-west",
+    "west",
+    "north-west",
+  ][Math.round(((th + 360) % 360) / 45) % 8];
 }
 function nameAt(lat, lon) {
   const x = Math.min(NAMES_W - 1, (((lon + 180) / 360) * NAMES_W) | 0),
@@ -778,16 +857,24 @@ function brief(s) {
   spot = s;
   spot.records = "";
   const at = s.lat === undefined ? "" : coords(s.lat, s.lon);
-  $("agoogle").href = "https://www.google.com/search?q=" + encodeURIComponent(s.query || s.place || at);
+  $("agoogle").href =
+    "https://www.google.com/search?q=" +
+    encodeURIComponent(s.query || s.place || at);
   $("awiki").href = s.wiki
-    ? "https://en.wikipedia.org/wiki/" + encodeURIComponent(s.wiki.replace(/ /g, "_"))
-    : "https://en.wikipedia.org/wiki/Special:Search?search=" + encodeURIComponent(s.search || s.place || at);
+    ? "https://en.wikipedia.org/wiki/" +
+      encodeURIComponent(s.wiki.replace(/ /g, "_"))
+    : "https://en.wikipedia.org/wiki/Special:Search?search=" +
+      encodeURIComponent(s.search || s.place || at);
   const pinned = s.lat !== undefined;
   $("plink").hidden = !pinned;
   $("asat").hidden = !pinned;
   if (pinned)
     $("asat").href =
-      "https://www.google.com/maps/@" + s.lat.toFixed(4) + "," + s.lon.toFixed(4) + ",40000m/data=!3m1!1e3";
+      "https://www.google.com/maps/@" +
+      s.lat.toFixed(4) +
+      "," +
+      s.lon.toFixed(4) +
+      ",40000m/data=!3m1!1e3";
   $("ptext").hidden = true;
   $("aprompt").textContent = "Copy AI prompt";
   writePrompt();
@@ -795,7 +882,10 @@ function brief(s) {
 }
 function writePrompt() {
   const s = spot,
-    here = s.lat === undefined ? "" : "#" + s.lat.toFixed(3) + "," + s.lon.toFixed(3);
+    here =
+      s.lat === undefined
+        ? ""
+        : "#" + s.lat.toFixed(3) + "," + s.lon.toFixed(3);
   promptText = [
     "I am looking at a spot on Unwalked Earth, a map that guesses where nobody has ever stood.",
     "",
@@ -869,7 +959,8 @@ $("aprompt").onclick = async () => {
   }
 };
 function show(which) {
-  for (const id of ["intro", "place", "about", "where"]) $(id).hidden = id !== which;
+  for (const id of ["intro", "place", "about", "where"])
+    $(id).hidden = id !== which;
   card.classList.toggle("tall", which === "place");
   card.scrollTop = 0;
   if (which !== "place") {
@@ -884,7 +975,8 @@ function show(which) {
 }
 let request = 0,
   current = null;
-const getJSON = (u) => fetch(u).then((r) => (r.ok ? r.json() : Promise.reject(r.status)));
+const getJSON = (u) =>
+  fetch(u).then((r) => (r.ok ? r.json() : Promise.reject(r.status)));
 const big = (n) => (n >= 1e6 ? (n / 1e6).toFixed(1) + " million" : number(n));
 function live(lat, lon, titles, score) {
   const id = ++request;
@@ -928,7 +1020,8 @@ function live(lat, lon, titles, score) {
         "&LAYERS=BlueMarble_ShadedRelief_Bathymetry";
     } else im.classList.remove("on");
   };
-  im.src = "https://tiles.maps.eox.at/wms?" + Q + box(0.1) + "&LAYERS=s2cloudless";
+  im.src =
+    "https://tiles.maps.eox.at/wms?" + Q + box(0.1) + "&LAYERS=s2cloudless";
   // weather right now
   $("pnowwrap").hidden = true;
   getJSON(
@@ -954,7 +1047,11 @@ function live(lat, lon, titles, score) {
       if (score !== null && score >= 50 && (c <= -20 || c >= 40)) {
         const li = document.createElement("li");
         li.textContent =
-          "Right now it is " + Math.round(c) + " °C (" + Math.round((c * 9) / 5 + 32) + " °F) there.";
+          "Right now it is " +
+          Math.round(c) +
+          " °C (" +
+          Math.round((c * 9) / 5 + 32) +
+          " °F) there.";
         $("pkeep").appendChild(li);
       }
     })
@@ -966,7 +1063,9 @@ function live(lat, lon, titles, score) {
       if (!t) continue;
       try {
         const d = await getJSON(
-          "https://en.wikipedia.org/api/rest_v1/page/summary/" + encodeURIComponent(t) + "?redirect=true",
+          "https://en.wikipedia.org/api/rest_v1/page/summary/" +
+            encodeURIComponent(t) +
+            "?redirect=true",
         );
         if (id !== request) return;
         if (d.type !== "standard" || !d.extract) continue;
@@ -980,7 +1079,8 @@ function live(lat, lon, titles, score) {
           wi.src = d.thumbnail.source;
           wi.hidden = false;
         } else wi.hidden = true;
-        if (d.content_urls && d.content_urls.desktop) $("awiki").href = d.content_urls.desktop.page;
+        if (d.content_urls && d.content_urls.desktop)
+          $("awiki").href = d.content_urls.desktop.page;
         $("pwiki").hidden = false;
         return;
       } catch (e) {}
@@ -991,7 +1091,8 @@ function live(lat, lon, titles, score) {
     dn = 0.09 / cosl,
     thumbs = $("pthumbs");
   thumbs.textContent = "";
-  for (const k of ["evphoto", "evgbif", "evinat", "evwiki"]) $(k).textContent = "…";
+  for (const k of ["evphoto", "evgbif", "evinat", "evwiki"])
+    $(k).textContent = "…";
   $("pevline").textContent = "Checking four sources.";
   $("pev").hidden = false;
   const photos = getJSON(
@@ -1003,7 +1104,9 @@ function live(lat, lon, titles, score) {
   ).then((d) => {
     const ps =
       d.query && d.query.pages
-        ? Object.values(d.query.pages).filter((p) => p.imageinfo && p.imageinfo[0] && p.imageinfo[0].thumburl)
+        ? Object.values(d.query.pages).filter(
+            (p) => p.imageinfo && p.imageinfo[0] && p.imageinfo[0].thumburl,
+          )
         : [];
     if (id === request) {
       for (const p of ps) {
@@ -1019,7 +1122,8 @@ function live(lat, lon, titles, score) {
         a.appendChild(i);
         thumbs.appendChild(a);
       }
-      $("evphoto").textContent = ps.length >= 6 ? "6 or more" : String(ps.length);
+      $("evphoto").textContent =
+        ps.length >= 6 ? "6 or more" : String(ps.length);
     }
     return ps.length;
   });
@@ -1080,7 +1184,10 @@ function live(lat, lon, titles, score) {
         a.href = "https://en.wikipedia.org/?curid=" + g[0].pageid;
         a.target = "_blank";
         a.rel = "noopener";
-        a.textContent = (g.length >= 20 ? "20 or more" : g.length) + ", nearest " + g[0].title;
+        a.textContent =
+          (g.length >= 20 ? "20 or more" : g.length) +
+          ", nearest " +
+          g[0].title;
         a.style.color = "var(--blue)";
         a.style.textDecoration = "none";
         e.appendChild(a);
@@ -1113,9 +1220,13 @@ function live(lat, lon, titles, score) {
           "Wikipedia articles",
         ],
         found = names
-          .map((n, i) => (rs[i].status === "fulfilled" ? rs[i].value + " " + n : ""))
+          .map((n, i) =>
+            rs[i].status === "fulfilled" ? rs[i].value + " " + n : "",
+          )
           .filter(Boolean);
-      spot.records = found.length ? "On record within 10 km: " + found.join(", ") + "." : "";
+      spot.records = found.length
+        ? "On record within 10 km: " + found.join(", ") + "."
+        : "";
       writePrompt();
     }
   });
@@ -1148,7 +1259,9 @@ function openMark(hit) {
 }
 // open whatever is at a position: a dotted place if one is there, otherwise the ground itself
 function openAt(lat, lon, label) {
-  const hit = LANDMARKS.find((m) => Math.abs(m.lat - lat) < 0.02 && Math.abs(m.lon - lon) < 0.02);
+  const hit = LANDMARKS.find(
+    (m) => Math.abs(m.lat - lat) < 0.02 && Math.abs(m.lon - lon) < 0.02,
+  );
   if (hit) openMark(hit);
   else selectLL(lat, lon, label);
 }
@@ -1228,9 +1341,11 @@ function selectLL(la, lo, label) {
     b = world[o + 2],
     step = acc > 100 ? 10 : 5,
     elev = (b >> 3) * 300;
-  const title = label || (nm[0] && nm[0] !== nm[1] ? nm[0] : nm[1] || "Unnamed land");
+  const title =
+    label || (nm[0] && nm[0] !== nm[1] ? nm[0] : nm[1] || "Unnamed land");
   $("pname").textContent = title;
-  $("pcoords").textContent = (nm[1] && nm[1] !== title ? nm[1] + "  ·  " : "") + coords(g[0], g[1]);
+  $("pcoords").textContent =
+    (nm[1] && nm[1] !== title ? nm[1] + "  ·  " : "") + coords(g[0], g[1]);
   $("pscored").hidden = false;
   $("pnote").hidden = true;
   $("pscore").textContent = s;
@@ -1244,9 +1359,13 @@ function selectLL(la, lo, label) {
           ? "Probably walked at some point."
           : "Walked.";
   $("pway").textContent = WAYS_IN[b & 3];
-  $("pfar").textContent = acc < 8 ? "Under 10 km" : "About " + number(Math.round(acc / step) * step) + " km";
+  $("pfar").textContent =
+    acc < 8
+      ? "Under 10 km"
+      : "About " + number(Math.round(acc / step) * step) + " km";
   $("pground").textContent =
-    (b & 4 ? "Permanent ice" : "Ice-free") + (elev >= 300 ? ", about " + number(elev) + " m up" : "");
+    (b & 4 ? "Permanent ice" : "Ice-free") +
+    (elev >= 300 ? ", about " + number(elev) + " m up" : "");
   {
     const icy = !!(b & 4) || g[0] < -60,
       L = icy ? 80 : 120,
@@ -1264,7 +1383,9 @@ function selectLL(la, lo, label) {
       " is " +
       $("pfar").textContent.toLowerCase() +
       " away." +
-      (reach < 0.15 ? " Too close to be unwalked." : " On distance alone that would score about " + ds + ".");
+      (reach < 0.15
+        ? " Too close to be unwalked."
+        : " On distance alone that would score about " + ds + ".");
     $("pwhy2").textContent =
       reach < 0.15
         ? ""
@@ -1290,7 +1411,8 @@ function selectLL(la, lo, label) {
           " on foot each way.",
       );
       if (b & 4) keep.push("Permanent ice. Nothing grows.");
-      else if (ratio >= 0.68 && elev < 3000) keep.push("Bare desert, with no reliable water on the surface.");
+      else if (ratio >= 0.68 && elev < 3000)
+        keep.push("Bare desert, with no reliable water on the surface.");
       if (elev >= 3000)
         keep.push(
           "About " +
@@ -1300,9 +1422,13 @@ function selectLL(la, lo, label) {
             "% of the oxygen at sea level.",
         );
       if (Math.abs(g[0]) >= 66.5)
-        keep.push("Inside the polar circle, so the sun does not rise for part of every winter.");
+        keep.push(
+          "Inside the polar circle, so the sun does not rise for part of every winter.",
+        );
       if (g[0] < -60)
-        keep.push("Antarctica never had people living on it. The first landings were in the 1800s.");
+        keep.push(
+          "Antarctica never had people living on it. The first landings were in the 1800s.",
+        );
     }
     const ul = $("pkeep");
     ul.textContent = "";
@@ -1318,7 +1444,9 @@ function selectLL(la, lo, label) {
       const n = nearest(g[0], g[1]);
       if (n) {
         const nn = nameAt(n[0], n[1]),
-          where = [nn[0], nn[1]].filter((v, i, a) => v && a.indexOf(v) === i).join(", ");
+          where = [nn[0], nn[1]]
+            .filter((v, i, a) => v && a.indexOf(v) === i)
+            .join(", ");
         $("fartext").textContent =
           "About " +
           number(n[2] > 100 ? Math.round(n[2] / 10) * 10 : Math.round(n[2])) +
@@ -1336,22 +1464,33 @@ function selectLL(la, lo, label) {
       }
     }
   }
-  const q = [label || nm[0], nm[1]].filter((v, i, a) => v && a.indexOf(v) === i).join(" ");
+  const q = [label || nm[0], nm[1]]
+    .filter((v, i, a) => v && a.indexOf(v) === i)
+    .join(" ");
   known(null);
   brief({
-    place: [label, nm[0], nm[1]].filter((v, i, a) => v && a.indexOf(v) === i).join(", ") || "Unnamed land",
+    place:
+      [label, nm[0], nm[1]]
+        .filter((v, i, a) => v && a.indexOf(v) === i)
+        .join(", ") || "Unnamed land",
     lat: g[0],
     lon: g[1],
     query: q || coords(g[0], g[1]),
     search: nm[0] || nm[1] || "",
     lines: [
-      "Unwalked score: " + s + " out of 100 (higher means less likely anyone has stood there)",
+      "Unwalked score: " +
+        s +
+        " out of 100 (higher means less likely anyone has stood there)",
       "Nearest way in, from the map's data: " +
         $("pway").textContent +
         ", " +
         $("pfar").textContent.toLowerCase(),
       "Ground: " + $("pground").textContent,
-      ...(s >= 50 ? [...$("pkeep").children].map((li) => "Kept people out: " + li.textContent) : []),
+      ...(s >= 50
+        ? [...$("pkeep").children].map(
+            (li) => "Kept people out: " + li.textContent,
+          )
+        : []),
     ],
     ask: QUESTIONS.land,
   });
@@ -1389,10 +1528,12 @@ function fillStat() {
 }
 function fillRegions() {
   $("go").innerHTML = REGIONS.map(
-    (r, i) => `<button class="chip" type="button" data-v="${i}">${r.name}</button>`,
+    (r, i) =>
+      `<button class="chip" type="button" data-v="${i}">${r.name}</button>`,
   ).join("");
   $("rlist").innerHTML = REGIONS.map(
-    (r, i) => `<li>${r.line} <button class="textlink" type="button" data-v="${i}">More</button></li>`,
+    (r, i) =>
+      `<li>${r.line} <button class="textlink" type="button" data-v="${i}">More</button></li>`,
   ).join("");
 }
 function openRegion(e) {
@@ -1412,12 +1553,22 @@ function openRegion(e) {
   for (const id of ["pnowwrap", "pwiki", "pev"]) $(id).hidden = true;
   $("asat").hidden = true;
   $("pcap").textContent = "";
-  known(r, "Who has lived here or crossed it", r.people, "The emptiest parts", r.empty);
+  known(
+    r,
+    "Who has lived here or crossed it",
+    r.people,
+    "The emptiest parts",
+    r.empty,
+  );
   brief({
     place: r.name,
     query: r.search,
     wiki: r.wikipedia,
-    lines: ["What the map says: " + r.line, "People: " + r.people, "Emptiest parts: " + r.empty],
+    lines: [
+      "What the map says: " + r.line,
+      "People: " + r.people,
+      "Emptiest parts: " + r.empty,
+    ],
     ask: [
       "Which parts of this region have most likely never had a person stand on them, and why?",
       "Who has lived in or crossed the emptiest parts, and what is the evidence?",
@@ -1513,7 +1664,10 @@ function lucky() {
       e = 1 - Math.pow(1 - u, 3);
     view.lon = ((a.lon + dl * e + 540) % 360) - 180;
     view.lat = a.lat + (tl - a.lat) * e;
-    view.k = u < 0.45 ? a.k + (1 - a.k) * (u / 0.45) : 1 + 2.2 * Math.pow((u - 0.45) / 0.55, 2);
+    view.k =
+      u < 0.45
+        ? a.k + (1 - a.k) * (u / 0.45)
+        : 1 + 2.2 * Math.pow((u - 0.45) / 0.55, 2);
     if (u < 1) {
       drawMoving();
       requestAnimationFrame(step);
@@ -1560,8 +1714,16 @@ $("find").addEventListener("input", (e) => {
   if (q.length < 2) return offer([]);
   offer(
     [
-      ...saved.map((p) => ({ name: p.n, kind: "Saved", go: () => goTo(p.lat, p.lon, p.n) })),
-      ...LANDMARKS.map((m) => ({ name: m.name, kind: m.where, go: () => goTo(m.lat, m.lon) })),
+      ...saved.map((p) => ({
+        name: p.n,
+        kind: "Saved",
+        go: () => goTo(p.lat, p.lon, p.n),
+      })),
+      ...LANDMARKS.map((m) => ({
+        name: m.name,
+        kind: m.where,
+        go: () => goTo(m.lat, m.lon),
+      })),
       ...REGIONS.map((r, i) => ({
         name: r.name,
         kind: "Region",
@@ -1586,7 +1748,8 @@ $("find").addEventListener("keydown", async (e) => {
   n.textContent = "Looking.";
   try {
     const d = await getJSON(
-      "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&q=" + encodeURIComponent(q),
+      "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&q=" +
+        encodeURIComponent(q),
     );
     if (!d.length) {
       n.textContent = "Nothing found.";
@@ -1614,12 +1777,17 @@ let saved = [],
   canSave = true;
 try {
   saved = JSON.parse(localStorage.getItem("unwalked.saved") || "[]").filter(
-    (p) => p && typeof p.n === "string" && Math.abs(p.lat) <= 90 && Math.abs(p.lon) <= 180,
+    (p) =>
+      p &&
+      typeof p.n === "string" &&
+      Math.abs(p.lat) <= 90 &&
+      Math.abs(p.lon) <= 180,
   );
 } catch (e) {
   canSave = false;
 }
-const sameSpot = (p, lat, lon) => Math.abs(p.lat - lat) < 0.005 && Math.abs(p.lon - lon) < 0.005;
+const sameSpot = (p, lat, lon) =>
+  Math.abs(p.lat - lat) < 0.005 && Math.abs(p.lon - lon) < 0.005;
 function keep() {
   try {
     localStorage.setItem("unwalked.saved", JSON.stringify(saved));
@@ -1653,7 +1821,10 @@ function fillSaved() {
 }
 function markSaved() {
   const b = $("psave"),
-    on = spot && spot.lat !== undefined && saved.some((p) => sameSpot(p, spot.lat, spot.lon));
+    on =
+      spot &&
+      spot.lat !== undefined &&
+      saved.some((p) => sameSpot(p, spot.lat, spot.lon));
   b.hidden = !canSave || !spot || spot.lat === undefined;
   b.textContent = on ? "Saved" : "Save";
   b.setAttribute("aria-pressed", on ? "true" : "false");
@@ -1664,7 +1835,11 @@ $("psave").onclick = () => {
   if (had) saved = saved.filter((p) => p !== had);
   else
     saved = [
-      { n: $("pname").textContent, lat: +spot.lat.toFixed(4), lon: +spot.lon.toFixed(4) },
+      {
+        n: $("pname").textContent,
+        lat: +spot.lat.toFixed(4),
+        lon: +spot.lon.toFixed(4),
+      },
       ...saved,
     ].slice(0, 50);
   keep();
@@ -1722,7 +1897,9 @@ addEventListener("resize", () => {
   if (world) size();
 });
 Promise.all(
-  ["data/meta.json", "data/names.json", "data/places.json"].map((u) => fetch(u).then((r) => r.json())),
+  ["data/meta.json", "data/names.json", "data/places.json"].map((u) =>
+    fetch(u).then((r) => r.json()),
+  ),
 ).then((d) => {
   META = d[0];
   NAMES = d[1];
@@ -1738,29 +1915,99 @@ Promise.all(
 // browsers that ask not to be tracked are not counted.
 const TALLY = "https://cpzhsztczixiidxypvmb.supabase.co/rest/v1/rpc/hit",
   TALLY_KEY = "sb_publishable_M8UMcKf1BrHMbCuCVJ1P3g_-Bwnwd2W";
+const TAGS = [
+    "x",
+    "reddit",
+    "hn",
+    "facebook",
+    "instagram",
+    "threads",
+    "tiktok",
+    "youtube",
+    "linkedin",
+    "bluesky",
+    "discord",
+    "github",
+    "text",
+    "email",
+  ],
+  REFERRERS = [
+    ["x", /(^|\.)(t\.co|x\.com|twitter\.com)$/],
+    ["reddit", /(^|\.)(reddit\.com|redd\.it)$/],
+    ["hn", /(^|\.)ycombinator\.com$/],
+    ["google", /(^|\.)google\.[a-z.]+$/],
+    [
+      "search",
+      /(^|\.)(bing\.com|duckduckgo\.com|yahoo\.com|brave\.com|ecosia\.org|kagi\.com|yandex\.[a-z.]+|baidu\.com|startpage\.com)$/,
+    ],
+    [
+      "ai",
+      /(^|\.)(chatgpt\.com|openai\.com|claude\.ai|perplexity\.ai|gemini\.google\.com|copilot\.microsoft\.com)$/,
+    ],
+    ["facebook", /(^|\.)(facebook\.com|fb\.com|fb\.me|messenger\.com)$/],
+    ["instagram", /(^|\.)instagram\.com$/],
+    ["threads", /(^|\.)threads\.(net|com)$/],
+    ["tiktok", /(^|\.)tiktok\.com$/],
+    ["youtube", /(^|\.)(youtube\.com|youtu\.be)$/],
+    ["linkedin", /(^|\.)(linkedin\.com|lnkd\.in)$/],
+    ["bluesky", /(^|\.)bsky\.app$/],
+    ["discord", /(^|\.)(discord\.com|discordapp\.com)$/],
+    ["github", /(^|\.)github\.(com|io)$/],
+    [
+      "email",
+      /(^|\.)(mail\.google\.com|outlook\.live\.com|outlook\.office\.com|mail\.yahoo\.com|mail\.proton\.me)$/,
+    ],
+  ];
 function cameFrom() {
   const tag = new URLSearchParams(location.search).get("from");
-  if (tag === "x" || tag === "reddit" || tag === "hn") return tag;
+  if (TAGS.includes(tag)) return tag;
   let host = "";
   try {
     host = new URL(document.referrer).hostname;
   } catch (e) {}
   if (!host || host === location.hostname) return "direct";
-  if (/(^|\.)(t\.co|x\.com|twitter\.com)$/.test(host)) return "x";
-  if (/(^|\.)(reddit\.com|redd\.it)$/.test(host)) return "reddit";
-  if (/(^|\.)ycombinator\.com$/.test(host)) return "hn";
-  if (/(^|\.)google\.[a-z.]+$/.test(host)) return "google";
-  return "other";
+  const hit = REFERRERS.filter(
+    ([name]) => name !== "google" || !/^(gemini|mail)\./.test(host),
+  ).find(([, re]) => re.test(host));
+  return hit ? hit[0] : "other";
+}
+function showCount() {
+  fetch(TALLY.replace(/hit$/, "visit_stats"), {
+    method: "POST",
+    headers: { apikey: TALLY_KEY, "Content-Type": "application/json" },
+    body: "{}",
+  })
+    .then((r) => (r.ok ? r.json() : null))
+    .then((d) => {
+      if (!d) return;
+      const el = document.getElementById("count"),
+        n = (v) => Number(v).toLocaleString("en-US");
+      el.textContent =
+        n(d.all_time) +
+        " visits, " +
+        n(d.last_30_min) +
+        " in the last 30 minutes";
+      el.hidden = false;
+    })
+    .catch(() => {});
 }
 try {
-  const asked = navigator.doNotTrack === "1" || navigator.globalPrivacyControl === true;
-  if (!asked && location.hostname === "unwalked.earth" && !sessionStorage.getItem("unwalked.counted")) {
+  const asked =
+    navigator.doNotTrack === "1" || navigator.globalPrivacyControl === true;
+  if (location.hostname !== "unwalked.earth") {
+  } else if (!asked && !sessionStorage.getItem("unwalked.counted")) {
     sessionStorage.setItem("unwalked.counted", "1");
     fetch(TALLY, {
       method: "POST",
       headers: { apikey: TALLY_KEY, "Content-Type": "application/json" },
       body: JSON.stringify({ src: cameFrom() }),
       keepalive: true,
-    }).catch(() => {});
-  }
+    })
+      .catch(() => {})
+      .then(showCount);
+  } else showCount();
+  if (location.hostname === "unwalked.earth")
+    setInterval(() => {
+      if (!document.hidden) showCount();
+    }, 60000);
 } catch (e) {}

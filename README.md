@@ -1,4 +1,4 @@
-# Unwalked Earth
+# <img src="icon.svg" alt="" height="24"> Unwalked Earth
 
 A globe that guesses where nobody has ever stood.
 
