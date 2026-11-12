@@ -229,6 +229,25 @@ textarea.find {
   resize: vertical;
   min-height: 120px;
 }
+.live {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 6px;
+  border-radius: 50%;
+  background: #34c759;
+  animation: live 1.6s ease-in-out infinite;
+}
+@keyframes live {
+  50% {
+    opacity: 0.25;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .live {
+    animation: none;
+  }
+}
 .count {
   margin-top: 16px;
   font-size: 13px;

@@ -6,6 +6,10 @@ https://unwalked.earth/
 
 Plain land has been walked. Orange land probably hasn't. Tap anywhere to see the score for that spot, why it got it, and whether anything is on record nearby.
 
+## Time slider
+
+Drag it back as far as 200,000 years. Land our species had not reached yet at that date is orange. Dates are the earliest known site or settlement in each region, from Wikipedia's list of first human settlements, and are rough.
+
 ## How a place gets its score
 
 Every patch of land about 10 km across gets a number from 0 to 100.
@@ -43,5 +47,6 @@ No build step and no dependencies. Open `index.html` from any static server.
 - [Wikidata](https://www.wikidata.org/): mines and archaeological sites
 - [GeoNames](https://www.geonames.org/): towns of 1,000 or more
 - NASA night lights
+- [Wikipedia, list of first human settlements](https://en.wikipedia.org/wiki/List_of_first_human_settlements): dates for the time slider
 
 Pictures on tap are Sentinel-2 cloudless by [EOX](https://s2maps.eu/) and NASA Blue Marble.

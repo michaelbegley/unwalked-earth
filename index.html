@@ -59,7 +59,7 @@
         "description": "A map of where nobody has stood, probably."
       }
     </script>
-    <link rel="stylesheet" href="css/style.css?v=22" />
+    <link rel="stylesheet" href="css/style.css?v=23" />
   </head>
   <body>
     <canvas id="sky" aria-hidden="true"></canvas>
@@ -117,9 +117,11 @@
             How it works
           </button>
         </div>
-        <p class="count" id="count" hidden></p>
+        <p class="count" id="count" hidden>
+          <i class="live"></i><span id="online"></span>
+        </p>
         <p class="count">
-          <span id="version">v0.50</span> &nbsp;<button
+          <span id="version">v0.51</span> &nbsp;<button
             class="textlink"
             id="feedbacklink"
             type="button"
@@ -160,6 +162,7 @@
           <div class="score"><b id="pscore"></b><span>out of 100</span></div>
           <div class="meter"><i id="pbar"></i></div>
           <p class="verdict" id="pverdict"></p>
+          <p class="verdict" id="pthen" hidden></p>
           <dl>
             <div>
               <dt>Nearest way in</dt>
@@ -448,6 +451,6 @@
 
     <img id="tex" alt="" style="display: none" src="data/world.png" />
     <img id="ntex" alt="" style="display: none" src="data/names.png" />
-    <script src="js/app.js?v=23" defer></script>
+    <script src="js/app.js?v=24" defer></script>
   </body>
 </html>

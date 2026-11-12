@@ -1426,6 +1426,15 @@ function selectLL(la, lo, label) {
         text = kind && up ? kind + ", " + up : kind || up || "Low ground";
       $("pground").textContent = text[0].toUpperCase() + text.slice(1);
       const first = firstPeople(g[0], g[1]);
+      // with the slider in the past, say so when nobody had got here yet
+      const then = eraCode ? Math.pow(10, eraCode / TIME.scale) : 0,
+        early = $("pthen");
+      early.hidden = !(then && first && first < then);
+      if (!early.hidden) {
+        const t = whenText(then);
+        early.textContent =
+          "Nobody had reached here " + (/ago$/.test(t) ? t : "by " + t) + ".";
+      }
       $("pfirstrow").hidden = !first;
       if (first)
         $("pfirst").textContent =
@@ -1547,6 +1556,12 @@ function selectLL(la, lo, label) {
         ", " +
         $("pfar").textContent.toLowerCase(),
       "Ground: " + $("pground").textContent,
+      ...($("pfirstrow").hidden
+        ? []
+        : [
+            "People first reached this area: " +
+              $("pfirst").textContent.toLowerCase(),
+          ]),
       ...(s >= 50
         ? [...$("pkeep").children].map(
             (li) => "Kept people out: " + li.textContent,
@@ -2198,12 +2213,9 @@ function showCount() {
       if (!d) return;
       const el = document.getElementById("count"),
         n = (v) => Number(v).toLocaleString("en-US");
-      el.textContent =
-        n(d.all_time) +
-        " visits" +
-        (d.last_30_min > 0
-          ? ", " + n(d.last_30_min) + " in the last 30 minutes"
-          : "");
+      // people here in the last half hour; the visitor reading this counts as one
+      document.getElementById("online").textContent =
+        n(Math.max(1, d.last_30_min)) + " online";
       el.hidden = false;
     })
     .catch(() => {});
