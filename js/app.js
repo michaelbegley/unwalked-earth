@@ -106,7 +106,38 @@ for (let r = 1; r < 256; r++) {
 palette[0] = 176;
 palette[1] = 210;
 palette[2] = 240; // sea
+let levels = null; // the same grid at half, quarter and eighth size, for when the globe is small
 let shown = null; // display scores, lightly smoothed so the land reads as clean shapes
+function pyramid(base) {
+  const n = WORLD_W * WORLD_H,
+    land0 = new Uint8Array(n);
+  for (let i = 0; i < n; i++) land0[i] = base[i] ? 255 : 0;
+  const out = [{ land: land0, mean: base }];
+  for (let lv = 1; lv <= 3; lv++) {
+    const up = out[lv - 1],
+      uw = WORLD_W >> (lv - 1),
+      w = WORLD_W >> lv,
+      h = WORLD_H >> lv,
+      land = new Uint8Array(w * h),
+      mean = new Uint8Array(w * h);
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        const i = y * 2 * uw + x * 2,
+          a = up.land[i],
+          b = up.land[i + 1],
+          c = up.land[i + uw],
+          d = up.land[i + uw + 1],
+          sum = a + b + c + d;
+        land[y * w + x] = (sum + 2) >> 2;
+        if (sum)
+          mean[y * w + x] =
+            (up.mean[i] * a + up.mean[i + 1] * b + up.mean[i + uw] * c + up.mean[i + uw + 1] * d) / sum + 0.5;
+      }
+    }
+    out.push({ land, mean });
+  }
+  return out;
+}
 function smooth() {
   const n = WORLD_W * WORLD_H,
     a = new Uint8Array(n),
@@ -149,6 +180,7 @@ function smooth() {
     }
   }
   shown = a;
+  levels = pyramid(a);
 }
 function sky() {
   const c = $("sky"),
@@ -174,37 +206,31 @@ function sky() {
       a = 0.25 + rnd() * 0.65,
       w = rnd();
     x.fillStyle =
-      w > 0.9
-        ? `rgba(190,210,255,${a})`
-        : w < 0.08
-          ? `rgba(255,232,205,${a})`
-          : `rgba(255,255,255,${a})`;
+      w > 0.9 ? `rgba(190,210,255,${a})` : w < 0.08 ? `rgba(255,232,205,${a})` : `rgba(255,255,255,${a})`;
     x.beginPath();
     x.arc(px, py, r, 0, 7);
     x.fill();
   }
 }
 
+// the card becomes a bottom sheet on phones and upright tablets; keep in step with style.css
+const sheet = matchMedia("(max-width: 700px), (max-width: 1000px) and (orientation: portrait)");
 function size() {
-  dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+  dpr = Math.min(window.devicePixelRatio || 1, sheet.matches ? 2 : 1.5);
   canvasW = Math.max(200, Math.round(innerWidth * dpr));
   canvasH = Math.max(200, Math.round(innerHeight * dpr));
   canvas.width = canvasW;
   canvas.height = canvasH;
   const r = card.getBoundingClientRect();
-  if (innerWidth <= 700) {
+  if (sheet.matches) {
     const free = (r.top - 8) * dpr;
     baseRadius = Math.min(canvasW, free) * 0.46;
     centerX = canvasW / 2;
     centerY = free / 2 + 4 * dpr;
-  } else if (innerWidth >= 1000) {
+  } else {
     const left = r.right * dpr;
     baseRadius = Math.min(canvasW - left, canvasH) * 0.46;
     centerX = left + (canvasW - left) / 2;
-    centerY = canvasH / 2;
-  } else {
-    baseRadius = Math.min(canvasW, canvasH) * 0.46;
-    centerX = canvasW / 2;
     centerY = canvasH / 2;
   }
   sky();
@@ -215,14 +241,10 @@ function sunAt(ms) {
   // where the sun is overhead: [lat, lon], good to a few degrees
   const d = new Date(ms),
     day =
-      (Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) -
-        Date.UTC(d.getUTCFullYear(), 0, 0)) /
+      (Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) - Date.UTC(d.getUTCFullYear(), 0, 0)) /
       864e5;
   const hrs = d.getUTCHours() + d.getUTCMinutes() / 60;
-  return [
-    -23.44 * Math.cos((2 * Math.PI * (day + 10)) / 365),
-    ((180 - 15 * hrs + 540) % 360) - 180,
-  ];
+  return [-23.44 * Math.cos((2 * Math.PI * (day + 10)) / 365), ((180 - 15 * hrs + 540) % 360) - 180];
 }
 function isDay(lat, lon) {
   const s = sunAt(Date.now()),
@@ -231,7 +253,7 @@ function isDay(lat, lon) {
   return Math.sin(a) * Math.sin(b) + Math.cos(a) * Math.cos(b) * Math.cos((lon - s[1]) * RAD) > 0;
 }
 function draw(q) {
-  if (!world) return;
+  if (!world || !levels) return;
   const w = Math.max(2, Math.round(canvasW * q)),
     h = Math.max(2, Math.round(canvasH * q));
   if (buffer.width !== w || buffer.height !== h) {
@@ -253,7 +275,11 @@ function draw(q) {
 
   const iR = 1 / R,
     TWO = Math.PI * 2,
-    fine = q >= 1;
+    fine = q >= 1,
+    rim0 = (1 - 1.5 * iR) * (1 - 1.5 * iR),
+    rim1 = (1 + 0.5 * iR) * (1 + 0.5 * iR),
+    perPixel = WORLD_H / (R * Math.PI),
+    crisp = Math.min(6, Math.max(1, 1.6 / perPixel));
   const sun = sunAt(Date.now()),
     sp2 = sun[0] * RAD,
     sd = (sun[1] - view.lon) * RAD,
@@ -262,25 +288,46 @@ function draw(q) {
     suny = cp * Math.sin(sp2) - sp * sc * Math.cos(sd),
     sunz = sp * Math.sin(sp2) + cp * sc * Math.cos(sd);
   for (let j = y0; j < y1; j++) {
-    const y = (cy - j - 0.5) * iR,
-      yy = y * y;
+    const yRow = (cy - j - 0.5) * iR,
+      yy = yRow * yRow;
     let o = j * w + x0;
     for (let i = x0; i < x1; i++, o++) {
-      const x = (i + 0.5 - cx) * iR,
+      let x = (i + 0.5 - cx) * iR,
         rr = x * x + yy;
-      if (rr >= 1) continue;
+      if (rr >= rim1) continue;
+      // fade the last pixel so the edge of the globe is not stepped
+      let y = yRow,
+        edge = 255;
+      if (rr > rim0) {
+        const d = Math.sqrt(rr);
+        edge = ((1 - d) * R + 0.5) * 255;
+        edge = edge < 0 ? 0 : edge > 255 ? 255 : edge | 0;
+        if (d > 1) {
+          x /= d;
+          y /= d;
+          rr = 1;
+        }
+      }
       const z = Math.sqrt(1 - rr);
       const la = Math.asin(y * cp + z * sp);
       let lo = l0 + Math.atan2(x, z * cp - y * sp);
       lo -= TWO * Math.floor((lo + Math.PI) / TWO);
-      const fx = ((lo + Math.PI) / TWO) * WORLD_W,
-        fy = ((Math.PI / 2 - la) / Math.PI) * WORLD_H;
+      // pick the map level whose cells are about one pixel here
+      const span = perPixel / (z > 0.2 ? z : 0.2),
+        lv = span <= 1.3 ? 0 : span <= 2.6 ? 1 : span <= 5.2 ? 2 : 3,
+        lw = WORLD_W >> lv,
+        lh = WORLD_H >> lv,
+        land = levels[lv].land,
+        mean = levels[lv].mean;
+      const fx = ((lo + Math.PI) / TWO) * lw,
+        fy = ((Math.PI / 2 - la) / Math.PI) * lh;
       let tx = fx | 0;
-      if (tx >= WORLD_W) tx = WORLD_W - 1;
+      if (tx >= lw) tx = lw - 1;
       let ty = fy | 0;
-      if (ty >= WORLD_H) ty = WORLD_H - 1;
-      let r = shown[ty * WORLD_W + tx],
-        f = r ? 1 : 0;
+      if (ty >= lh) ty = lh - 1;
+      const at = ty * lw + tx;
+      let r = mean[at],
+        f = land[at] / 255;
       if (fine) {
         // blend neighbouring cells so scores and coastlines are smooth
         const ax = fx - tx - 0.5,
@@ -289,17 +336,22 @@ function draw(q) {
           sy = ay < 0 ? -1 : 1,
           wx = Math.abs(ax),
           wy = Math.abs(ay);
-        const tx2 = (tx + sx + WORLD_W) % WORLD_W,
-          ty2 = Math.min(WORLD_H - 1, Math.max(0, ty + sy));
-        const b = shown[ty * WORLD_W + tx2],
-          c = shown[ty2 * WORLD_W + tx],
-          d = shown[ty2 * WORLD_W + tx2];
-        const w0 = (1 - wx) * (1 - wy),
-          w1 = wx * (1 - wy),
-          w2 = (1 - wx) * wy,
-          w3 = wx * wy;
-        f = (r ? w0 : 0) + (b ? w1 : 0) + (c ? w2 : 0) + (d ? w3 : 0);
-        if (f > 0) r = Math.max(1, ((r * w0 + b * w1 + c * w2 + d * w3) / f + 0.5) | 0);
+        const tx2 = (tx + sx + lw) % lw,
+          ty2 = Math.min(lh - 1, Math.max(0, ty + sy)),
+          bt = ty * lw + tx2,
+          ct = ty2 * lw + tx,
+          dt = ty2 * lw + tx2;
+        const w0 = (1 - wx) * (1 - wy) * land[at],
+          w1 = wx * (1 - wy) * land[bt],
+          w2 = (1 - wx) * wy * land[ct],
+          w3 = wx * wy * land[dt],
+          sum = w0 + w1 + w2 + w3;
+        f = sum / 255;
+        if (sum > 0)
+          r = Math.max(1, ((mean[at] * w0 + mean[bt] * w1 + mean[ct] * w2 + mean[dt] * w3) / sum + 0.5) | 0);
+        // tighten the coast as you zoom in, so it stays a clean line
+        if (lv === 0) f = (f - 0.5) * crisp + 0.5;
+        f = f < 0 ? 0 : f > 1 ? 1 : f;
       }
       let lit = (x * sunx + y * suny + z * sunz + 0.12) / 0.24;
       lit = lit < 0 ? 0 : lit > 1 ? 1 : lit;
@@ -307,7 +359,7 @@ function draw(q) {
         q3 = r * 3,
         g1 = 1 - f;
       px[o] =
-        0xff000000 |
+        (edge << 24) |
         (((palette[q3 + 2] * f + palette[2] * g1) * sh) << 16) |
         (((palette[q3 + 1] * f + palette[1] * g1) * sh) << 8) |
         ((palette[q3] * f + palette[0] * g1) * sh);
@@ -335,11 +387,7 @@ function proj(lat, lon) {
     c = Math.cos(p);
   const z = sp * Math.sin(p) + cp * c * Math.cos(dl);
   const R = baseRadius * view.k;
-  return [
-    centerX + c * Math.sin(dl) * R,
-    centerY - (cp * Math.sin(p) - sp * c * Math.cos(dl)) * R,
-    z,
-  ];
+  return [centerX + c * Math.sin(dl) * R, centerY - (cp * Math.sin(p) - sp * c * Math.cos(dl)) * R, z];
 }
 function unproj(mx, my) {
   const R = baseRadius * view.k,
@@ -549,11 +597,7 @@ function pos(e) {
 }
 function mid() {
   const a = [...ptrs.values()];
-  return [
-    (a[0][0] + a[1][0]) / 2,
-    (a[0][1] + a[1][1]) / 2,
-    Math.hypot(a[0][0] - a[1][0], a[0][1] - a[1][1]),
-  ];
+  return [(a[0][0] + a[1][0]) / 2, (a[0][1] + a[1][1]) / 2, Math.hypot(a[0][0] - a[1][0], a[0][1] - a[1][1])];
 }
 canvas.addEventListener("pointerdown", (e) => {
   stopSpin();
@@ -791,14 +835,9 @@ function show(which) {
 }
 function links(query, wiki, lat, lon) {
   $("agoogle").href = "https://www.google.com/search?q=" + encodeURIComponent(query);
-  $("awiki").href =
-    "https://en.wikipedia.org/wiki/Special:Search?search=" + encodeURIComponent(wiki);
+  $("awiki").href = "https://en.wikipedia.org/wiki/Special:Search?search=" + encodeURIComponent(wiki);
   $("asat").href =
-    "https://www.google.com/maps/@" +
-    lat.toFixed(4) +
-    "," +
-    lon.toFixed(4) +
-    ",40000m/data=!3m1!1e3";
+    "https://www.google.com/maps/@" + lat.toFixed(4) + "," + lon.toFixed(4) + ",40000m/data=!3m1!1e3";
 }
 let request = 0,
   current = null;
@@ -873,11 +912,7 @@ function live(lat, lon, titles, score) {
       if (score !== null && score >= 50 && (c <= -20 || c >= 40)) {
         const li = document.createElement("li");
         li.textContent =
-          "Right now it is " +
-          Math.round(c) +
-          " °C (" +
-          Math.round((c * 9) / 5 + 32) +
-          " °F) there.";
+          "Right now it is " + Math.round(c) + " °C (" + Math.round((c * 9) / 5 + 32) + " °F) there.";
         $("pkeep").appendChild(li);
       }
     })
@@ -889,9 +924,7 @@ function live(lat, lon, titles, score) {
       if (!t) continue;
       try {
         const d = await getJSON(
-          "https://en.wikipedia.org/api/rest_v1/page/summary/" +
-            encodeURIComponent(t) +
-            "?redirect=true",
+          "https://en.wikipedia.org/api/rest_v1/page/summary/" + encodeURIComponent(t) + "?redirect=true",
         );
         if (id !== request) return;
         if (d.type !== "standard" || !d.extract) continue;
@@ -925,9 +958,7 @@ function live(lat, lon, titles, score) {
   ).then((d) => {
     const ps =
       d.query && d.query.pages
-        ? Object.values(d.query.pages).filter(
-            (p) => p.imageinfo && p.imageinfo[0] && p.imageinfo[0].thumburl,
-          )
+        ? Object.values(d.query.pages).filter((p) => p.imageinfo && p.imageinfo[0] && p.imageinfo[0].thumburl)
         : [];
     if (id === request) {
       for (const p of ps) {
@@ -1129,11 +1160,9 @@ function selectLL(la, lo, label) {
           ? "Probably walked at some point."
           : "Walked.";
   $("pway").textContent = WAYS_IN[b & 3];
-  $("pfar").textContent =
-    acc < 8 ? "Under 10 km" : "About " + number(Math.round(acc / step) * step) + " km";
+  $("pfar").textContent = acc < 8 ? "Under 10 km" : "About " + number(Math.round(acc / step) * step) + " km";
   $("pground").textContent =
-    (b & 4 ? "Permanent ice" : "Ice-free") +
-    (elev >= 300 ? ", about " + number(elev) + " m up" : "");
+    (b & 4 ? "Permanent ice" : "Ice-free") + (elev >= 300 ? ", about " + number(elev) + " m up" : "");
   {
     const icy = !!(b & 4) || g[0] < -60,
       L = icy ? 80 : 120,
@@ -1179,11 +1208,8 @@ function selectLL(la, lo, label) {
           " each way, carrying everything.",
       );
       if (b & 4)
-        keep.push(
-          "Permanent ice. Nothing grows, and there is nothing to burn or drink without melting it.",
-        );
-      else if (ratio >= 0.68 && elev < 3000)
-        keep.push("Bare desert, with no reliable water on the surface.");
+        keep.push("Permanent ice. Nothing grows, and there is nothing to burn or drink without melting it.");
+      else if (ratio >= 0.68 && elev < 3000) keep.push("Bare desert, with no reliable water on the surface.");
       if (elev >= 3000)
         keep.push(
           "About " +
@@ -1195,9 +1221,7 @@ function selectLL(la, lo, label) {
       if (Math.abs(g[0]) >= 66.5)
         keep.push("Inside the polar circle, so the sun does not rise for part of every winter.");
       if (g[0] < -60)
-        keep.push(
-          "Antarctica never had people living on it. The first landings were in the 1800s.",
-        );
+        keep.push("Antarctica never had people living on it. The first landings were in the 1800s.");
     }
     const ul = $("pkeep");
     ul.textContent = "";
@@ -1326,11 +1350,7 @@ function candidates() {
 function lucky() {
   if (spinning) return;
   const list =
-    Math.random() < 0.6 && otherSpots.length
-      ? otherSpots
-      : polarSpots.length
-        ? polarSpots
-        : otherSpots;
+    Math.random() < 0.6 && otherSpots.length ? otherSpots : polarSpots.length ? polarSpots : otherSpots;
   if (!list.length) return;
   const i = list[(Math.random() * list.length) | 0],
     y = (i / WORLD_W) | 0,
@@ -1449,10 +1469,8 @@ for (const id of ["tex", "ntex"]) {
 addEventListener("resize", () => {
   if (world) size();
 });
-Promise.all(["data/meta.json", "data/names.json"].map((u) => fetch(u).then((r) => r.json()))).then(
-  (d) => {
-    META = d[0];
-    NAMES = d[1];
-    boot();
-  },
-);
+Promise.all(["data/meta.json", "data/names.json"].map((u) => fetch(u).then((r) => r.json()))).then((d) => {
+  META = d[0];
+  NAMES = d[1];
+  boot();
+});
