@@ -19,7 +19,7 @@
 <style>
 :root{
   /* A printed globe on a quiet page. Walked land is ink, the sea is a pale wash, and unwalked
-     land is left white. Everything you read or press lives in one card.
+     land is orange. Everything you read or press lives in one card.
      Layout: globe fills the window; one card at the left (a bottom sheet on phones). */
   --page:#f5f5f7;
   --card:#ffffff;
@@ -47,7 +47,7 @@ h3{font-size:15px;font-weight:600;margin:18px 0 4px}
 p{margin:0}
 .lede{margin-top:8px;color:var(--soft)}
 .key{display:flex;align-items:center;gap:8px;margin-top:14px;font-size:13px;color:var(--soft)}
-.key i{flex:1;height:8px;border-radius:4px;box-shadow:inset 0 0 0 1px var(--line);background:linear-gradient(90deg,#3a3a38,#a8a7a1 50%,#fff)}
+.key i{flex:1;height:8px;border-radius:4px;box-shadow:inset 0 0 0 1px var(--line);background:linear-gradient(90deg,#eeece6 15%,#fbddb2 42%,#ff9f0a 68%,#e24600)}
 .hint{margin-top:14px;font-size:13px;color:var(--soft)}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .chip{border:0;background:var(--fill);border-radius:999px;padding:5px 12px;font-size:13px}
@@ -61,7 +61,7 @@ p{margin:0}
 .score b{font-size:44px;line-height:1;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
 .score span{color:var(--soft);font-size:13px}
 .meter{height:6px;border-radius:3px;background:var(--fill);margin-top:10px;overflow:hidden}
-.meter i{display:block;height:100%;background:var(--ink);border-radius:3px}
+.meter i{display:block;height:100%;background:#ff9500;border-radius:3px}
 .verdict{margin-top:10px}
 dl{margin:16px 0 0;border-top:1px solid var(--line)}
 dl div{display:flex;justify-content:space-between;gap:16px;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}
@@ -99,12 +99,12 @@ dd{margin:0;text-align:right}
 </style>
 </head>
 <body>
-<canvas id="globe" aria-label="Globe. Dark land has been walked. White land probably has not."></canvas>
+<canvas id="globe" aria-label="Globe. Orange land has probably never been walked."></canvas>
 
 <aside id="card">
   <section id="intro">
     <h1>Unwalked Earth</h1>
-    <p class="lede">White is land where probably nobody has ever stood. <span id="stat"></span></p>
+    <p class="lede">Orange is land where probably nobody has ever stood. <span id="stat"></span></p>
     <div class="key"><span>Walked</span><i></i><span>Never</span></div>
     <p class="hint">Tap anywhere on the globe, or jump to</p>
     <div class="chips" id="go"></div>
@@ -139,6 +139,8 @@ dd{margin:0;text-align:right}
     <h3>The score</h3>
     <p>Every patch of land about 10 km across gets a score from 0 to 100. The farther it is from a road, track, railway, town, airstrip, research station, river or coast, the higher it scores.</p>
     <p>The ground matters too. Ice can reach 100, because nobody ever lived on it. Forest, grassland and tundra stop near 55, because people have lived on or crossed that ground for thousands of years. Lights at night pull a score down.</p>
+    <h3>The dots</h3>
+    <p>Six places worth knowing about. Tap one.</p>
     <h3>Where it's wrong</h3>
     <p>Nobody keeps a record of everywhere people have stood, so this is a guess made from distance.</p>
     <p>It only knows about camps, mines and expedition routes that are in its data, and I keep finding ones that aren't. Hunters, herders and nomads went far beyond any road. The oceans aren't scored.</p>
@@ -179,12 +181,17 @@ const st={lon:25,lat:12,k:1,spin:!calm,sel:null};
 const off=document.createElement('canvas'),octx=off.getContext('2d');
 let dpr=1,cw=0,ch=0,R0=0,CX=0,CY=0;
 
-// walked land is ink, unwalked land is white
-const STOPS=[[0,58,58,56],[50,168,167,161],[80,228,228,224],[100,255,255,255]];
-function ramp(s){for(let i=1;i<STOPS.length;i++){if(s<=STOPS[i][0]){const a=STOPS[i-1],b=STOPS[i],t=(s-a[0])/(b[0]-a[0]);return[a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t,a[3]+(b[3]-a[3])*t]}}return[255,255,255]}
-const LUT=new Uint32Array(256);
-for(let r=1;r<256;r++){const c=ramp((r-1)/2.54);LUT[r]=0xff000000|(c[2]<<16)|(c[1]<<8)|(c[0]|0)}
-LUT[0]=0xff000000|(240<<16)|(227<<8)|212; // sea
+// walked land is plain, unwalked land is orange
+const STOPS=[[0,238,236,230],[20,238,236,230],[42,251,221,178],[68,255,159,10],[100,226,70,0]];
+function ramp(s){for(let i=1;i<STOPS.length;i++){if(s<=STOPS[i][0]){const a=STOPS[i-1],b=STOPS[i],t=(s-a[0])/(b[0]-a[0]);return[a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t,a[3]+(b[3]-a[3])*t]}}return[226,70,0]}
+const LUT=new Uint8Array(768);
+for(let r=1;r<256;r++){const c=ramp((r-1)/2.54);LUT[r*3]=c[0];LUT[r*3+1]=c[1];LUT[r*3+2]=c[2]}
+LUT[0]=176;LUT[1]=210;LUT[2]=240; // sea
+let D=null; // display scores, lightly smoothed so the land reads as clean shapes
+function smooth(){const n=TW*TH,a=new Uint8Array(n),b=new Uint8Array(n);for(let i=0;i<n;i++)a[i]=T[i*4];
+  for(let y=0;y<TH;y++){const o=y*TW;for(let x=0;x<TW;x++){const c=a[o+x];if(!c)continue;let s=0,k=0;for(let d=-2;d<=2;d++){const v=a[o+((x+d+TW)%TW)];if(v){s+=v;k++}}b[o+x]=(s/k+.5)|0}}
+  for(let y=0;y<TH;y++){const o=y*TW;for(let x=0;x<TW;x++){const c=b[o+x];if(!c)continue;let s=0,k=0;for(let d=-2;d<=2;d++){const yy=y+d;if(yy<0||yy>=TH)continue;const v=b[yy*TW+x];if(v){s+=v;k++}}a[o+x]=Math.max(1,(s/k+.5)|0)}}
+  D=a}
 const PAGE=0xff000000|(247<<16)|(245<<8)|245;
 
 function size(){
@@ -214,14 +221,14 @@ function draw(q){
       lo-=TWO*Math.floor((lo+Math.PI)/TWO);
       const fx=(lo+Math.PI)/TWO*TW,fy=(Math.PI/2-la)/Math.PI*TH;
       let tx=fx|0;if(tx>=TW)tx=TW-1;let ty=fy|0;if(ty>=TH)ty=TH-1;
-      let r=T[(ty*TW+tx)*4];
+      let r=D[ty*TW+tx];
       if(fine&&r){ // smooth the score between neighbouring land cells
         const ax=fx-tx-.5,ay=fy-ty-.5,sx=ax<0?-1:1,sy=ay<0?-1:1,wx=Math.abs(ax),wy=Math.abs(ay);
         const tx2=(tx+sx+TW)%TW,ty2=Math.min(TH-1,Math.max(0,ty+sy));
-        const b=T[(ty*TW+tx2)*4]||r,c=T[(ty2*TW+tx)*4]||r,d=T[(ty2*TW+tx2)*4]||r;
+        const b=D[ty*TW+tx2]||r,c=D[ty2*TW+tx]||r,d=D[ty2*TW+tx2]||r;
         r=(r*(1-wx)*(1-wy)+b*wx*(1-wy)+c*(1-wx)*wy+d*wx*wy+.5)|0;
       }
-      px[o]=LUT[r];
+      const sh=.9+.1*z,q3=r*3;px[o]=0xff000000|((LUT[q3+2]*sh)<<16)|((LUT[q3+1]*sh)<<8)|(LUT[q3]*sh);
     }
   }
   octx.putImageData(img,0,0);
@@ -236,11 +243,11 @@ function unproj(mx,my){const R=R0*st.k,x=(mx-CX)/R,y=(CY-my)/R,rr=x*x+y*y;if(rr>
   let lo=st.lon+Math.atan2(x,z*cp-y*sp)/RAD;lo=((lo+540)%360)-180;return[Math.asin(y*cp+z*sp)/RAD,lo]}
 function overlay(){
   const R=R0*st.k;
-  ctx.lineWidth=1*dpr;ctx.strokeStyle='#b7c6d4';ctx.beginPath();ctx.arc(CX,CY,R,0,7);ctx.stroke();
-  ctx.strokeStyle='rgba(125,125,120,.5)';ctx.lineWidth=.7*dpr;ctx.beginPath();
+  ctx.lineWidth=1*dpr;ctx.strokeStyle='#9fbfdd';ctx.beginPath();ctx.arc(CX,CY,R,0,7);ctx.stroke();
+  ctx.strokeStyle='rgba(110,110,115,.38)';ctx.lineWidth=.7*dpr;ctx.beginPath();
   for(const b of META.borders){let pen=false;for(let i=0;i<b.length;i+=2){const p=proj(b[i+1],b[i]);if(p[2]>0.02){pen?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]);pen=true}else pen=false}}
   ctx.stroke();
-  for(const s of DOTS){const p=proj(s.lat,s.lon);if(p[2]<.05)continue;ctx.beginPath();ctx.arc(p[0],p[1],4.5*dpr,0,7);ctx.fillStyle='#ff3b30';ctx.fill();ctx.lineWidth=1.5*dpr;ctx.strokeStyle='#fff';ctx.stroke()}
+  for(const s of DOTS){const p=proj(s.lat,s.lon);if(p[2]<.05)continue;ctx.beginPath();ctx.arc(p[0],p[1],4.5*dpr,0,7);ctx.fillStyle='#1d1d1f';ctx.fill();ctx.lineWidth=1.5*dpr;ctx.strokeStyle='#fff';ctx.stroke()}
   if(st.sel){const p=proj(st.sel[0],st.sel[1]);if(p[2]>.05){ctx.beginPath();ctx.arc(p[0],p[1],8*dpr,0,7);ctx.lineWidth=5*dpr;ctx.strokeStyle='#fff';ctx.stroke();ctx.lineWidth=2.5*dpr;ctx.strokeStyle='#0071e3';ctx.stroke()}}
 }
 let raf=0,settle=0;
@@ -314,7 +321,7 @@ card.addEventListener('click',e=>{if(e.target.closest('[data-back]'))show('intro
 addEventListener('keydown',e=>{if(e.key==='Escape')show('intro')});
 
 function grab(img,w,h){const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(img,0,0);return x.getImageData(0,0,w,h).data}
-let ready=0;function boot(){if(++ready<2)return;T=grab($('tex'),TW,TH);N=grab($('ntex'),NW,NH);size();if(st.spin)requestAnimationFrame(spin)}
+let ready=0;function boot(){if(++ready<2)return;T=grab($('tex'),TW,TH);N=grab($('ntex'),NW,NH);smooth();size();if(st.spin)requestAnimationFrame(spin)}
 for(const id of['tex','ntex']){const im=$(id);if(im.complete&&im.naturalWidth)boot();else im.addEventListener('load',boot)}
 addEventListener('resize',()=>{if(T)size()});
 </script>

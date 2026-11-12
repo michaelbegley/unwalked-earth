@@ -1,6 +1,6 @@
 # Unwalked Earth
 
-A globe that guesses where nobody has ever stood. Dark land has been walked. White land probably has not.
+A globe that guesses where nobody has ever stood. Orange land has probably never been walked.
 
 **Live:** https://michaelbegley.github.io/unwalked-earth/
 
