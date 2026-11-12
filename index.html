@@ -425,14 +425,14 @@ function pick(mx,my){
   const g=unproj(mx,my);if(!g)return;
   selectLL(g[0],g[1]);
 }
-function selectLL(la,lo){
+function selectLL(la,lo,label){
   if(!T||!N)return;const g=[la,lo];st.sel=g;
   const tx=Math.min(TW-1,((g[1]+180)/360*TW)|0),ty=Math.min(TH-1,((90-g[0])/180*TH)|0),o=(ty*TW+tx)*4,r=T[o];
   const nm=nameAt(g[0],g[1]);
-  if(!r){$('pname').textContent='Open water';$('pcoords').textContent=ll(g[0],g[1]);$('pscored').hidden=true;$('pnote').hidden=false;$('pnote').textContent='The oceans are not scored.';
+  if(!r){$('pname').textContent=label||'Open water';$('pcoords').textContent=ll(g[0],g[1]);$('pscored').hidden=true;$('pnote').hidden=false;$('pnote').textContent='The oceans are not scored.';
     links(ll(g[0],g[1]),'Ocean',g[0],g[1]);setPrompt(['Place: open water','Coordinates: '+ll(g[0],g[1]),'The map does not score the oceans.']);show('place');live(g[0],g[1],[],null);return}
   const s=Math.round((r-1)/2.54),acc=Math.pow(T[o+1]/8,2),b=T[o+2],step=acc>100?10:5,elev=(b>>3)*300;
-  const title=nm[0]&&nm[0]!==nm[1]?nm[0]:(nm[1]||'Unnamed land');
+  const title=label||(nm[0]&&nm[0]!==nm[1]?nm[0]:(nm[1]||'Unnamed land'));
   $('pname').textContent=title;
   $('pcoords').textContent=(nm[1]&&nm[1]!==title?nm[1]+'  ·  ':'')+ll(g[0],g[1]);
   $('pscored').hidden=false;$('pnote').hidden=true;
@@ -460,10 +460,10 @@ function selectLL(la,lo){
     }
     const ul=$('pkeep');ul.textContent='';for(const k of keep){const li=document.createElement('li');li.textContent=k;ul.appendChild(li)}
     $('pkeepwrap').hidden=!keep.length; }
-  const q=[nm[0],nm[1]].filter((v,i,a)=>v&&a.indexOf(v)===i).join(' ');
+  const q=[label||nm[0],nm[1]].filter((v,i,a)=>v&&a.indexOf(v)===i).join(' ');
   links(q||ll(g[0],g[1]),nm[0]||nm[1]||'',g[0],g[1]);
   setPrompt(['Place: '+[nm[0],nm[1]].filter((v,i,a)=>v&&a.indexOf(v)===i).join(', '),'Coordinates: '+ll(g[0],g[1]),'Unwalked score: '+s+' out of 100 (higher means less likely anyone has stood there)','Nearest way in, from the map\'s data: '+$('pway').textContent+', '+$('pfar').textContent.toLowerCase(),'Ground: '+$('pground').textContent]);
-  show('place');live(g[0],g[1],[nm[0],nm[1]],s);
+  show('place');live(g[0],g[1],(label?[label]:[]).concat([nm[0],nm[1]]),s);
 }
 function fly(lat,lon,k){stopSpin();const a={lon:st.lon,lat:st.lat,k:st.k},dl=((lon-a.lon+540)%360)-180,t0=performance.now(),dur=calm?1:700;
   (function step(t){let u=Math.min(1,(t-t0)/dur);u=u*u*(3-2*u);st.lon=((a.lon+dl*u+540)%360)-180;st.lat=a.lat+(lat-a.lat)*u;st.k=a.k+(k-a.k)*u;if(u<1){draw(.5);requestAnimationFrame(step)}else draw(1)})(t0)}
@@ -489,7 +489,7 @@ $('lucky').onclick=lucky;$('again').onclick=lucky;
 $('find').addEventListener('keydown',async e=>{if(e.key!=='Enter')return;const q=e.target.value.trim(),n=$('findnote');if(!q)return;n.hidden=false;n.textContent='Looking.';
   try{const d=await getj('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q='+encodeURIComponent(q));
     if(!d.length){n.textContent='Could not find that. Try a town, mountain or region.';return}
-    n.hidden=true;const lat=+d[0].lat,lon=+d[0].lon;selectLL(lat,lon);fly(lat,lon,3.5)}
+    n.hidden=true;const lat=+d[0].lat,lon=+d[0].lon,nmx=(d[0].name||String(d[0].display_name||q).split(',')[0]).trim();selectLL(lat,lon,nmx);fly(lat,lon,3.5)}
   catch(err){n.textContent='Search is not answering. Tap the globe instead.'}});
 function fromHash(){const m=/^#(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)$/.exec(location.hash);if(!m)return false;const lat=+m[1],lon=+m[2];if(Math.abs(lat)>90||Math.abs(lon)>180)return false;
   st.spin=false;st.lat=Math.max(-89.5,Math.min(89.5,lat));st.lon=lon;st.k=3;selectLL(lat,lon);return true}
