@@ -768,6 +768,7 @@ function brief(s) {
   $("ptext").hidden = true;
   $("aprompt").textContent = "Copy AI prompt";
   writePrompt();
+  markSaved();
 }
 function writePrompt() {
   const s = spot,
@@ -1097,6 +1098,38 @@ function live(lat, lon, titles, score) {
     }
   });
 }
+function openMark(hit) {
+  view.arc = null;
+  view.sel = [hit.lat, hit.lon];
+  $("pname").textContent = hit.name;
+  $("pcoords").textContent = hit.where + "  ·  " + coords(hit.lat, hit.lon);
+  $("pscored").hidden = true;
+  $("pnote").hidden = false;
+  $("pnote").textContent = hit.summary;
+  known(hit, "Who has been here", hit.been, "What keeps people out", hit.why);
+  brief({
+    place: hit.name + ", " + hit.where,
+    lat: hit.lat,
+    lon: hit.lon,
+    query: hit.search,
+    wiki: hit.wikipedia,
+    lines: [
+      "What the map says: " + hit.summary,
+      "Known visits: " + hit.been,
+      "What keeps people out: " + hit.why,
+      ...(hit.caveat ? ["Uncertain: " + hit.caveat] : []),
+    ],
+    ask: hit.ask.concat("Is anything in the notes above wrong or out of date?"),
+  });
+  show("place");
+  live(hit.lat, hit.lon, [hit.wikipedia, hit.name], null);
+}
+// open whatever is at a position: a dotted place if one is there, otherwise the ground itself
+function openAt(lat, lon, label) {
+  const hit = LANDMARKS.find((m) => Math.abs(m.lat - lat) < 0.02 && Math.abs(m.lon - lon) < 0.02);
+  if (hit) openMark(hit);
+  else selectLL(lat, lon, label);
+}
 function pick(mx, my) {
   if (!world || !nameTex) return;
   let hit = null,
@@ -1111,30 +1144,7 @@ function pick(mx, my) {
     }
   }
   if (hit) {
-    view.arc = null;
-    view.sel = [hit.lat, hit.lon];
-    $("pname").textContent = hit.name;
-    $("pcoords").textContent = hit.where + "  ·  " + coords(hit.lat, hit.lon);
-    $("pscored").hidden = true;
-    $("pnote").hidden = false;
-    $("pnote").textContent = hit.summary;
-    known(hit, "Who has been here", hit.been, "What keeps people out", hit.why);
-    brief({
-      place: hit.name + ", " + hit.where,
-      lat: hit.lat,
-      lon: hit.lon,
-      query: hit.search,
-      wiki: hit.wikipedia,
-      lines: [
-        "What the map says: " + hit.summary,
-        "Known visits: " + hit.been,
-        "What keeps people out: " + hit.why,
-        ...(hit.caveat ? ["Uncertain: " + hit.caveat] : []),
-      ],
-      ask: hit.ask.concat("Is anything in the notes above wrong or out of date?"),
-    });
-    show("place");
-    live(hit.lat, hit.lon, [hit.wikipedia, hit.name], null);
+    openMark(hit);
     return;
   }
   const g = unproj(mx, my);
@@ -1465,31 +1475,151 @@ function lucky() {
 }
 $("lucky").onclick = lucky;
 $("again").onclick = lucky;
+// Search: saved places, dots and regions match as you type; Enter looks the rest up.
+function offer(rows) {
+  const list = $("findlist");
+  list.replaceChildren(
+    ...rows.map((r) => {
+      const li = document.createElement("li"),
+        b = document.createElement("button"),
+        small = document.createElement("span");
+      b.type = "button";
+      b.textContent = r.name;
+      small.textContent = r.kind;
+      b.append(small);
+      b.onclick = () => {
+        list.hidden = true;
+        $("find").value = "";
+        r.go();
+      };
+      li.append(b);
+      return li;
+    }),
+  );
+  list.hidden = !rows.length;
+}
+function goTo(lat, lon, name) {
+  $("find").value = "";
+  openAt(lat, lon, name);
+  fly(lat, lon, 3.5);
+}
+$("find").addEventListener("input", (e) => {
+  const q = e.target.value.trim().toLowerCase();
+  $("findnote").hidden = true;
+  if (q.length < 2) return offer([]);
+  offer(
+    [
+      ...saved.map((p) => ({ name: p.n, kind: "Saved", go: () => goTo(p.lat, p.lon, p.n) })),
+      ...LANDMARKS.map((m) => ({ name: m.name, kind: m.where, go: () => goTo(m.lat, m.lon) })),
+      ...REGIONS.map((r, i) => ({
+        name: r.name,
+        kind: "Region",
+        go: () => $("go").children[i].click(),
+      })),
+    ]
+      .filter((r) => r.name.toLowerCase().includes(q))
+      .slice(0, 6),
+  );
+});
 $("find").addEventListener("keydown", async (e) => {
   if (e.key !== "Enter") return;
   const q = e.target.value.trim(),
     n = $("findnote");
   if (!q) return;
+  const pair = /^\s*(-?\d+(?:\.\d+)?)\s*[, ]\s*(-?\d+(?:\.\d+)?)\s*$/.exec(q);
+  if (pair && Math.abs(+pair[1]) <= 90 && Math.abs(+pair[2]) <= 180) {
+    offer([]);
+    return goTo(+pair[1], +pair[2]);
+  }
   n.hidden = false;
   n.textContent = "Looking.";
   try {
     const d = await getJSON(
-      "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=" + encodeURIComponent(q),
+      "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&q=" + encodeURIComponent(q),
     );
     if (!d.length) {
-      n.textContent = "Could not find that. Try a town, mountain or region.";
+      n.textContent = "Could not find that. Try a town, mountain, region or coordinates.";
       return;
     }
     n.hidden = true;
-    const lat = +d[0].lat,
-      lon = +d[0].lon,
-      nmx = (d[0].name || String(d[0].display_name || q).split(",")[0]).trim();
-    selectLL(lat, lon, nmx);
-    fly(lat, lon, 3.5);
+    const rows = d.map((x) => {
+      const parts = String(x.display_name || q).split(","),
+        name = (x.name || parts[0]).trim();
+      return {
+        name,
+        kind: parts.slice(1).join(",").trim().slice(0, 60),
+        go: () => goTo(+x.lat, +x.lon, name),
+      };
+    });
+    rows[0].go();
+    offer(rows.length > 1 ? rows.slice(1) : []);
   } catch (err) {
     n.textContent = "Search is not answering. Tap the globe instead.";
   }
 });
+
+// Saved places stay in this browser only. Nothing is sent anywhere.
+let saved = [],
+  canSave = true;
+try {
+  saved = JSON.parse(localStorage.getItem("unwalked.saved") || "[]").filter(
+    (p) => p && typeof p.n === "string" && Math.abs(p.lat) <= 90 && Math.abs(p.lon) <= 180,
+  );
+} catch (e) {
+  canSave = false;
+}
+const sameSpot = (p, lat, lon) => Math.abs(p.lat - lat) < 0.005 && Math.abs(p.lon - lon) < 0.005;
+function keep() {
+  try {
+    localStorage.setItem("unwalked.saved", JSON.stringify(saved));
+  } catch (e) {
+    canSave = false;
+  }
+  fillSaved();
+}
+function fillSaved() {
+  $("savedwrap").hidden = !saved.length;
+  $("savedlist").replaceChildren(
+    ...saved.map((p) => {
+      const li = document.createElement("li"),
+        open = document.createElement("button"),
+        drop = document.createElement("button");
+      open.type = drop.type = "button";
+      open.className = "textlink";
+      open.textContent = p.n;
+      open.onclick = () => goTo(p.lat, p.lon, p.n);
+      drop.className = "drop";
+      drop.textContent = "Remove";
+      drop.setAttribute("aria-label", "Remove " + p.n);
+      drop.onclick = () => {
+        saved = saved.filter((x) => x !== p);
+        keep();
+      };
+      li.append(open, drop);
+      return li;
+    }),
+  );
+}
+function markSaved() {
+  const b = $("psave"),
+    on = spot && spot.lat !== undefined && saved.some((p) => sameSpot(p, spot.lat, spot.lon));
+  b.hidden = !canSave || !spot || spot.lat === undefined;
+  b.textContent = on ? "Saved" : "Save";
+  b.setAttribute("aria-pressed", on ? "true" : "false");
+}
+$("psave").onclick = () => {
+  if (!spot || spot.lat === undefined) return;
+  const had = saved.find((p) => sameSpot(p, spot.lat, spot.lon));
+  if (had) saved = saved.filter((p) => p !== had);
+  else
+    saved = [
+      { n: $("pname").textContent, lat: +spot.lat.toFixed(4), lon: +spot.lon.toFixed(4) },
+      ...saved,
+    ].slice(0, 50);
+  keep();
+  markSaved();
+};
+fillSaved();
 function fromHash() {
   const m = /^#(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)$/.exec(location.hash);
   if (!m) return false;
@@ -1501,7 +1631,7 @@ function fromHash() {
   view.lon = lon;
   view.k = 3;
   zoomGoal = 3;
-  selectLL(lat, lon);
+  openAt(lat, lon);
   return true;
 }
 card.addEventListener("click", (e) => {
