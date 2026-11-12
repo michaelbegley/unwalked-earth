@@ -10,7 +10,7 @@
     <meta name="robots" content="noindex, nofollow" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Unwalked Earth visits</title>
-    <link rel="stylesheet" href="stats.css" />
+    <link rel="stylesheet" href="stats.css?v=2" />
   </head>
   <body>
     <main>
@@ -21,13 +21,16 @@
         <div><b id="today">0</b><span>today</span></div>
         <div><b id="all">0</b><span>all time</span></div>
       </div>
+      <h2>Where from, last 30 days</h2>
+      <ul id="from"></ul>
       <h2>Last 30 days</h2>
       <ul id="days"></ul>
       <p class="soft">
         A visit is one browser tab opening the site. Reloads in the same tab are not counted again, and
-        neither are browsers that ask not to be tracked. Days are Central time.
+        neither are browsers that ask not to be tracked. Days are Central time. "Direct" means the visitor
+        typed the address, used a bookmark, or came from an app that does not say where it sent them.
       </p>
     </main>
-    <script src="stats.js" defer></script>
+    <script src="stats.js?v=2" defer></script>
   </body>
 </html>

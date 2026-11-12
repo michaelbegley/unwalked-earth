@@ -1732,11 +1732,26 @@ Promise.all(
   boot();
 });
 
-// One anonymous count per visit, so the site's owner can see how many people come by.
-// It adds one to a ten-minute tally. Nothing about the visitor is sent or kept, and
+// One anonymous count per visit, so the site's owner can see how many people come by and
+// roughly where from. It adds one to a tally for a group of sites (x, reddit, hn, google,
+// other, direct). No address, no page and nothing about the visitor is sent or kept, and
 // browsers that ask not to be tracked are not counted.
 const TALLY = "https://cpzhsztczixiidxypvmb.supabase.co/rest/v1/rpc/hit",
   TALLY_KEY = "sb_publishable_M8UMcKf1BrHMbCuCVJ1P3g_-Bwnwd2W";
+function cameFrom() {
+  const tag = new URLSearchParams(location.search).get("from");
+  if (tag === "x" || tag === "reddit" || tag === "hn") return tag;
+  let host = "";
+  try {
+    host = new URL(document.referrer).hostname;
+  } catch (e) {}
+  if (!host || host === location.hostname) return "direct";
+  if (/(^|\.)(t\.co|x\.com|twitter\.com)$/.test(host)) return "x";
+  if (/(^|\.)(reddit\.com|redd\.it)$/.test(host)) return "reddit";
+  if (/(^|\.)ycombinator\.com$/.test(host)) return "hn";
+  if (/(^|\.)google\.[a-z.]+$/.test(host)) return "google";
+  return "other";
+}
 try {
   const asked = navigator.doNotTrack === "1" || navigator.globalPrivacyControl === true;
   if (!asked && location.hostname === "unwalked.earth" && !sessionStorage.getItem("unwalked.counted")) {
@@ -1744,7 +1759,7 @@ try {
     fetch(TALLY, {
       method: "POST",
       headers: { apikey: TALLY_KEY, "Content-Type": "application/json" },
-      body: "{}",
+      body: JSON.stringify({ src: cameFrom() }),
       keepalive: true,
     }).catch(() => {});
   }
