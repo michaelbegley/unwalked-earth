@@ -200,6 +200,16 @@ function isDay(lat, lon) {
     b = s[0] * RAD;
   return Math.sin(a) * Math.sin(b) + Math.cos(a) * Math.cos(b) * Math.cos((lon - s[1]) * RAD) > 0;
 }
+// While the globe is moving it is drawn a little smaller and scaled up. How much smaller
+// follows the device: fast ones stay sharp, slow ones stay smooth.
+let moveQ = 0.6;
+function drawMoving() {
+  const t = performance.now();
+  draw(moveQ);
+  const ms = performance.now() - t;
+  if (ms > 20 && moveQ > 0.4) moveQ = Math.max(0.4, moveQ - 0.1);
+  else if (ms < 9 && moveQ < 1) moveQ = Math.min(1, moveQ + 0.05);
+}
 function draw(q) {
   if (!world || !levels) return;
   const w = Math.max(2, Math.round(canvasW * q)),
@@ -223,7 +233,7 @@ function draw(q) {
 
   const iR = 1 / R,
     TWO = Math.PI * 2,
-    fine = q >= 1,
+    fine = q >= 0.3,
     rim0 = (1 - 1.5 * iR) * (1 - 1.5 * iR),
     rim1 = (1 + 0.5 * iR) * (1 + 0.5 * iR),
     perPixel = WORLD_H / (R * Math.PI),
@@ -431,7 +441,7 @@ function kick() {
   if (!raf)
     raf = requestAnimationFrame(() => {
       raf = 0;
-      draw(0.5);
+      drawMoving();
     });
   clearTimeout(settle);
   settle = setTimeout(() => draw(1), 140);
@@ -441,7 +451,7 @@ function spin(t) {
   if (!view.spin) return;
   if (last) {
     view.lon = ((view.lon + (t - last) * 0.003 + 540) % 360) - 180;
-    draw(0.5);
+    drawMoving();
   }
   last = t;
   requestAnimationFrame(spin);
@@ -507,7 +517,7 @@ function zoomTo(k, anchor) {
       zoomFrame = 0;
       draw(1);
     } else {
-      draw(0.5);
+      drawMoving();
       zoomFrame = requestAnimationFrame(step);
     }
   })();
@@ -532,7 +542,7 @@ function throwIt(vlon, vlat) {
       coasting = 0;
       draw(1);
     } else {
-      draw(0.5);
+      drawMoving();
       requestAnimationFrame(step);
     }
   })(last);
@@ -1364,7 +1374,7 @@ function fly(lat, lon, k) {
     view.lat = a.lat + (lat - a.lat) * u;
     view.k = a.k + (k - a.k) * u;
     if (u < 1) {
-      draw(0.5);
+      drawMoving();
       requestAnimationFrame(step);
     } else {
       zoomGoal = view.k;
@@ -1505,7 +1515,7 @@ function lucky() {
     view.lat = a.lat + (tl - a.lat) * e;
     view.k = u < 0.45 ? a.k + (1 - a.k) * (u / 0.45) : 1 + 2.2 * Math.pow((u - 0.45) / 0.55, 2);
     if (u < 1) {
-      draw(0.5);
+      drawMoving();
       requestAnimationFrame(step);
     } else {
       spinning = false;

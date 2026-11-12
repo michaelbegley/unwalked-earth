@@ -206,6 +206,8 @@ p {
 /* the orange directly opposite the button blue on the colour wheel */
 .half.warm {
   background: var(--warm);
+  color: #fff;
+  font-weight: 600;
 }
 .half.warm:hover {
   background: #f07d0a;
