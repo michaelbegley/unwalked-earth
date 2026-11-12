@@ -342,7 +342,7 @@ function draw(q) {
       }
       let lit = (x * sunx + y * suny + z * sunz + 0.12) / 0.24;
       lit = lit < 0 ? 0 : lit > 1 ? 1 : lit;
-      const sh = (0.9 + 0.1 * z) * (0.72 + 0.28 * lit),
+      const sh = (0.9 + 0.1 * z) * (0.9 + 0.1 * lit),
         q3 = r * 3,
         g1 = 1 - f;
       px[o] =
@@ -781,13 +781,13 @@ function vec(lat, lon) {
   return [c * Math.cos(b), c * Math.sin(b), Math.sin(a)];
 }
 function nearest(lat, lon) {
-  // closest cell scoring 70 or more: [lat, lon, km]
+  // closest orange cell, 50 or more: [lat, lon, km]
   const v = vec(lat, lon);
   let best = -2,
     bi = -1;
   for (const list of spotGroups.values())
     for (let j = 0; j < list.length; j++) {
-      if (shown[list[j]] < 179) continue;
+      if (shown[list[j]] < 128) continue;
       const i = list[j],
         y = (i / WORLD_W) | 0,
         x = i - y * WORLD_W,
@@ -1105,7 +1105,14 @@ function live(lat, lon, titles, score) {
     const ps =
       d.query && d.query.pages
         ? Object.values(d.query.pages).filter(
-            (p) => p.imageinfo && p.imageinfo[0] && p.imageinfo[0].thumburl,
+            (p) =>
+              p.imageinfo &&
+              p.imageinfo[0] &&
+              p.imageinfo[0].thumburl &&
+              // pictures taken from orbit and maps are not someone standing there
+              !/ISS\d|from space|from orbit|satellite|landsat|sentinel|modis|astronaut|\bmap\b|locator|location/i.test(
+                p.title || "",
+              ),
           )
         : [];
     if (id === request) {
@@ -1203,11 +1210,19 @@ function live(lat, lon, titles, score) {
     });
     const got = rs.filter((r) => r.status === "fulfilled"),
       any = got.some((r) => r.value > 0),
+      count = got.reduce((n, r) => n + r.value, 0),
+      strong =
+        count >= 3 ||
+        [2, 3].some((i) => rs[i].status === "fulfilled" && rs[i].value > 0),
       all = got.length === 4,
       hi = score !== null && score >= 50;
     $("pevline").textContent = any
       ? hi
-        ? "Probably. The score looks too high here."
+        ? strong
+          ? "Probably. The score looks too high here."
+          : "Maybe. " +
+            (count === 1 ? "One record" : "Two records") +
+            " within 10 km."
         : "Yes."
       : all
         ? "No record of it within 10 km."
