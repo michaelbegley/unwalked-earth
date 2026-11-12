@@ -186,7 +186,8 @@ function size() {
   canvas.height = canvasH;
   const r = card.getBoundingClientRect();
   if (sheet.matches) {
-    const free = (r.top - 8) * dpr;
+    // with the panel pulled all the way up, keep the globe where it sits at the resting height
+    const free = (r.top + Math.max(0, stops().rest - drop) - 8) * dpr;
     baseRadius = Math.min(canvasW, free) * 0.46;
     centerX = canvasW / 2;
     centerY = free / 2 + 4 * dpr;
@@ -981,9 +982,20 @@ $("aprompt").onclick = async () => {
     b.textContent = "Select all and copy";
   }
 };
-// on phones the panel can be dropped down to show more of the globe
+// On phones the panel works like a sheet with three stops: a short strip, a resting
+// height, and nearly full screen. Drag the grey bar or the panel itself; it only scrolls
+// once it is all the way up.
 const PEEK = 76;
 let drop = 0;
+function stops() {
+  const h = card.offsetHeight,
+    rest = h - Math.round(innerHeight * 0.62);
+  return {
+    full: 0,
+    rest: sheet.matches && rest > 80 ? rest : 0,
+    peek: Math.max(0, h - PEEK),
+  };
+}
 function setDrop(px, animate) {
   drop = px;
   card.style.transition = animate
@@ -998,54 +1010,85 @@ function setDrop(px, animate) {
     }, 300);
 }
 {
-  const grab = $("grab");
-  let startY = 0,
-    startDrop = 0,
-    lastY = 0,
-    dir = 0,
-    dragging = false,
-    moved = false;
-  const most = () => Math.max(0, card.offsetHeight - PEEK);
-  grab.addEventListener("pointerdown", (e) => {
-    dragging = true;
-    moved = false;
-    startY = lastY = e.clientY;
-    startDrop = drop;
-    grab.setPointerCapture(e.pointerId);
-  });
-  grab.addEventListener("pointermove", (e) => {
-    if (!dragging) return;
-    if (Math.abs(e.clientY - startY) > 6) moved = true;
-    if (!moved) return;
-    dir = e.clientY - lastY || dir;
-    lastY = e.clientY;
-    setDrop(
-      Math.max(0, Math.min(most(), startDrop + e.clientY - startY)),
-      false,
-    );
-  });
+  let touch = null;
+  card.addEventListener(
+    "touchstart",
+    (e) => {
+      touch = null;
+      if (!sheet.matches || e.touches.length !== 1) return;
+      if (e.target.closest("textarea, input[type=range]")) return;
+      const t = e.touches[0];
+      touch = {
+        x: t.clientX,
+        y: t.clientY,
+        last: t.clientY,
+        dir: 0,
+        from: drop,
+        moving: false,
+      };
+    },
+    { passive: true },
+  );
+  card.addEventListener(
+    "touchmove",
+    (e) => {
+      if (!touch) return;
+      const t = e.touches[0],
+        dx = t.clientX - touch.x,
+        dy = t.clientY - touch.y;
+      if (!touch.moving) {
+        if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+        // sideways belongs to the row of regions; up and down inside a full panel is scrolling
+        const scrolls = !drop && card.scrollHeight > card.clientHeight + 1;
+        if (
+          Math.abs(dx) > Math.abs(dy) ||
+          (scrolls && (card.scrollTop > 0 || dy < 0))
+        ) {
+          touch = null;
+          return;
+        }
+        touch.moving = true;
+      }
+      e.preventDefault();
+      touch.dir = t.clientY - touch.last || touch.dir;
+      touch.last = t.clientY;
+      setDrop(Math.max(0, Math.min(stops().peek, touch.from + dy)), false);
+    },
+    { passive: false },
+  );
   const end = () => {
-    if (!dragging) return;
-    dragging = false;
-    // a tap flips it; a drag settles the way it was last moving
-    const down = moved ? (dir ? dir > 0 : drop > most() / 2) : !drop;
-    setDrop(down ? most() : 0, true);
+    if (!touch || !touch.moving) return (touch = null);
+    // settle on the next stop in the direction of the last movement
+    const s = stops(),
+      list = [...new Set([s.full, s.rest, s.peek])].sort((a, b) => a - b),
+      next =
+        touch.dir > 0
+          ? list.find((v) => v >= drop - 1)
+          : [...list].reverse().find((v) => v <= drop + 1);
+    touch = null;
+    setDrop(next === undefined ? s.rest : next, true);
   };
-  grab.addEventListener("pointerup", end);
-  grab.addEventListener("pointercancel", end);
-  grab.addEventListener("keydown", (e) => {
+  card.addEventListener("touchend", end);
+  card.addEventListener("touchcancel", end);
+  // a tap or a key on the grey bar: up one stop, or down from the top
+  const step = () => {
+    const s = stops();
+    setDrop(drop > s.rest ? s.rest : drop > 0 ? 0 : s.rest || s.peek, true);
+  };
+  $("grab").addEventListener("click", step);
+  $("grab").addEventListener("keydown", (e) => {
     if (e.key !== "Enter" && e.key !== " ") return;
     e.preventDefault();
-    setDrop(drop ? 0 : most(), true);
+    step();
   });
   sheet.addEventListener("change", () => setDrop(0, false));
 }
 function show(which) {
-  if (drop) setDrop(0, false);
   for (const id of ["intro", "place", "about", "where", "feedback"])
     $(id).hidden = id !== which;
   card.classList.toggle("tall", which === "place");
   card.scrollTop = 0;
+  setDrop(stops().rest, false);
   if (which !== "place") {
     view.sel = null;
     view.arc = null;

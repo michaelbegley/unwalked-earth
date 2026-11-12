@@ -643,8 +643,10 @@ dd {
     top: auto;
     bottom: 12px;
     width: auto;
-    max-height: 66%;
+    max-height: calc(100% - 116px);
     padding: 0 16px 16px;
+    scrollbar-width: none;
+    overscroll-behavior: contain;
     border-radius: 20px;
     will-change: transform;
   }
@@ -659,8 +661,7 @@ dd {
     height: 24px;
     margin: 0 -16px;
     background: var(--card);
-    touch-action: none;
-    cursor: grab;
+    cursor: pointer;
   }
   #grab i {
     width: 36px;
@@ -676,8 +677,11 @@ dd {
     margin: 0 -16px 0;
     padding: 0 16px 0;
   }
+  #card::-webkit-scrollbar {
+    display: none;
+  }
   #card.tall {
-    height: 66%;
+    height: calc(100% - 116px);
   }
   .score {
     margin-top: 12px;
@@ -845,4 +849,14 @@ dd {
 }
 .pair {
   white-space: nowrap;
+}
+
+@media (max-width: 700px), (max-width: 1000px) and (orientation: portrait) {
+  /* the panel is dragged, not scrolled by a bar */
+  #card {
+    scrollbar-width: none;
+  }
+  #card::-webkit-scrollbar {
+    display: none;
+  }
 }
