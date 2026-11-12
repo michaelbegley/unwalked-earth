@@ -1984,9 +1984,10 @@ function showCount() {
         n = (v) => Number(v).toLocaleString("en-US");
       el.textContent =
         n(d.all_time) +
-        " visits, " +
-        n(d.last_30_min) +
-        " in the last 30 minutes";
+        " visits" +
+        (d.last_30_min > 0
+          ? ", " + n(d.last_30_min) + " in the last 30 minutes"
+          : "");
       el.hidden = false;
     })
     .catch(() => {});
