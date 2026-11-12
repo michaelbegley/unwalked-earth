@@ -44,7 +44,7 @@
         <p class="hint mid">Tap the globe or pick a region</p>
         <div class="chips" id="go"></div>
         <div id="savedwrap" hidden>
-          <p class="hint">Saved places, kept in this browser only</p>
+          <p class="hint">Saved on this device</p>
           <ul id="savedlist"></ul>
         </div>
         <div class="foot">
@@ -158,7 +158,7 @@
               <dd id="evwiki"></dd>
             </div>
           </dl>
-          <p class="cap">Counts are for records tagged within 10 km of this spot.</p>
+          <p class="cap">Within 10 km.</p>
           <div class="thumbs" id="pthumbs"></div>
         </div>
         <div class="near" id="ksrcwrap" hidden>
@@ -170,7 +170,7 @@
       <section id="where" hidden>
         <button class="pill back" type="button" data-back>&lsaquo; Back</button>
         <h2>Top countries</h2>
-        <p class="lede">Land scoring 50 or more, by country. The bar is the share of that country.</p>
+        <p class="lede">Orange land by country.</p>
         <ol id="wlist"></ol>
       </section>
 
@@ -178,11 +178,11 @@
         <button class="pill back" type="button" data-back>&lsaquo; Back</button>
         <h2>How it works</h2>
         <h3>What turns a place orange</h3>
-        <p>Two things. It is far from every way in, and the ground is somewhere people could not live.</p>
+        <p>It is far from any way in, and nobody could live on the ground.</p>
         <p>
           A way in is a road, track, railway, town, airstrip, research station, mine, archaeological site,
           river or coast. The map measures how far each patch of land, about 10 km across, is from the nearest
-          one. Around 100 km off counts as far. Past 300 km it hardly gets more remote.
+          one. 100 km counts as far. Past 300 km it stops mattering.
         </p>
         <h3>What holds a score down</h3>
         <p>
@@ -191,13 +191,13 @@
           have lived on or crossed that ground for thousands of years. Lights at night pull a score down
           further.
         </p>
-        <h3>Why each region looks the way it does</h3>
+        <h3>Regions</h3>
         <ul id="rlist"></ul>
-        <h3>The evidence check</h3>
+        <h3>Records</h3>
         <p>
           The score is a guess from distance. When you tap a spot, the page also asks four public sources what
           is on record within 10 km: photos, wildlife records, iNaturalist sightings and Wikipedia articles.
-          If any come back, somebody was there, whatever the score says.
+          If anything comes back, somebody was there.
         </p>
         <h3>Where it is wrong</h3>
         <p>
@@ -262,6 +262,6 @@
 
     <img id="tex" alt="" style="display: none" src="data/world.png" />
     <img id="ntex" alt="" style="display: none" src="data/names.png" />
-    <script src="js/app.js?v=10" defer></script>
+    <script src="js/app.js?v=11" defer></script>
   </body>
 </html>

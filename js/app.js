@@ -845,7 +845,7 @@ $("aprompt").onclick = async () => {
   const b = $("aprompt");
   try {
     await navigator.clipboard.writeText(promptText);
-    b.textContent = "Copied. Paste it into your AI";
+    b.textContent = "Copied";
     setTimeout(() => {
       b.textContent = "Copy AI prompt";
     }, 2500);
@@ -905,8 +905,8 @@ function live(lat, lon, titles, score) {
     im.classList.add("on");
     cap.textContent =
       (tried
-        ? "NASA Blue Marble, about 220 km across."
-        : "Sentinel-2 cloudless by EOX, about 45 km across.") + " Tap it for a closer look.";
+        ? "NASA Blue Marble. About 220 km across."
+        : "Sentinel-2, EOX. About 45 km across.";
   };
   im.onerror = () => {
     if (id !== request) return;
@@ -1091,8 +1091,8 @@ function live(lat, lon, titles, score) {
       hi = score !== null && score >= 50;
     $("pevline").textContent = any
       ? hi
-        ? "Probably. There are records within 10 km, so this score looks too high."
-        : "Yes. People have left records within 10 km."
+        ? "Probably. The score looks too high here."
+        : "Yes."
       : all
         ? "No record of it within 10 km."
         : "Nothing found, but not every source answered.";
@@ -1256,19 +1256,19 @@ function selectLL(la, lo, label) {
       $("pfar").textContent.toLowerCase() +
       " away." +
       (reach < 0.15
-        ? " That close, the map assumes people have been here."
+        ? " Too close to be unwalked."
         : " On distance alone that would score about " + ds + ".");
     $("pwhy2").textContent =
       reach < 0.15
         ? ""
         : icy
-          ? "It is permanent ice. Nobody has ever lived on ice like this, so nothing is taken off."
+          ? "Permanent ice, so the full score stands."
           : ratio >= 0.88
             ? "The ground is high and steep enough that people rarely cross it, so very little is taken off."
             : ratio >= 0.68
-              ? "The ground is open desert or very high country. People have crossed places like this for thousands of years, so the map keeps about three quarters of that."
+              ? "Open desert or very high country. People have crossed it, so the score is cut to about three quarters."
               : ratio >= 0.45
-                ? "The ground is forest, grassland or tundra. People have lived on or crossed ground like this for thousands of years, so the map keeps about half of that."
+                ? "Forest, grassland or tundra. People have lived on it, so the score is cut to about half."
                 : "Lights show here at night, or a known site is close, so the map keeps less than half of that.";
     $("pwhy2").hidden = reach < 0.15;
     const keep = [],
@@ -1277,13 +1277,13 @@ function selectLL(la, lo, label) {
       keep.push(
         "It is about " +
           number(Math.round(acc / step) * step) +
-          " km from the nearest way in. On foot that is roughly " +
+          " km from the nearest way in. About " +
           days +
           (days === 1 ? " day" : " days") +
-          " each way, carrying everything.",
+          " on foot each way.",
       );
       if (b & 4)
-        keep.push("Permanent ice. Nothing grows, and there is nothing to burn or drink without melting it.");
+        keep.push("Permanent ice. Nothing grows.");
       else if (ratio >= 0.68 && elev < 3000) keep.push("Bare desert, with no reliable water on the surface.");
       if (elev >= 3000)
         keep.push(
@@ -1583,7 +1583,7 @@ $("find").addEventListener("keydown", async (e) => {
       "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&q=" + encodeURIComponent(q),
     );
     if (!d.length) {
-      n.textContent = "Could not find that. Try a town, mountain, region or coordinates.";
+      n.textContent = "Nothing found.";
       return;
     }
     n.hidden = true;
@@ -1599,7 +1599,7 @@ $("find").addEventListener("keydown", async (e) => {
     rows[0].go();
     offer(rows.length > 1 ? rows.slice(1) : []);
   } catch (err) {
-    n.textContent = "Search is not answering. Tap the globe instead.";
+    n.textContent = "Search is down right now.";
   }
 });
 
