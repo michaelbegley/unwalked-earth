@@ -112,7 +112,7 @@ p {
   background: linear-gradient(90deg, #eeece6 15%, #fbddb2 42%, #ff9f0a 68%, #e24600);
 }
 .hint {
-  margin-top: 16px;
+  margin-top: 12px;
   font-size: 13px;
   color: var(--soft);
 }
@@ -120,7 +120,7 @@ p {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
-  margin-top: 8px;
+  margin-top: 12px;
 }
 .chips .chip {
   padding-left: 4px;
@@ -212,9 +212,7 @@ p {
 .half.warm:hover {
   background: #f07d0a;
 }
-.hint.mid {
-  text-align: center;
-}
+
 .pill {
   border: 0;
   border-radius: 999px;
