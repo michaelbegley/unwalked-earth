@@ -6,6 +6,7 @@
   --line: rgba(0, 0, 0, 0.09);
   --fill: #f0f0f3;
   --blue: #0071e3;
+  --warm: #e37200;
   --face: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Helvetica, Arial, sans-serif;
   color-scheme: light;
 }
@@ -116,10 +117,16 @@ p {
   color: var(--soft);
 }
 .chips {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 8px;
   margin-top: 8px;
+}
+.chips .chip {
+  padding-left: 4px;
+  padding-right: 4px;
+  white-space: nowrap;
+  font-size: 12px;
 }
 .chip {
   border: 0;
@@ -177,11 +184,34 @@ p {
   text-decoration: underline;
 }
 .foot {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
   margin-top: 16px;
   padding-top: 16px;
   border-top: 1px solid var(--line);
+}
+.half {
+  border: 0;
+  border-radius: 12px;
+  padding: 12px 8px;
+  font-size: 14px;
+  font-weight: 500;
+  background: var(--fill);
+  color: var(--ink);
+}
+.half:hover {
+  background: #e4e4e9;
+}
+/* the orange directly opposite the button blue on the colour wheel */
+.half.warm {
+  background: var(--warm);
+}
+.half.warm:hover {
+  background: #f07d0a;
+}
+.hint.mid {
+  text-align: center;
 }
 .pill {
   border: 0;
@@ -533,6 +563,7 @@ dd {
     font-size: 38px;
   }
   .chips {
+    display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;
     margin-right: -16px;
@@ -542,8 +573,11 @@ dd {
   .chips::-webkit-scrollbar {
     display: none;
   }
-  .chip {
+  .chips .chip {
     flex: none;
+    font-size: 13px;
+    padding-left: 12px;
+    padding-right: 12px;
   }
   #zoom {
     right: 12px;
@@ -565,7 +599,6 @@ dd {
     padding-top: 8px;
     padding-bottom: 8px;
   }
-  .foot .textlink,
   #plink,
   #psave,
   #fargo {
