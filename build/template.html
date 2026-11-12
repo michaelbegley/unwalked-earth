@@ -239,7 +239,7 @@ const $=id=>document.getElementById(id);
 const cv=$('globe'),ctx=cv.getContext('2d'),card=$('card');
 const TW=4096,TH=2048,NW=2048,NH=1024;let T=null,N=null;
 const calm=matchMedia('(prefers-reduced-motion: reduce)').matches;
-const st={lon:25,lat:12,k:1,spin:!calm,sel:null};
+const st={lon:25,lat:12,k:1,spin:!calm,sel:null};let spinning=false;
 const off=document.createElement('canvas'),octx=off.getContext('2d');
 let dpr=1,cw=0,ch=0,R0=0,CX=0,CY=0;
 
@@ -326,21 +326,66 @@ function kick(){if(!raf)raf=requestAnimationFrame(()=>{raf=0;draw(.5)});clearTim
 let last=0;function spin(t){if(!st.spin)return;if(last){st.lon=((st.lon+(t-last)*.003+540)%360)-180;draw(.5)}last=t;requestAnimationFrame(spin)}
 function stopSpin(){if(st.spin){st.spin=false;draw(1)}}
 
-const ptrs=new Map();let pinch0=0,k0=1,moved=false;
+// ---- moving the globe: grab a point and it stays under your finger, throw it and it keeps turning
+let mot=0,kT=1,zanchor=null,zraf=0,inert=0;
+const KMIN=.8,KMAX=10,clampK=k=>Math.min(KMAX,Math.max(KMIN,k));
+function hold(lat,lon,sx,sy){ // turn the globe so that (lat,lon) sits at screen point (sx,sy)
+  const R=R0*st.k;let x=(sx-CX)/R,y=(CY-sy)/R;const rr=Math.hypot(x,y);if(rr>.97){x*=.97/rr;y*=.97/rr}
+  const p=lat*RAD,c=Math.cos(p),s=Math.sin(p);
+  const dl=Math.asin(Math.max(-1,Math.min(1,x/Math.max(c,1e-6)))),C=c*Math.cos(dl),Rm=Math.hypot(s,C)||1e-6;
+  const f=Math.acos(Math.max(-1,Math.min(1,y/Rm)))-Math.atan2(C,s);
+  st.lat=Math.max(-89.5,Math.min(89.5,f/RAD));st.lon=((lon-dl/RAD+540)%360)-180}
+function halt(){mot++;inert=0;spinning=false;if(zraf){cancelAnimationFrame(zraf);zraf=0}kT=st.k}
+function zoomTo(k,anchor){ // ease toward a zoom level, keeping the anchored point where it is on screen
+  stopSpin();inert=0;kT=clampK(k);zanchor=anchor||null;if(zraf)return;
+  (function step(){st.k+=(kT-st.k)*.22;if(Math.abs(kT-st.k)<.004*st.k)st.k=kT;
+    if(zanchor)hold(zanchor[0],zanchor[1],zanchor[2],zanchor[3]);
+    if(st.k===kT){zraf=0;draw(1)}else{draw(.5);zraf=requestAnimationFrame(step)}})()}
+function throwIt(vlon,vlat){const id=++inert;let last=performance.now();
+  (function step(t){if(id!==inert)return;const dt=Math.min(50,t-last);last=t;
+    st.lon=((st.lon+vlon*dt+540)%360)-180;st.lat+=vlat*dt;if(st.lat>89.5||st.lat<-89.5){st.lat=Math.max(-89.5,Math.min(89.5,st.lat));vlat=0}
+    const d=Math.exp(-dt/650);vlon*=d;vlat*=d;
+    if(Math.hypot(vlon,vlat)<.003){inert=0;draw(1)}else{draw(.5);requestAnimationFrame(step)}})(last)}
+const ptrs=new Map();let pinch0=0,k0=1,moved=false,grab=null,pgrab=null,trail=[],lastTap=[0,0,0];
 function pos(e){const r=cv.getBoundingClientRect();return[(e.clientX-r.left)*dpr,(e.clientY-r.top)*dpr]}
-cv.addEventListener('pointerdown',e=>{stopSpin();cv.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,[e.clientX,e.clientY]);moved=false;cv.classList.add('drag');if(ptrs.size===2){moved=true;const a=[...ptrs.values()];pinch0=Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1]);k0=st.k}});
+function mid(){const a=[...ptrs.values()];return[(a[0][0]+a[1][0])/2,(a[0][1]+a[1][1])/2,Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1])]}
+cv.addEventListener('pointerdown',e=>{stopSpin();halt();cv.setPointerCapture(e.pointerId);const p=pos(e);ptrs.set(e.pointerId,p);moved=false;cv.classList.add('drag');trail=[];
+  if(ptrs.size===1){grab=unproj(p[0],p[1])}
+  else if(ptrs.size===2){moved=true;const m=mid();pinch0=m[2];k0=st.k;pgrab=unproj(m[0],m[1])}});
 cv.addEventListener('pointermove',e=>{
   if(!ptrs.has(e.pointerId))return;
-  const p=ptrs.get(e.pointerId),dx=e.clientX-p[0],dy=e.clientY-p[1];ptrs.set(e.pointerId,[e.clientX,e.clientY]);
-  if(ptrs.size===2){const a=[...ptrs.values()];const d=Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1]);st.k=Math.min(8,Math.max(.8,k0*d/pinch0));kick();return}
-  if(Math.abs(dx)+Math.abs(dy)>3)moved=true;
+  const was=ptrs.get(e.pointerId),p=pos(e);ptrs.set(e.pointerId,p);
+  if(ptrs.size===2){const m=mid();st.k=clampK(k0*m[2]/pinch0);kT=st.k;if(pgrab)hold(pgrab[0],pgrab[1],m[0],m[1]);kick();return}
+  if(Math.abs(p[0]-was[0])+Math.abs(p[1]-was[1])>3*dpr)moved=true;
   if(!moved)return;
-  const f=dpr/(R0*st.k)/RAD;st.lon=((st.lon-dx*f+540)%360)-180;st.lat=Math.max(-89.5,Math.min(89.5,st.lat+dy*f));kick()});
-function up(e){if(ptrs.has(e.pointerId)){ptrs.delete(e.pointerId);if(!moved&&e.type==='pointerup'){const p=pos(e);pick(p[0],p[1])}}if(!ptrs.size)cv.classList.remove('drag')}
+  if(grab)hold(grab[0],grab[1],p[0],p[1]);
+  else{const f=1/(R0*st.k)/RAD;st.lon=((st.lon-(p[0]-was[0])*f+540)%360)-180;st.lat=Math.max(-89.5,Math.min(89.5,st.lat+(p[1]-was[1])*f))}
+  const now=performance.now();trail.push([now,st.lon,st.lat]);while(trail.length>2&&now-trail[0][0]>110)trail.shift();
+  kick()});
+function up(e){
+  if(!ptrs.has(e.pointerId))return;const p=ptrs.get(e.pointerId),two=ptrs.size===2;ptrs.delete(e.pointerId);
+  if(!ptrs.size)cv.classList.remove('drag');
+  if(two){const r=[...ptrs.values()][0];grab=r?unproj(r[0],r[1]):null;trail=[];return}
+  if(e.type!=='pointerup')return;
+  if(!moved){const now=performance.now();
+    if(now-lastTap[0]<320&&Math.hypot(p[0]-lastTap[1],p[1]-lastTap[2])<30*dpr){const g=unproj(p[0],p[1]);zoomTo(st.k*2,g?[g[0],g[1],p[0],p[1]]:null);lastTap=[0,0,0]}
+    else{lastTap=[now,p[0],p[1]];pick(p[0],p[1])}
+    return}
+  if(trail.length>1&&!calm){const a=trail[0],b=trail[trail.length-1],dt=b[0]-a[0];
+    if(dt>15&&performance.now()-b[0]<60){const vlon=(((b[1]-a[1]+540)%360)-180)/dt,vlat=(b[2]-a[2])/dt;if(Math.hypot(vlon,vlat)>.012)throwIt(vlon,vlat)}}}
 cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
-cv.addEventListener('wheel',e=>{e.preventDefault();stopSpin();st.k=Math.min(8,Math.max(.8,st.k*Math.exp(-e.deltaY*.0015)));kick()},{passive:false});
-$('zin').onclick=()=>{stopSpin();st.k=Math.min(8,st.k*1.5);draw(1)};
-$('zout').onclick=()=>{stopSpin();st.k=Math.max(.8,st.k/1.5);draw(1)};
+cv.addEventListener('wheel',e=>{e.preventDefault();stopSpin();inert=0;mot++;const p=pos(e),g=unproj(p[0],p[1]);
+  zoomTo((zraf?kT:st.k)*Math.exp(-e.deltaY*.0022),g?[g[0],g[1],p[0],p[1]]:null)},{passive:false});
+$('zin').onclick=()=>zoomTo((zraf?kT:st.k)*1.7);
+$('zout').onclick=()=>zoomTo((zraf?kT:st.k)/1.7);
+addEventListener('keydown',e=>{const tag=(e.target&&e.target.tagName)||'';if(tag==='INPUT'||tag==='TEXTAREA'||e.metaKey||e.ctrlKey||e.altKey)return;
+  const step=18/st.k,k=e.key;
+  if(k==='ArrowLeft'||k==='ArrowRight'||k==='ArrowUp'||k==='ArrowDown'){e.preventDefault();stopSpin();halt();
+    if(k==='ArrowLeft')st.lon=((st.lon-step+540)%360)-180;if(k==='ArrowRight')st.lon=((st.lon+step+540)%360)-180;
+    if(k==='ArrowUp')st.lat=Math.min(89.5,st.lat+step);if(k==='ArrowDown')st.lat=Math.max(-89.5,st.lat-step);kick()}
+  else if(k==='+'||k==='=')zoomTo((zraf?kT:st.k)*1.7);
+  else if(k==='-'||k==='_')zoomTo((zraf?kT:st.k)/1.7);
+  else if(k===' '&&tag!=='BUTTON'){e.preventDefault();stopSpin();halt();draw(1)}});
 
 const WAYS=['Road, railway or track','Town, airstrip, mine or other site','Coast','River'];
 const fmt=n=>Math.round(n).toLocaleString('en-US');
@@ -465,8 +510,8 @@ function selectLL(la,lo,label){
   setPrompt(['Place: '+[nm[0],nm[1]].filter((v,i,a)=>v&&a.indexOf(v)===i).join(', '),'Coordinates: '+ll(g[0],g[1]),'Unwalked score: '+s+' out of 100 (higher means less likely anyone has stood there)','Nearest way in, from the map\'s data: '+$('pway').textContent+', '+$('pfar').textContent.toLowerCase(),'Ground: '+$('pground').textContent]);
   show('place');live(g[0],g[1],(label?[label]:[]).concat([nm[0],nm[1]]),s);
 }
-function fly(lat,lon,k){stopSpin();const a={lon:st.lon,lat:st.lat,k:st.k},dl=((lon-a.lon+540)%360)-180,t0=performance.now(),dur=calm?1:700;
-  (function step(t){let u=Math.min(1,(t-t0)/dur);u=u*u*(3-2*u);st.lon=((a.lon+dl*u+540)%360)-180;st.lat=a.lat+(lat-a.lat)*u;st.k=a.k+(k-a.k)*u;if(u<1){draw(.5);requestAnimationFrame(step)}else draw(1)})(t0)}
+function fly(lat,lon,k){stopSpin();halt();const tok=mot,a={lon:st.lon,lat:st.lat,k:st.k},dl=((lon-a.lon+540)%360)-180,t0=performance.now(),dur=calm?1:700;
+  (function step(t){if(tok!==mot)return;let u=Math.min(1,(t-t0)/dur);u=u*u*(3-2*u);st.lon=((a.lon+dl*u+540)%360)-180;st.lat=a.lat+(lat-a.lat)*u;st.k=a.k+(k-a.k)*u;if(u<1){draw(.5);requestAnimationFrame(step)}else{kT=st.k;draw(1)}})(t0)}
 
 $('stat').textContent=`That is about ${Math.round(META.cum[50])}% of all land, or ${META.cumx[50].toFixed(1)}% without Antarctica.`;
 $('go').innerHTML=VIEWS.map((v,i)=>`<button class="chip" type="button" data-v="${i}">${v[0]}</button>`).join('');
@@ -475,16 +520,15 @@ $('aboutlink').onclick=()=>show('about');
 $('plink').onclick=async()=>{const b=$('plink');try{await navigator.clipboard.writeText(location.href);b.textContent='Link copied'}catch(e){b.textContent='Copy it from the address bar'}setTimeout(()=>{b.textContent='Copy link'},2500)};
 let CA=[],CB=[];
 function candidates(){for(let y=0;y<TH;y+=3){const lat=90-(y+.5)*180/TH,o=y*TW;for(let x=0;x<TW;x+=3){if(D[o+x]>=179)(lat<-60?CA:CB).push(o+x)}}}
-let spinning=false;
 function lucky(){if(spinning)return;const list=(Math.random()<.6&&CB.length)?CB:(CA.length?CA:CB);if(!list.length)return;const i=list[(Math.random()*list.length)|0],y=(i/TW)|0,x=i-y*TW;
   const lat=90-(y+.5)*180/TH,lon=-180+(x+.5)*360/TW;
   stopSpin();if(calm){selectLL(lat,lon);st.lat=lat;st.lon=lon;st.k=3.2;draw(1);return}
-  show('intro');spinning=true;
+  show('intro');halt();spinning=true;const tok=mot;
   const a={lon:st.lon,lat:st.lat,k:st.k},dl=((lon-a.lon+540)%360)-180+360,t0=performance.now(),dur=2400,tl=Math.max(-89.5,Math.min(89.5,lat));
-  (function step(t){const u=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-u,3);
+  (function step(t){if(tok!==mot)return;const u=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-u,3);
     st.lon=((a.lon+dl*e+540)%360)-180;st.lat=a.lat+(tl-a.lat)*e;
     st.k=u<.45?a.k+(1-a.k)*(u/.45):1+2.2*Math.pow((u-.45)/.55,2);
-    if(u<1){draw(.5);requestAnimationFrame(step)}else{spinning=false;selectLL(lat,lon)}})(t0)}
+    if(u<1){draw(.5);requestAnimationFrame(step)}else{spinning=false;kT=st.k;selectLL(lat,lon)}})(t0)}
 $('lucky').onclick=lucky;$('again').onclick=lucky;
 $('find').addEventListener('keydown',async e=>{if(e.key!=='Enter')return;const q=e.target.value.trim(),n=$('findnote');if(!q)return;n.hidden=false;n.textContent='Looking.';
   try{const d=await getj('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q='+encodeURIComponent(q));
@@ -492,12 +536,12 @@ $('find').addEventListener('keydown',async e=>{if(e.key!=='Enter')return;const q
     n.hidden=true;const lat=+d[0].lat,lon=+d[0].lon,nmx=(d[0].name||String(d[0].display_name||q).split(',')[0]).trim();selectLL(lat,lon,nmx);fly(lat,lon,3.5)}
   catch(err){n.textContent='Search is not answering. Tap the globe instead.'}});
 function fromHash(){const m=/^#(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)$/.exec(location.hash);if(!m)return false;const lat=+m[1],lon=+m[2];if(Math.abs(lat)>90||Math.abs(lon)>180)return false;
-  st.spin=false;st.lat=Math.max(-89.5,Math.min(89.5,lat));st.lon=lon;st.k=3;selectLL(lat,lon);return true}
+  st.spin=false;st.lat=Math.max(-89.5,Math.min(89.5,lat));st.lon=lon;st.k=3;kT=3;selectLL(lat,lon);return true}
 card.addEventListener('click',e=>{if(e.target.closest('[data-back]'))show('intro')});
 addEventListener('keydown',e=>{if(e.key==='Escape')show('intro')});
 
-function grab(img,w,h){const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(img,0,0);return x.getImageData(0,0,w,h).data}
-let ready=0;function boot(){if(++ready<2)return;T=grab($('tex'),TW,TH);N=grab($('ntex'),NW,NH);smooth();candidates();size();fromHash();if(st.spin)requestAnimationFrame(spin)}
+function pixels(img,w,h){const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(img,0,0);return x.getImageData(0,0,w,h).data}
+let ready=0;function boot(){if(++ready<2)return;T=pixels($('tex'),TW,TH);N=pixels($('ntex'),NW,NH);smooth();candidates();size();fromHash();if(st.spin)requestAnimationFrame(spin)}
 for(const id of['tex','ntex']){const im=$(id);if(im.complete&&im.naturalWidth)boot();else im.addEventListener('load',boot)}
 addEventListener('resize',()=>{if(T)size()});
 </script>
