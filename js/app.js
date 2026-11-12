@@ -314,6 +314,12 @@ function draw(q) {
     }
   }
   bufferCtx.putImageData(img, 0, 0);
+  paint(q);
+}
+// put the finished globe, its glow and the markers on screen
+let lastQ = 1;
+function paint(q) {
+  lastQ = q;
   ctx.clearRect(0, 0, canvasW, canvasH);
   const RR = baseRadius * view.k,
     halo = ctx.createRadialGradient(centerX, centerY, RR * 0.98, centerX, centerY, RR * 1.07);
@@ -371,7 +377,7 @@ function overlay() {
     const p = proj(s.lat, s.lon);
     if (p[2] < 0.05) continue;
     ctx.beginPath();
-    ctx.arc(p[0], p[1], 4.5 * dpr, 0, 7);
+    ctx.arc(p[0], p[1], (4.5 + (s === hovered ? 2.5 * swell : 0)) * dpr, 0, 7);
     ctx.fillStyle = "#1d1d1f";
     ctx.fill();
     ctx.lineWidth = 1.5 * dpr;
@@ -544,10 +550,11 @@ function pos(e) {
   return [(e.clientX - r.left) * dpr, (e.clientY - r.top) * dpr];
 }
 function mid() {
-  const a = [...ptrs.values()];
+  const a = [...pointers.values()];
   return [(a[0][0] + a[1][0]) / 2, (a[0][1] + a[1][1]) / 2, Math.hypot(a[0][0] - a[1][0], a[0][1] - a[1][1])];
 }
 canvas.addEventListener("pointerdown", (e) => {
+  canvas.style.cursor = "";
   stopSpin();
   halt();
   canvas.setPointerCapture(e.pointerId);
@@ -566,7 +573,12 @@ canvas.addEventListener("pointerdown", (e) => {
     pgrab = unproj(m[0], m[1]);
   }
 });
+canvas.addEventListener("pointerleave", () => hover(null));
 canvas.addEventListener("pointermove", (e) => {
+  if (!pointers.size && e.pointerType === "mouse" && world) {
+    const p = pos(e);
+    hover(dotAt(p[0], p[1]));
+  }
   if (!pointers.has(e.pointerId)) return;
   const was = pointers.get(e.pointerId),
     p = pos(e);
@@ -599,7 +611,7 @@ function up(e) {
   pointers.delete(e.pointerId);
   if (!pointers.size) canvas.classList.remove("drag");
   if (two) {
-    const r = [...ptrs.values()][0];
+    const r = [...pointers.values()][0];
     grab = r ? unproj(r[0], r[1]) : null;
     trail = [];
     return;
@@ -1135,8 +1147,7 @@ function openAt(lat, lon, label) {
   if (hit) openMark(hit);
   else selectLL(lat, lon, label);
 }
-function pick(mx, my) {
-  if (!world || !nameTex) return;
+function dotAt(mx, my) {
   let hit = null,
     bd = 16 * dpr;
   for (const s of LANDMARKS) {
@@ -1148,6 +1159,27 @@ function pick(mx, my) {
       hit = s;
     }
   }
+  return hit;
+}
+// a dot under the mouse grows a little and the cursor turns into a pointer
+let hovered = null,
+  swell = 0;
+function hover(dot) {
+  if (dot === hovered) return;
+  hovered = dot;
+  canvas.style.cursor = dot ? "pointer" : "";
+  const t0 = performance.now();
+  swell = 0;
+  (function step(t) {
+    if (hovered !== dot) return;
+    swell = dot ? Math.min(1, (t - t0) / 120) : 0;
+    paint(lastQ);
+    if (dot && swell < 1) requestAnimationFrame(step);
+  })(t0);
+}
+function pick(mx, my) {
+  if (!world || !nameTex) return;
+  const hit = dotAt(mx, my);
   if (hit) {
     openMark(hit);
     return;
