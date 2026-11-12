@@ -205,6 +205,14 @@ p {
   padding-top: 16px;
   border-top: 1px solid var(--line);
 }
+.count + .count {
+  margin-top: 4px;
+}
+textarea.find {
+  font-size: 16px;
+  resize: vertical;
+  min-height: 120px;
+}
 .count {
   margin-top: 16px;
   font-size: 13px;

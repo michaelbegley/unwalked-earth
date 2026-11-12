@@ -959,7 +959,7 @@ $("aprompt").onclick = async () => {
   }
 };
 function show(which) {
-  for (const id of ["intro", "place", "about", "where"])
+  for (const id of ["intro", "place", "about", "where", "feedback"])
     $(id).hidden = id !== which;
   card.classList.toggle("tall", which === "place");
   card.scrollTop = 0;
@@ -1596,6 +1596,36 @@ $("go").addEventListener("click", openRegion);
 $("rlist").addEventListener("click", openRegion);
 $("aboutlink").onclick = () => show("about");
 $("wherelink").onclick = () => show("where");
+$("feedbacklink").onclick = () => {
+  show("feedback");
+  $("fbnote").hidden = true;
+};
+$("fbsend").onclick = () => {
+  const text = $("fbtext").value.trim(),
+    note = $("fbnote");
+  if (!text) return;
+  $("fbsend").disabled = true;
+  fetch(TALLY.replace(/hit$/, "send_feedback"), {
+    method: "POST",
+    headers: { apikey: TALLY_KEY, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      msg: text.slice(0, 1000),
+      ver: $("version").textContent,
+    }),
+  })
+    .then((r) => {
+      if (!r.ok) throw new Error(r.status);
+      $("fbtext").value = "";
+      note.textContent = "Sent.";
+    })
+    .catch(() => {
+      note.textContent = "Could not send.";
+    })
+    .then(() => {
+      note.hidden = false;
+      $("fbsend").disabled = false;
+    });
+};
 function fillWhere() {
   $("wlist").innerHTML = (META.top || [])
     .map(

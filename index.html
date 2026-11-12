@@ -59,7 +59,7 @@
         "description": "A map of where probably nobody has ever stood."
       }
     </script>
-    <link rel="stylesheet" href="css/style.css?v=18" />
+    <link rel="stylesheet" href="css/style.css?v=19" />
   </head>
   <body>
     <canvas id="sky" aria-hidden="true"></canvas>
@@ -104,6 +104,15 @@
           </button>
         </div>
         <p class="count" id="count" hidden></p>
+        <p class="count">
+          <span id="version">v0.45</span> &nbsp;<button
+            class="textlink"
+            id="feedbacklink"
+            type="button"
+          >
+            Feedback
+          </button>
+        </p>
       </section>
 
       <section id="place" hidden>
@@ -241,6 +250,20 @@
         <ol id="wlist"></ol>
       </section>
 
+      <section id="feedback" hidden>
+        <button class="pill back" type="button" data-back>&lsaquo; Back</button>
+        <h2>Feedback</h2>
+        <textarea
+          class="find"
+          id="fbtext"
+          rows="5"
+          maxlength="1000"
+          aria-label="Feedback"
+        ></textarea>
+        <button class="primary" id="fbsend" type="button">Send</button>
+        <p class="note" id="fbnote" hidden></p>
+      </section>
+
       <section id="about" hidden>
         <button class="pill back" type="button" data-back>&lsaquo; Back</button>
         <h2>How it works</h2>
@@ -346,6 +369,10 @@
           from, like Reddit or Google. Nothing about you is kept.
         </p>
         <p>
+          Feedback is stored as the text you send. No name or address goes with
+          it.
+        </p>
+        <p>
           When you tap a place, your browser asks Wikipedia, Wikimedia Commons,
           GBIF, iNaturalist, Open-Meteo, EOX and NASA about that spot. Search
           asks OpenStreetMap.
@@ -375,6 +402,6 @@
 
     <img id="tex" alt="" style="display: none" src="data/world.png" />
     <img id="ntex" alt="" style="display: none" src="data/names.png" />
-    <script src="js/app.js?v=20" defer></script>
+    <script src="js/app.js?v=21" defer></script>
   </body>
 </html>
