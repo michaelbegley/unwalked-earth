@@ -25,12 +25,12 @@ let dpr = 1,
   centerX = 0,
   centerY = 0;
 
-// walked land is plain, unwalked land is orange
+// walked land is plain; orange starts at 50, with a short fade just below so edges stay soft
 const RAMP = [
   [0, 238, 236, 230],
-  [20, 238, 236, 230],
-  [42, 251, 221, 178],
-  [68, 255, 159, 10],
+  [44, 238, 236, 230],
+  [50, 251, 214, 160],
+  [70, 255, 159, 10],
   [100, 226, 70, 0],
 ];
 function ramp(s) {

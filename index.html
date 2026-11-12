@@ -8,7 +8,7 @@
       content="default-src 'none'; img-src 'self' https://upload.wikimedia.org https://thumb.wikimedia.org https://gibs.earthdata.nasa.gov https://tiles.maps.eox.at; connect-src 'self' https://en.wikipedia.org https://commons.wikimedia.org https://api.open-meteo.com https://api.gbif.org https://api.inaturalist.org https://nominatim.openstreetmap.org https://cpzhsztczixiidxypvmb.supabase.co; style-src 'self' 'unsafe-inline'; script-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'"
     />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
-    <title>Unwalked Earth: a map of where nobody has ever stood</title>
+    <title>unwalked.earth: a map of where nobody has ever stood</title>
     <meta
       name="description"
       content="A globe showing the land where probably nobody has ever stood, with a score for every place on Earth."
@@ -19,19 +19,19 @@
     <link rel="icon" href="icon-192.png?v=5" type="image/png" sizes="192x192" />
     <link rel="apple-touch-icon" href="apple-touch-icon.png?v=5" />
     <link rel="manifest" href="site.webmanifest" />
-    <meta name="application-name" content="Unwalked Earth" />
-    <meta name="apple-mobile-web-app-title" content="Unwalked Earth" />
+    <meta name="application-name" content="unwalked.earth" />
+    <meta name="apple-mobile-web-app-title" content="unwalked.earth" />
     <meta name="theme-color" content="#05060b" />
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Unwalked Earth" />
+    <meta property="og:site_name" content="unwalked.earth" />
     <meta property="og:locale" content="en_US" />
-    <meta property="og:title" content="Unwalked Earth" />
+    <meta property="og:title" content="unwalked.earth" />
     <meta
       property="og:description"
       content="A map of where probably nobody has ever stood."
     />
     <meta property="og:url" content="https://unwalked.earth/" />
-    <meta property="og:image" content="https://unwalked.earth/og.png" />
+    <meta property="og:image" content="https://unwalked.earth/og.png?v=2" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta
@@ -39,12 +39,12 @@
       content="A globe with the unwalked land in orange."
     />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Unwalked Earth" />
+    <meta name="twitter:title" content="unwalked.earth" />
     <meta
       name="twitter:description"
       content="A map of where probably nobody has ever stood."
     />
-    <meta name="twitter:image" content="https://unwalked.earth/og.png" />
+    <meta name="twitter:image" content="https://unwalked.earth/og.png?v=2" />
     <meta
       name="twitter:image:alt"
       content="A globe with the unwalked land in orange."
@@ -53,12 +53,13 @@
       {
         "@context": "https://schema.org",
         "@type": "WebSite",
-        "name": "Unwalked Earth",
+        "name": "unwalked.earth",
+        "alternateName": "Unwalked Earth",
         "url": "https://unwalked.earth/",
         "description": "A map of where probably nobody has ever stood."
       }
     </script>
-    <link rel="stylesheet" href="css/style.css?v=17" />
+    <link rel="stylesheet" href="css/style.css?v=18" />
   </head>
   <body>
     <canvas id="sky" aria-hidden="true"></canvas>
@@ -374,6 +375,6 @@
 
     <img id="tex" alt="" style="display: none" src="data/world.png" />
     <img id="ntex" alt="" style="display: none" src="data/names.png" />
-    <script src="js/app.js?v=19" defer></script>
+    <script src="js/app.js?v=20" defer></script>
   </body>
 </html>

@@ -1,6 +1,6 @@
 {
-  "name": "Unwalked Earth",
-  "short_name": "Unwalked",
+  "name": "unwalked.earth",
+  "short_name": "unwalked",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#05060b",
