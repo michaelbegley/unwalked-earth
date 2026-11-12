@@ -911,13 +911,14 @@ function writePrompt() {
         ? ""
         : "#" + s.lat.toFixed(3) + "," + s.lon.toFixed(3);
   promptText = [
-    "I am looking at a spot on Unwalked Earth, a map that guesses where nobody has ever stood.",
+    "I am looking at a spot on Unwalked Earth (https://unwalked.earth/" +
+      here +
+      "), a map that guesses where nobody has ever stood.",
     "",
     "Place: " + s.place,
     ...(s.lat === undefined ? [] : ["Coordinates: " + coords(s.lat, s.lon)]),
     ...s.lines,
     ...(s.records ? [s.records] : []),
-    "On the map: https://unwalked.earth/" + here,
     "",
     "What I would like to know:",
     ...s.ask.map((q, i) => i + 1 + ". " + q),
@@ -1663,7 +1664,7 @@ function selectLL(la, lo, label) {
         ? []
         : [
             "People first reached this area: " +
-              $("pfirst").textContent.toLowerCase(),
+              $("pfirst").textContent.replace(/^[AM]/, (c) => c.toLowerCase()),
           ]),
       ...(s >= 50
         ? [...$("pkeep").children].map(
