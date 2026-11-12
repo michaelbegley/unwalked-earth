@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data:; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: https://upload.wikimedia.org https://gibs.earthdata.nasa.gov; connect-src https://en.wikipedia.org https://commons.wikimedia.org https://api.open-meteo.com; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <title>Unwalked Earth</title>
 <meta name="description" content="A map of where probably nobody has ever stood.">
@@ -72,6 +72,18 @@ dd{margin:0;text-align:right}
 .acts a:hover{background:#e4e4e9}
 .acts a.main{grid-column:1/-1;background:var(--blue);color:#fff}
 .acts a.main:hover{background:#0064c9}
+.sat{display:block;width:100%;aspect-ratio:2/1;object-fit:cover;border-radius:12px;background:var(--fill);margin-top:12px}
+.cap{font-size:12px;color:var(--soft);margin-top:5px}
+.wiki{display:flex;gap:12px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+.wiki img{width:72px;height:72px;object-fit:cover;border-radius:10px;flex:none;background:var(--fill)}
+.wiki b{display:block;font-weight:600}
+.wiki span{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;font-size:13px;color:var(--soft)}
+.near{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+.near b{font-weight:600}
+.near p{font-size:13px;color:var(--soft);margin-top:2px}
+.thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.thumbs a{display:block;aspect-ratio:1;border-radius:8px;overflow:hidden;background:var(--fill)}
+.thumbs img{width:100%;height:100%;object-fit:cover;display:block}
 #about p{margin-bottom:10px;color:var(--ink)}
 #about ul{margin:0;padding-left:18px}
 #about li{margin-bottom:4px}
@@ -85,6 +97,7 @@ dd{margin:0;text-align:right}
 
 @media (max-width:700px){
   #card{left:10px;right:10px;top:auto;bottom:10px;width:auto;max-height:66%;padding:16px 16px 16px;border-radius:20px}
+  #card.tall{height:66%}
   .score{margin-top:10px}
   dl{margin-top:12px}
   dl div{padding:7px 0}
@@ -115,6 +128,8 @@ dd{margin:0;text-align:right}
     <button class="textlink back" type="button" data-back>&lsaquo; Unwalked Earth</button>
     <h2 id="pname"></h2>
     <p class="coords" id="pcoords"></p>
+    <img class="sat" id="psat" alt="Satellite picture of this spot">
+    <p class="cap">NASA Blue Marble, about 220 km across</p>
     <div id="pscored">
       <div class="score"><b id="pscore"></b><span>out of 100</span></div>
       <div class="meter"><i id="pbar"></i></div>
@@ -125,12 +140,15 @@ dd{margin:0;text-align:right}
         <div><dt>Ground</dt><dd id="pground"></dd></div>
       </dl>
     </div>
+    <dl id="pnowwrap" hidden style="margin-top:0;border-top:0"><div><dt>Right now</dt><dd id="pnow"></dd></div></dl>
     <p class="verdict" id="pnote" hidden></p>
     <div class="acts">
       <a class="main" id="agoogle" target="_blank" rel="noopener">Search Google</a>
       <a id="awiki" target="_blank" rel="noopener">Wikipedia</a>
       <a id="asat" target="_blank" rel="noopener">Satellite view</a>
     </div>
+    <div class="wiki" id="pwiki" hidden><img id="pwimg" alt=""><div><b id="pwtitle"></b><span id="pwtext"></span></div></div>
+    <div class="near" id="pnear" hidden><b>Photos taken nearby</b><p id="pneartext"></p><div class="thumbs" id="pthumbs"></div></div>
   </section>
 
   <section id="about" hidden>
@@ -152,9 +170,10 @@ dd{margin:0;text-align:right}
       <li><a href="https://github.com/PolarGeospatialCenter/comnap-antarctic-facilities" target="_blank" rel="noopener">COMNAP</a>: Antarctic stations</li>
       <li><a href="https://www.geonames.org/" target="_blank" rel="noopener">GeoNames</a>: towns of 1,000 or more</li>
       <li><a href="https://www.wikidata.org/" target="_blank" rel="noopener">Wikidata</a>: mines and archaeological sites</li>
-      <li>NASA night lights</li>
+      <li>NASA night lights and Blue Marble imagery</li>
     </ul>
-    <p style="margin-top:12px"><a href="https://github.com/michaelbegley/unwalked-earth" target="_blank" rel="noopener">Code on GitHub</a></p>
+    <p style="margin-top:12px">When you tap a spot, the picture comes from NASA, the text from Wikipedia, the photos from Wikimedia Commons and the weather from Open-Meteo.</p>
+    <p><a href="https://github.com/michaelbegley/unwalked-earth" target="_blank" rel="noopener">Code on GitHub</a></p>
   </section>
 </aside>
 
@@ -280,24 +299,54 @@ function nameAt(lat,lon){
   const c=N[o]|((N[o+2]>>4)<<8),r=N[o+1]|((N[o+2]&15)<<8);
   return[NAMES.r[r]||'',NAMES.c[c]||''];
 }
-function show(which){for(const id of['intro','place','about'])$(id).hidden=id!==which;card.scrollTop=0;if(which!=='place'){st.sel=null}if(T)size()}
+function show(which){for(const id of['intro','place','about'])$(id).hidden=id!==which;card.classList.toggle('tall',which==='place');card.scrollTop=0;if(which!=='place'){st.sel=null}if(T)size()}
 function links(query,wiki,lat,lon){
   $('agoogle').href='https://www.google.com/search?q='+encodeURIComponent(query);
   $('awiki').href='https://en.wikipedia.org/wiki/Special:Search?search='+encodeURIComponent(wiki);
   $('asat').href='https://www.google.com/maps/@'+lat.toFixed(4)+','+lon.toFixed(4)+',40000m/data=!3m1!1e3';
+}
+let req=0;
+const getj=u=>fetch(u).then(r=>r.ok?r.json():Promise.reject(r.status));
+function live(lat,lon,titles,scored){
+  const id=++req;
+  // satellite picture
+  const hw=Math.min(30,1/Math.max(Math.cos(lat*RAD),.03)),la0=Math.max(-90,lat-.5),la1=Math.min(90,lat+.5);
+  const im=$('psat');im.style.visibility='hidden';im.onload=()=>{im.style.visibility='visible'};im.onerror=()=>{im.style.visibility='hidden'};
+  im.src='https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&STYLES=&SRS=EPSG:4326&FORMAT=image/jpeg&LAYERS=BlueMarble_ShadedRelief_Bathymetry&WIDTH=680&HEIGHT=340&BBOX='+[(lon-hw).toFixed(3),la0.toFixed(3),(lon+hw).toFixed(3),la1.toFixed(3)].join(',');
+  // weather right now
+  $('pnowwrap').hidden=true;
+  getj('https://api.open-meteo.com/v1/forecast?latitude='+lat.toFixed(3)+'&longitude='+lon.toFixed(3)+'&current=temperature_2m,wind_speed_10m').then(d=>{
+    if(id!==req||!d.current)return;const c=d.current.temperature_2m,w=d.current.wind_speed_10m;
+    $('pnow').textContent=Math.round(c)+' °C ('+Math.round(c*9/5+32)+' °F), wind '+Math.round(w)+' km/h';$('pnowwrap').hidden=false}).catch(()=>{});
+  // what Wikipedia says about the area
+  $('pwiki').hidden=true;
+  (async()=>{for(const t of titles){if(!t)continue;try{const d=await getj('https://en.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(t)+'?redirect=true');
+      if(id!==req)return;if(d.type!=='standard'||!d.extract)continue;
+      $('pwtitle').textContent=d.title;$('pwtext').textContent=d.extract;
+      const wi=$('pwimg');if(d.thumbnail&&d.thumbnail.source){wi.src=d.thumbnail.source;wi.hidden=false}else wi.hidden=true;
+      if(d.content_urls&&d.content_urls.desktop)$('awiki').href=d.content_urls.desktop.page;
+      $('pwiki').hidden=false;return}catch(e){}}})();
+  // photos people have taken near here
+  $('pnear').hidden=true;
+  getj('https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&generator=geosearch&ggscoord='+lat.toFixed(4)+'%7C'+lon.toFixed(4)+'&ggsradius=10000&ggslimit=6&ggsnamespace=6&prop=imageinfo&iiprop=url&iiurlwidth=240').then(d=>{
+    if(id!==req)return;const ps=d.query&&d.query.pages?Object.values(d.query.pages).filter(p=>p.imageinfo&&p.imageinfo[0]&&p.imageinfo[0].thumburl):[];
+    const box=$('pthumbs');box.textContent='';
+    for(const p of ps){const a=document.createElement('a');a.href=p.imageinfo[0].descriptionurl;a.target='_blank';a.rel='noopener';const i=document.createElement('img');i.src=p.imageinfo[0].thumburl;i.alt='';i.loading='lazy';a.appendChild(i);box.appendChild(a)}
+    $('pneartext').textContent=ps.length?'From Wikimedia Commons, within 10 km. Somebody stood here.':scored?'None on Wikimedia Commons within 10 km.':'None on Wikimedia Commons within 10 km.';
+    $('pnear').hidden=false}).catch(()=>{});
 }
 function pick(mx,my){
   if(!T||!N)return;
   let hit=null,bd=16*dpr;
   for(const s of DOTS){const p=proj(s.lat,s.lon);if(p[2]<.05)continue;const d=Math.hypot(p[0]-mx,p[1]-my);if(d<bd){bd=d;hit=s}}
   if(hit){st.sel=[hit.lat,hit.lon];$('pname').textContent=hit.name;$('pcoords').textContent=hit.place+'  ·  '+ll(hit.lat,hit.lon);
-    $('pscored').hidden=true;$('pnote').hidden=false;$('pnote').textContent=hit.d;links(hit.name,hit.name,hit.lat,hit.lon);show('place');return}
+    $('pscored').hidden=true;$('pnote').hidden=false;$('pnote').textContent=hit.d;links(hit.name,hit.name,hit.lat,hit.lon);show('place');live(hit.lat,hit.lon,[hit.name],false);return}
   const g=unproj(mx,my);if(!g)return;
   st.sel=g;
   const tx=Math.min(TW-1,((g[1]+180)/360*TW)|0),ty=Math.min(TH-1,((90-g[0])/180*TH)|0),o=(ty*TW+tx)*4,r=T[o];
   const nm=nameAt(g[0],g[1]);
   if(!r){$('pname').textContent='Open water';$('pcoords').textContent=ll(g[0],g[1]);$('pscored').hidden=true;$('pnote').hidden=false;$('pnote').textContent='The oceans are not scored.';
-    links(ll(g[0],g[1]),'Ocean',g[0],g[1]);show('place');return}
+    links(ll(g[0],g[1]),'Ocean',g[0],g[1]);show('place');live(g[0],g[1],[],false);return}
   const s=Math.round((r-1)/2.54),acc=Math.pow(T[o+1]/8,2),b=T[o+2],step=acc>100?10:5,elev=(b>>3)*300;
   const title=nm[0]&&nm[0]!==nm[1]?nm[0]:(nm[1]||'Unnamed land');
   $('pname').textContent=title;
@@ -309,7 +358,7 @@ function pick(mx,my){
   $('pground').textContent=(b&4?'Permanent ice':'Ice-free')+(elev>=300?', about '+fmt(elev)+' m up':'');
   const q=[nm[0],nm[1]].filter((v,i,a)=>v&&a.indexOf(v)===i).join(' ');
   links(q||ll(g[0],g[1]),nm[0]||nm[1]||'',g[0],g[1]);
-  show('place');
+  show('place');live(g[0],g[1],[nm[0],nm[1]],true);
 }
 function fly(lat,lon,k){stopSpin();const a={lon:st.lon,lat:st.lat,k:st.k},dl=((lon-a.lon+540)%360)-180,t0=performance.now(),dur=calm?1:700;
   (function step(t){let u=Math.min(1,(t-t0)/dur);u=u*u*(3-2*u);st.lon=((a.lon+dl*u+540)%360)-180;st.lat=a.lat+(lat-a.lat)*u;st.k=a.k+(k-a.k)*u;if(u<1){draw(.5);requestAnimationFrame(step)}else draw(1)})(t0)}
