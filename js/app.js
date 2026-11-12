@@ -1610,17 +1610,33 @@ $("plink").onclick = async () => {
 // unwalked spots grouped by patch of the world, so the random button does not keep landing on the same ice
 const spotGroups = new Map(),
   recentGroups = [];
+// One patch per part of the world, so the random button visits each about as often.
+function patch(lat, lon) {
+  if (lat < -60) return "antarctica";
+  if (lat >= 55) {
+    if (lon < -60) return "arctic west|canada";
+    if (lon < -10) return "arctic west|greenland";
+    return lon < 60 ? "arctic europe" : "siberia";
+  }
+  if (lon < -30) return lat >= 13 ? "north america" : "south america";
+  if (lon < 35)
+    return lat < 0
+      ? "southern africa"
+      : lon < 10
+        ? "sahara west"
+        : "sahara east";
+  if (lon < 62) return lat >= 10 ? "arabia" : "southern africa";
+  if (lat >= 25) return lat >= 37 ? "central asia" : "tibet";
+  return lat >= -11 ? "south asia" : "australia";
+}
 function candidates() {
-  for (let y = 0; y < WORLD_H; y += 3) {
+  for (let y = 0; y < WORLD_H; y += 2) {
     const lat = 90 - ((y + 0.5) * 180) / WORLD_H,
       o = y * WORLD_W;
-    for (let x = 0; x < WORLD_W; x += 3) {
+    for (let x = 0; x < WORLD_W; x += 2) {
       if (shown[o + x] < 128) continue; // 50 or more, the same line the orange is drawn at
       const lon = -180 + ((x + 0.5) * 360) / WORLD_W,
-        key =
-          lat < -60
-            ? "south" + Math.floor((lon + 180) / 120)
-            : Math.floor(lat / 20) + ":" + Math.floor(lon / 30);
+        key = patch(lat, lon);
       if (!spotGroups.has(key)) spotGroups.set(key, []);
       spotGroups.get(key).push(o + x);
     }
@@ -1628,13 +1644,16 @@ function candidates() {
 }
 function lucky() {
   if (spinning) return;
-  let keys = [...spotGroups.keys()].filter((k) => !recentGroups.includes(k));
-  if (!keys.length) keys = [...spotGroups.keys()];
-  if (!keys.length) return;
-  const key = keys[(Math.random() * keys.length) | 0],
-    list = spotGroups.get(key);
-  recentGroups.push(key);
-  if (recentGroups.length > 6) recentGroups.shift();
+  const area = (k) => k.split("|")[0],
+    all = [...new Set([...spotGroups.keys()].map(area))];
+  let areas = all.filter((a) => !recentGroups.includes(a));
+  if (!areas.length) areas = all;
+  if (!areas.length) return;
+  const pick = areas[(Math.random() * areas.length) | 0],
+    keys = [...spotGroups.keys()].filter((k) => area(k) === pick),
+    list = spotGroups.get(keys[(Math.random() * keys.length) | 0]);
+  recentGroups.push(pick);
+  if (recentGroups.length > Math.min(6, all.length - 2)) recentGroups.shift();
   const i = list[(Math.random() * list.length) | 0],
     y = (i / WORLD_W) | 0,
     x = i - y * WORLD_W;
