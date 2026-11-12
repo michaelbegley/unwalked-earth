@@ -2,7 +2,7 @@
 
 A globe that guesses where nobody has ever stood.
 
-https://michaelbegley.github.io/unwalked-earth/
+https://unwalked.earth/
 
 Plain land has been walked. Orange land probably hasn't. Tap anywhere to see the score for that spot, why it got it, and whether anything is on record nearby.
 

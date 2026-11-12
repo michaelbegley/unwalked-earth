@@ -753,7 +753,7 @@ function setPrompt(lines) {
     "",
     "Tell me about this place. Has anyone actually been here? Cover expeditions, people who lived or travelled nearby, and what makes it hard to reach. Say what you are unsure about.",
     "",
-    "https://michaelbegley.github.io/unwalked-earth/",
+    "https://unwalked.earth/",
   ].join("\n");
   $("ptext").hidden = true;
   $("aprompt").textContent = "Copy AI prompt";
