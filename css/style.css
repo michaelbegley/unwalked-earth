@@ -119,11 +119,27 @@ p {
   box-shadow: inset 0 0 0 1px var(--line);
   background: linear-gradient(
     90deg,
-    #eeece6 15%,
-    #fbddb2 42%,
-    #ff9f0a 68%,
+    #eeece6 44%,
+    #fbd6a0 50%,
+    #ff9f0a 70%,
     #e24600
   );
+}
+.time {
+  margin-top: 12px;
+}
+.timehead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 13px;
+  color: var(--soft);
+}
+.time input {
+  display: block;
+  width: 100%;
+  margin: 8px 0 0;
+  accent-color: var(--blue);
 }
 .hint {
   margin-top: 12px;

@@ -59,7 +59,7 @@
         "description": "A map of where nobody has stood, probably."
       }
     </script>
-    <link rel="stylesheet" href="css/style.css?v=20" />
+    <link rel="stylesheet" href="css/style.css?v=21" />
   </head>
   <body>
     <canvas id="sky" aria-hidden="true"></canvas>
@@ -76,6 +76,20 @@
           <span id="stat">Loading.</span>
         </p>
         <div class="key"><span>Walked</span><i></i><span>Never</span></div>
+        <div class="time" id="timebox" hidden>
+          <div class="timehead">
+            <span id="timelabel">Today</span>
+            <button class="textlink" id="timeplay" type="button">Play</button>
+          </div>
+          <input
+            id="time"
+            type="range"
+            min="0"
+            max="100"
+            value="100"
+            aria-label="Time"
+          />
+        </div>
         <input
           class="find"
           id="find"
@@ -105,7 +119,7 @@
         </div>
         <p class="count" id="count" hidden></p>
         <p class="count">
-          <span id="version">v0.48</span> &nbsp;<button
+          <span id="version">v0.49</span> &nbsp;<button
             class="textlink"
             id="feedbacklink"
             type="button"
@@ -158,6 +172,10 @@
             <div>
               <dt>Ground</dt>
               <dd id="pground"></dd>
+            </div>
+            <div id="pfirstrow" hidden>
+              <dt>First people</dt>
+              <dd id="pfirst"></dd>
             </div>
           </dl>
           <div class="near" id="pwhy">
@@ -305,6 +323,14 @@
           wildlife records, iNaturalist sightings and Wikipedia articles. If
           anything comes back, somebody was there.
         </p>
+        <h3>Time</h3>
+        <p>
+          The slider goes back 200,000 years. Land our species had not reached
+          yet is orange. Dates come from the earliest known site or settlement
+          in each region and are argued over. Africa counts as walked from the
+          start. Inside a region people had reached, the slider shows today's
+          orange, so the past looks more walked than it was.
+        </p>
         <h3>Where it is wrong</h3>
         <p>
           Nobody keeps a record of everywhere people have stood. The map only
@@ -345,6 +371,14 @@
               rel="noopener"
               >COMNAP</a
             >: Antarctic stations
+          </li>
+          <li>
+            <a
+              href="https://en.wikipedia.org/wiki/List_of_first_human_settlements"
+              target="_blank"
+              rel="noopener"
+              >Wikipedia, first human settlements</a
+            >: dates for the time slider
           </li>
           <li>
             <a
@@ -414,6 +448,6 @@
 
     <img id="tex" alt="" style="display: none" src="data/world.png" />
     <img id="ntex" alt="" style="display: none" src="data/names.png" />
-    <script src="js/app.js?v=22" defer></script>
+    <script src="js/app.js?v=23" defer></script>
   </body>
 </html>

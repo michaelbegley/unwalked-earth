@@ -261,6 +261,7 @@ function draw(q) {
     rim1 = (1 + 0.5 * iR) * (1 + 0.5 * iR),
     perPixel = WORLD_H / (R * Math.PI),
     crisp = Math.min(6, Math.max(1, 1.6 / perPixel));
+  const era = TIME ? eraCode : 0;
   const sun = sunAt(Date.now()),
     sp2 = sun[0] * RAD,
     sd = (sun[1] - view.lon) * RAD,
@@ -339,6 +340,28 @@ function draw(q) {
         // tighten the coast as you zoom in, so it stays a clean line
         if (lv === 0) f = (f - 0.5) * crisp + 0.5;
         f = f < 0 ? 0 : f > 1 ? 1 : f;
+      }
+      if (era && f > 0) {
+        // time slider: land people had not reached yet is fully orange
+        const ex = ((lo + Math.PI) / TWO) * TIME.w - 0.5,
+          ey = ((Math.PI / 2 - la) / Math.PI) * TIME.h - 0.5,
+          e0 = Math.floor(ex),
+          e1 = Math.floor(ey),
+          ax = ex - e0,
+          ay = ey - e1,
+          xa = (e0 + TIME.w) % TIME.w,
+          xb = (e0 + 1) % TIME.w,
+          ya = e1 < 0 ? 0 : e1,
+          yb = e1 + 1 >= TIME.h ? TIME.h - 1 : e1 + 1,
+          code =
+            (timeMap[ya * TIME.w + xa] * (1 - ax) +
+              timeMap[ya * TIME.w + xb] * ax) *
+              (1 - ay) +
+            (timeMap[yb * TIME.w + xa] * (1 - ax) +
+              timeMap[yb * TIME.w + xb] * ax) *
+              ay,
+          gone = (era - code) * 0.7;
+        if (gone > 0) r = gone >= 1 ? 255 : (r + (255 - r) * gone) | 0;
       }
       let lit = (x * sunx + y * suny + z * sunz + 0.12) / 0.24;
       lit = lit < 0 ? 0 : lit > 1 ? 1 : lit;
@@ -1402,6 +1425,13 @@ function selectLL(la, lo, label) {
         up = elev >= 300 ? "about " + number(elev) + " m up" : "",
         text = kind && up ? kind + ", " + up : kind || up || "Low ground";
       $("pground").textContent = text[0].toUpperCase() + text.slice(1);
+      const first = firstPeople(g[0], g[1]);
+      $("pfirstrow").hidden = !first;
+      if (first)
+        $("pfirst").textContent =
+          first >= 200000
+            ? "More than 200,000 years ago"
+            : "About " + whenText(first);
     }
     const way = [
       "The nearest road, railway or track",
@@ -1979,6 +2009,109 @@ for (const id of ["tex", "ntex"]) {
 addEventListener("resize", () => {
   if (world) size();
 });
+// when people first reached each place, for the time slider
+let TIME = null,
+  timeMap = null,
+  eraCode = 0;
+Promise.all([
+  fetch("data/time.json").then((r) => r.json()),
+  new Promise((done, fail) => {
+    const im = new Image();
+    im.onload = () => done(im);
+    im.onerror = fail;
+    im.src = "data/time.png";
+  }),
+])
+  .then(([meta, im]) => {
+    const c = document.createElement("canvas");
+    c.width = meta.w;
+    c.height = meta.h;
+    const x = c.getContext("2d", { willReadFrequently: true });
+    x.drawImage(im, 0, 0);
+    const d = x.getImageData(0, 0, meta.w, meta.h).data;
+    timeMap = new Uint8Array(meta.w * meta.h);
+    for (let i = 0; i < timeMap.length; i++) timeMap[i] = d[i * 4];
+    TIME = meta;
+    $("timebox").hidden = false;
+  })
+  .catch(() => {});
+// years ago for a spot, or 0 when unknown
+function firstPeople(lat, lon) {
+  if (!TIME) return 0;
+  const x = Math.min(TIME.w - 1, (((lon + 180) / 360) * TIME.w) | 0),
+    y = Math.min(TIME.h - 1, (((90 - lat) / 180) * TIME.h) | 0);
+  return Math.pow(10, timeMap[y * TIME.w + x] / TIME.scale);
+}
+// a date in words: years ago for the deep past, a year after that
+function whenText(ya) {
+  if (ya >= 11500) {
+    const mag = Math.pow(10, Math.floor(Math.log10(ya)) - 1);
+    return number(Math.round(ya / mag) * mag) + " years ago";
+  }
+  const year = new Date().getFullYear() - ya;
+  if (year < 0) return Math.max(100, Math.round(-year / 100) * 100) + " BC";
+  if (year < 1000) return "AD " + Math.max(50, Math.round(year / 50) * 50);
+  if (year < 1800) return String(Math.round(year / 10) * 10);
+  return String(Math.round(year));
+}
+let todayStat = "",
+  playing = 0;
+function setTime(p, moving) {
+  if (!TIME) return;
+  p = Math.max(0, Math.min(100, p));
+  $("time").value = p;
+  const stat = $("stat");
+  if (!eraCode) todayStat = stat.textContent;
+  if (p >= 100) {
+    eraCode = 0;
+    $("timelabel").textContent = "Today";
+    stat.textContent = todayStat;
+  } else {
+    const step = Math.min(TIME.steps - 1, Math.round(p));
+    eraCode = TIME.top - (p * (TIME.top - TIME.low)) / (TIME.steps - 1);
+    const text = whenText(Math.pow(10, eraCode / TIME.scale));
+    $("timelabel").textContent = text[0].toUpperCase() + text.slice(1);
+    stat.textContent =
+      (/ago$/.test(text)
+        ? text[0].toUpperCase() + text.slice(1)
+        : "In " + text) +
+      " that was about " +
+      Math.round(TIME.share[step]) +
+      "% of all land.";
+  }
+  stopSpin();
+  if (moving) drawMoving();
+  else draw(1);
+}
+function stopPlay() {
+  playing = 0;
+  $("timeplay").textContent = "Play";
+}
+$("time").oninput = (e) => {
+  stopPlay();
+  setTime(+e.target.value, true);
+};
+$("time").onchange = (e) => setTime(+e.target.value, false);
+$("timeplay").onclick = () => {
+  if (playing) {
+    stopPlay();
+    setTime(+$("time").value, false);
+    return;
+  }
+  const id = ++playing,
+    from = +$("time").value >= 100 ? 0 : +$("time").value,
+    began = performance.now(),
+    length = 14000 * (1 - from / 100);
+  $("timeplay").textContent = "Stop";
+  (function tick(now) {
+    if (id !== playing) return;
+    const t = Math.min(1, (now - began) / length),
+      p = from + (100 - from) * t;
+    setTime(p, t < 1);
+    if (t < 1) requestAnimationFrame(tick);
+    else stopPlay();
+  })(began);
+};
 Promise.all(
   ["data/meta.json", "data/names.json", "data/places.json"].map((u) =>
     fetch(u).then((r) => r.json()),
