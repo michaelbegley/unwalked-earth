@@ -95,7 +95,7 @@ for n in ('ne_10m_airports', 'ne_10m_ports'):
         x, y = f['geometry']['coordinates'][:2]
         cities.append((x, y)); names.append((f['properties'].get('name') or n, '', 0))
 # places confirmed by the 11 Nov 2026 fact check that the source lists miss
-for nm, cc, x, y in [('Plateau Station (closed 1969)', 'AQ', 40.5, -79.25), ('Moomba', 'AU', 140.203, -28.108)]:
+for nm, cc, x, y in [('Plateau Station (closed 1969)', 'AQ', 40.5, -79.25), ('Moomba', 'AU', 140.203, -28.108), ('Byrd Station (closed 2005)', 'AQ', -119.5656, -80.0147), ('Veladero mine', 'AR', -69.895, -29.4092), ('EastGRIP camp', 'GL', -35.9829, 75.6332)]:
     cities.append((x, y)); names.append((nm, cc, 0))
 towns = np.array(cities)
 print('town pts', len(towns))
