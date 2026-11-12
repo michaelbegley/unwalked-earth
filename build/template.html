@@ -137,7 +137,7 @@ dd{margin:0;text-align:right}
     <button class="textlink back" type="button" data-back>&lsaquo; Unwalked Earth</button>
     <h2>How this was made</h2>
     <h3>The score</h3>
-    <p>Every patch of land about 10 km across gets a score from 0 to 100. The farther it is from a road, track, railway, town, airstrip, research station, river or coast, the higher it scores.</p>
+    <p>Every patch of land about 10 km across gets a score from 0 to 100. The farther it is from a road, track, railway, town, airstrip, research station, mine, archaeological site, river or coast, the higher it scores.</p>
     <p>The ground matters too. Ice can reach 100, because nobody ever lived on it. Forest, grassland and tundra stop near 55, because people have lived on or crossed that ground for thousands of years. Lights at night pull a score down.</p>
     <h3>The dots</h3>
     <p>Six places worth knowing about. Tap one.</p>
@@ -151,6 +151,7 @@ dd{margin:0;text-align:right}
       <li><a href="https://ourairports.com/data/" target="_blank" rel="noopener">OurAirports</a>: airstrips, open and closed</li>
       <li><a href="https://github.com/PolarGeospatialCenter/comnap-antarctic-facilities" target="_blank" rel="noopener">COMNAP</a>: Antarctic stations</li>
       <li><a href="https://www.geonames.org/" target="_blank" rel="noopener">GeoNames</a>: towns of 1,000 or more</li>
+      <li><a href="https://www.wikidata.org/" target="_blank" rel="noopener">Wikidata</a>: mines and archaeological sites</li>
       <li>NASA night lights</li>
     </ul>
     <p style="margin-top:12px"><a href="https://github.com/michaelbegley/unwalked-earth" target="_blank" rel="noopener">Code on GitHub</a></p>
@@ -271,7 +272,7 @@ cv.addEventListener('wheel',e=>{e.preventDefault();stopSpin();st.k=Math.min(8,Ma
 $('zin').onclick=()=>{stopSpin();st.k=Math.min(8,st.k*1.5);draw(1)};
 $('zout').onclick=()=>{stopSpin();st.k=Math.max(.8,st.k/1.5);draw(1)};
 
-const WAYS=['Road, railway or track','Town, airstrip or station','Coast','River'];
+const WAYS=['Road, railway or track','Town, airstrip, mine or other site','Coast','River'];
 const fmt=n=>Math.round(n).toLocaleString('en-US');
 const ll=(lat,lon)=>Math.abs(lat).toFixed(2)+'° '+(lat<0?'S':'N')+', '+Math.abs(lon).toFixed(2)+'° '+(lon<0?'W':'E');
 function nameAt(lat,lon){

@@ -28,4 +28,4 @@ It is a guess made from distance. Nobody keeps a record of real footsteps. It on
 
 ## Data
 
-Natural Earth 1:10m vectors, the Malaria Atlas Project travel-time-to-cities map (Weiss et al. 2018), OurAirports, the COMNAP Antarctic facilities list, GeoNames towns (npm `all-the-cities`), and night-lights and elevation textures from the three-globe examples.
+Natural Earth 1:10m vectors, the Malaria Atlas Project travel-time-to-cities map (Weiss et al. 2018), OurAirports, Wikidata mines and archaeological sites, the COMNAP Antarctic facilities list, GeoNames towns (npm `all-the-cities`), and night-lights and elevation textures from the three-globe examples.

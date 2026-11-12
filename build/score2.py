@@ -27,6 +27,8 @@ for r in rows:
 for r in csv.DictReader(open('/home/claude/data/oa/airports.csv',encoding='utf-8')):
     try: pts.append((float(r['longitude_deg']),float(r['latitude_deg']))); pn.append(r['name'].strip()+(' (closed airstrip)' if r['type']=='closed' else ''))
     except: pass
+for lo,la,kind,lab in json.load(open('v2/wd.json')):
+    pts.append((lo,la)); pn.append((lab or kind)+' ('+kind+')')
 pts.append((-38.4592,72.5796)); pn.append('Summit Station')  # staffed year-round since 2003; coordinates not confirmed in the fact check
 pts=np.array(pts); print('extra pts',len(pts))
 def xyz(lo,la):
