@@ -1,0 +1,906 @@
+{
+  "landmarks": [
+    {
+      "id": "gangkhar-puensum",
+      "name": "Gangkhar Puensum",
+      "where": "Bhutan and Tibet (China) border",
+      "lat": 28.04833,
+      "lon": 90.45417,
+      "summary": "Gangkhar Puensum is the highest mountain in Bhutan, about 7,570 metres tall, on the border with Tibet. It is widely described as the highest mountain in the world that nobody has climbed.",
+      "facts": [
+        {
+          "label": "Height",
+          "value": "About 7,570 m. A 1986 British survey said 7,550 m."
+        },
+        {
+          "label": "Summit attempts",
+          "value": "Four, in 1985 and 1986. All failed."
+        },
+        {
+          "label": "Highest point reached",
+          "value": "About 6,880 m, Japanese team, 1985."
+        },
+        {
+          "label": "Climbing bans",
+          "value": "Peaks over 6,000 m in 1994, all mountaineering in 2003."
+        },
+        {
+          "label": "Nearest climbed summit",
+          "value": "Liankang Kangri, 7,534 m, May 1999."
+        }
+      ],
+      "been": "Four teams tried the mountain from Bhutan in 1985 and 1986. A Japanese team got to about 6,880 metres and a British led team turned back at about 6,700 metres. In May 1999 a Japanese team coming from Tibet climbed Liankang Kangri, a 7,534 metre side peak about 2 kilometres along the ridge. No one is recorded as having stood on the main summit.",
+      "why": "Bhutan stopped climbing on peaks above 6,000 metres in 1994, out of respect for local spiritual beliefs, and banned all mountaineering in 2003. The teams that did try were stopped by strong wind, heavy snow, falling ice, altitude sickness and steep rock on the upper south ridge.",
+      "caveat": "Sources give the height as 7,550, 7,570 or 7,571 metres, and they disagree on whether the summit sits on the border or wholly inside Bhutan.",
+      "wikipedia": "Gangkhar Puensum",
+      "search": "Gangkhar Puensum highest unclimbed mountain Bhutan climbing ban",
+      "ask": [
+        "Why did Bhutan ban climbing on its high mountains in 1994 and all mountaineering in 2003?",
+        "What stopped the four expeditions that tried Gangkhar Puensum in 1985 and 1986?",
+        "How did the Japanese team end up climbing Liankang Kangri instead of Gangkhar Puensum in 1999?"
+      ],
+      "sources": [
+        {
+          "title": "Gangkhar Puensum, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Gangkhar_Puensum"
+        },
+        {
+          "title": "The Five Highest Unclimbed Mountains in the World, ExplorersWeb",
+          "url": "https://explorersweb.com/worlds-five-highest-unclimbed-mountains-kangkar-punzum/"
+        },
+        {
+          "title": "Gankarpunzum, Reconnaissance, and Liankang Kangri, First Ascent, American Alpine Journal",
+          "url": "https://publications.americanalpineclub.org/articles/12200039000"
+        },
+        {
+          "title": "British Bhutan Expedition, Mount Everest Foundation",
+          "url": "https://www.mef.org.uk/expeditions/british-bhutan-expedition"
+        },
+        {
+          "title": "Kingdom of the Thunder Dragon, Himalayan Journal vol. 44",
+          "url": "https://www.himalayanclub.org/hj/44/7/kingdom-of-the-thunder-dragon/"
+        }
+      ]
+    },
+    {
+      "id": "pole-of-inaccessibility",
+      "name": "Southern Pole of Inaccessibility",
+      "where": "East Antarctic Plateau, Antarctica",
+      "lat": -82.1116,
+      "lon": 55.0325,
+      "summary": "This is the part of Antarctica farthest from the sea. A Soviet team set up a small station here in December 1958, and a bust of Lenin still marks the spot.",
+      "facts": [
+        {
+          "label": "Station opened",
+          "value": "14 December 1958, by the Third Soviet Antarctic Expedition"
+        },
+        {
+          "label": "Time in use",
+          "value": "About 12 days, vacated 26 December 1958"
+        },
+        {
+          "label": "Height",
+          "value": "About 3,720 metres above sea level"
+        },
+        {
+          "label": "From South Pole",
+          "value": "About 878 kilometres"
+        },
+        {
+          "label": "Protected status",
+          "value": "Antarctic Historic Site and Monument number 4"
+        }
+      ],
+      "been": "People have stood at the station itself. Soviet tractor parties came in 1958, 1964 and 1967, and American traverse crews in 1965. Team N2i arrived by ski and kite on 19 January 2007, a Norwegian and American science traverse on 1 January 2008, and Sebastian Copeland with Eric McNair-Landry on 27 December 2011.",
+      "why": "The station sits deep inside the East Antarctic ice sheet at about 3,720 metres. Team N2i covered about 1,091 miles over seven weeks to get there. The 1958 team left after 12 days because the site was too remote for permanent use.",
+      "caveat": "The pole has no single agreed position. A 2021 study puts it at about 83.90 S, 64.89 E measured from the ocean edge, or about 83.61 S, 53.72 E measured from where the ice starts to float, and both are well south of the Soviet station.",
+      "wikipedia": "Pole of Inaccessibility research station",
+      "search": "Southern Pole of Inaccessibility Soviet station Lenin bust Antarctica",
+      "ask": [
+        "Why do scientists give different positions for the Southern Pole of Inaccessibility?",
+        "What did the Soviet team do during their 12 days at the Pole of Inaccessibility station in 1958?",
+        "How did Team N2i reach the Pole of Inaccessibility in 2007 without vehicles?"
+      ],
+      "sources": [
+        {
+          "title": "Pole of Inaccessibility research station, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Pole_of_Inaccessibility_research_station"
+        },
+        {
+          "title": "Pole of inaccessibility, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Pole_of_inaccessibility"
+        },
+        {
+          "title": "Rees, Gerrish, Fox and Barnes, Finding Antarctica's Pole of Inaccessibility, Polar Record, 2021",
+          "url": "https://nora.nerc.ac.uk/531111/1/finding-antarcticas-pole-of-inaccessibility.pdf"
+        },
+        {
+          "title": "The Pole of Inaccessibility, southpolestation.com",
+          "url": "https://southpolestation.com/trivia/igy1/poi.html"
+        },
+        {
+          "title": "Explorers set mark in Antarctica journey, NBC News, 2007",
+          "url": "https://www.nbcnews.com/id/wbna16754029"
+        },
+        {
+          "title": "Sebastian Copeland expedition post, 27 December 2011",
+          "url": "https://sebastiancopelandadventures.com/?p=1569"
+        }
+      ]
+    },
+    {
+      "id": "lake-vostok",
+      "name": "Lake Vostok",
+      "where": "East Antarctica, under the ice sheet",
+      "lat": -77.5,
+      "lon": 106.0,
+      "summary": "Lake Vostok is a large freshwater lake buried under about 4 km of ice in East Antarctica. A drill has touched its surface, but no person has ever stood at the water.",
+      "facts": [
+        {
+          "label": "Lake size",
+          "value": "About 250 km long and 50 km wide"
+        },
+        {
+          "label": "Ice cover",
+          "value": "About 4 km of ice above the water"
+        },
+        {
+          "label": "Time sealed",
+          "value": "Estimates run from 15 to 25 million years"
+        },
+        {
+          "label": "First reached",
+          "value": "February 2012, by a Russian drill at about 3,769 m"
+        },
+        {
+          "label": "Coldest day above",
+          "value": "Minus 89.2 C at Vostok Station, 21 July 1983"
+        }
+      ],
+      "been": "People live and work on the ice above the lake at Vostok Station, which the Soviet Union opened on 16 December 1957 and Russia runs today. A Russian drill reached the lake surface in February 2012 and again on 25 January 2015, and lake water rose into the borehole and froze there. No person has been in the lake.",
+      "why": "The water lies under about 4 km of ice in one of the coldest places on Earth. The borehole was kept open with about 60 tons of kerosene and Freon, so scientists worry that going further would pollute the lake.",
+      "caveat": "The time sealed, the lake area (12,500 to about 15,700 square km depending on the source) and the claims of life found in samples are all disputed.",
+      "wikipedia": "Lake Vostok",
+      "search": "Lake Vostok subglacial lake drilling 2012 2015 contamination",
+      "ask": [
+        "How did scientists find Lake Vostok under 4 km of ice before anyone drilled to it?",
+        "Why are the reports of microbes from Lake Vostok disputed?",
+        "Why do scientists compare Lake Vostok with the oceans under the ice of Europa and Enceladus?"
+      ],
+      "sources": [
+        {
+          "title": "Lake Vostok, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Lake_Vostok"
+        },
+        {
+          "title": "Vostok Station, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Vostok_Station"
+        },
+        {
+          "title": "In scientific coup, Russians reach Antarctic lake, Phys.org (AP), 2012",
+          "url": "https://phys.org/news/2012-02-scientific-coup-russians-antarctic-lake.html"
+        },
+        {
+          "title": "Russians enter Lake Vostok again, Physics Today, 2015",
+          "url": "https://physicstoday.aip.org/news/russians-enter-lake-vostok-again"
+        },
+        {
+          "title": "Lowest temperature recorded on Earth, Guinness World Records",
+          "url": "https://www.guinnessworldrecords.com/world-records/66137-lowest-temperature-recorded-on-earth"
+        }
+      ]
+    },
+    {
+      "id": "north-sentinel-island",
+      "name": "North Sentinel Island",
+      "where": "Andaman Islands, India",
+      "lat": 11.5775,
+      "lon": 92.2444,
+      "summary": "North Sentinel Island is the home of the Sentinelese, who have made clear that they want no visitors. It is on the map as the opposite case: people live here, and outsiders stay away.",
+      "facts": [
+        {
+          "label": "Island area",
+          "value": "About 60 square kilometres"
+        },
+        {
+          "label": "Population",
+          "value": "Unknown. Estimates run from about 50 to 500 people."
+        },
+        {
+          "label": "Census counts",
+          "value": "39 people in 2001 and 15 in 2011, counted from a distance"
+        },
+        {
+          "label": "Legal status",
+          "value": "Tribal reserve under a 1956 Indian regulation"
+        },
+        {
+          "label": "Keep away distance",
+          "value": "5 kilometres from the shore"
+        }
+      ],
+      "been": "A British party led by Maurice Vidal Portman landed in 1880. Indian government teams, including the anthropologist T. N. Pandit, made short visits from 1967, and on 4 January 1991 islanders came out unarmed to accept coconuts. Regular visits ended in the 1990s, and the few landings since then were accidental or illegal.",
+      "why": "The Sentinelese have shown again and again that they want to be left alone. Indian law makes the island and the sea around it a tribal reserve that outsiders may not enter. Visitors could also bring illnesses such as flu that the islanders may have no immunity to.",
+      "caveat": "Nobody knows how many people live here, because the census counts were made from a distance, and sources give the closed zone as either 5 kilometres or 5 nautical miles.",
+      "wikipedia": "North Sentinel Island",
+      "search": "North Sentinel Island Sentinelese history of contact and Indian protection law",
+      "ask": [
+        "Why did India stop its contact visits to North Sentinel Island in the 1990s?",
+        "How do researchers estimate the Sentinelese population without landing on the island?",
+        "What does the 1956 Andaman and Nicobar Islands Protection of Aboriginal Tribes Regulation actually forbid?"
+      ],
+      "sources": [
+        {
+          "title": "North Sentinel Island, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/North_Sentinel_Island"
+        },
+        {
+          "title": "Sentinelese, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Sentinelese"
+        },
+        {
+          "title": "The Sentinelese, Survival International",
+          "url": "https://www.survivalinternational.org/tribes/sentinelese"
+        },
+        {
+          "title": "Are foreigners allowed to enter North Sentinel island? The News Minute",
+          "url": "https://www.thenewsminute.com/news/john-chaus-death-andaman-are-foreigners-allowed-enter-north-sentinel-island-92050"
+        }
+      ]
+    },
+    {
+      "id": "point-nemo",
+      "name": "Point Nemo",
+      "where": "South Pacific Ocean",
+      "lat": -48.8755,
+      "lon": -123.3925,
+      "summary": "Point Nemo is the spot in the ocean farthest from any land, about 2,688 km from the nearest shore. It is on the map as a reference point for how remote a place can be.",
+      "facts": [
+        {
+          "label": "Nearest land",
+          "value": "About 2,688 km away in three directions"
+        },
+        {
+          "label": "Three neighbours",
+          "value": "Ducie Island, Motu Nui and Maher Island"
+        },
+        {
+          "label": "Worked out",
+          "value": "1992, by survey engineer Hrvoje Lukatela, by computer"
+        },
+        {
+          "label": "Spacecraft sunk nearby",
+          "value": "More than 263 between 1971 and 2016"
+        }
+      ],
+      "been": "Round the world yacht races cross this part of the ocean, and the Volvo Ocean Race fleet passed about 200 miles south of the point in March 2018. British explorer Chris Brown and three others reported reaching the exact coordinates on 20 March 2024 aboard the yacht Hanse Explorer, and Brown swam there. No earlier visit to the exact spot is on record.",
+      "why": "There is nothing to visit, only open water with the nearest land about 2,688 km away, and that land is two uninhabited islets and an Antarctic island. Space agencies steer old spacecraft down into this region because so few people are near it.",
+      "caveat": "The 2024 visit and swim rest on the expedition's own account, and the exact position depends on which coastline data is used.",
+      "wikipedia": "Pole of inaccessibility",
+      "search": "Point Nemo oceanic pole of inaccessibility Lukatela spacecraft cemetery",
+      "ask": [
+        "How did Hrvoje Lukatela calculate the position of Point Nemo from coastline data?",
+        "Which spacecraft have been brought down in the South Pacific spacecraft cemetery, and what is the plan for the International Space Station?",
+        "What happened on the 2024 expedition that reported reaching and swimming at Point Nemo?"
+      ],
+      "sources": [
+        {
+          "title": "Point Nemo, Hrvoje Lukatela's own page",
+          "url": "https://www.lukatela.com/pointNemo"
+        },
+        {
+          "title": "Where is Point Nemo? NOAA National Ocean Service",
+          "url": "https://oceanservice.noaa.gov/facts/nemo.html"
+        },
+        {
+          "title": "Remotest spot from land, Guinness World Records",
+          "url": "https://www.guinnessworldrecords.com/world-records/66641-remotest-spot-from-land"
+        },
+        {
+          "title": "Point Nemo, expedition account, inaccessibility.net",
+          "url": "https://inaccessibility.net/nemo/"
+        },
+        {
+          "title": "Spacecraft cemetery, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Spacecraft_cemetery"
+        }
+      ]
+    },
+    {
+      "id": "challenger-deep",
+      "name": "Challenger Deep",
+      "where": "Mariana Trench, western Pacific Ocean",
+      "lat": 11.3733,
+      "lon": 142.5917,
+      "summary": "Challenger Deep is the deepest known point of the seabed, about 10,935 metres down in the Mariana Trench. It is on the map as a reference point for how hard a place can be to reach.",
+      "facts": [
+        {
+          "label": "Deepest measured",
+          "value": "10,935 metres, give or take 6 metres"
+        },
+        {
+          "label": "Depth source",
+          "value": "Pressure readings from June 2020 dives, published 2021"
+        },
+        {
+          "label": "First descent",
+          "value": "23 January 1960, Jacques Piccard and Don Walsh in Trieste"
+        },
+        {
+          "label": "Named after",
+          "value": "HMS Challenger, which sounded the trench in 1875"
+        }
+      ],
+      "been": "Jacques Piccard and Don Walsh reached the bottom in Trieste in 1960, James Cameron went alone in 2012, and Victor Vescovo began a series of dives in Limiting Factor in 2019. A Chinese crew of three followed in Fendouzhe in November 2020. Wikipedia's list names 27 people as of July 2022, and Chinese reports of later dives suggest the real total is higher.",
+      "why": "The water presses down with more than a thousand times the force of the air at the surface, so a vehicle needs a very strong crew cabin. Only four crewed vehicles are listed as having carried people there.",
+      "caveat": "The depth differs between surveys, with sonar figures from 10,924 to 10,994 metres, and no source gives a firm current count of visitors.",
+      "wikipedia": "Challenger Deep",
+      "search": "Challenger Deep depth and list of crewed descents",
+      "ask": [
+        "How did scientists measure the depth of Challenger Deep to within 6 metres?",
+        "What did Piccard and Walsh see at the bottom in 1960?",
+        "What lives at the bottom of Challenger Deep?"
+      ],
+      "sources": [
+        {
+          "title": "Challenger Deep, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Challenger_Deep"
+        },
+        {
+          "title": "List of people who descended to Challenger Deep, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/List_of_people_who_descended_to_Challenger_Deep"
+        },
+        {
+          "title": "Revised depth of the Challenger Deep from submersible transects, Greenaway and others, 2021, NOAA",
+          "url": "https://repository.library.noaa.gov/view/noaa/33477"
+        },
+        {
+          "title": "How deep is the ocean? NOAA National Ocean Service",
+          "url": "https://oceanservice.noaa.gov/facts/oceandepth.html"
+        },
+        {
+          "title": "DSV Limiting Factor, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/DSV_Limiting_Factor"
+        }
+      ]
+    }
+  ],
+  "regions": [
+    {
+      "id": "antarctica",
+      "name": "Antarctica",
+      "line": "Antarctica never had a native population and almost all of it lies under thick ice. Records show people have still crossed much of it, and the largest untouched areas are in the central interior.",
+      "people": "Nobody is native to Antarctica. A Russian expedition under Bellingshausen and Lazarev first saw it in January 1820, sealers from the ship of John Davis probably landed in February 1821, and the first confirmed landing was at Cape Adare in 1895. Today about 4,000 to 5,000 people work there in summer and about 1,000 in winter.",
+      "empty": "The least visited ground is in the central interior, away from the coast and the Antarctic Peninsula where most stations sit. A 2020 study in Nature of about 2.7 million activity records found that less than 32 percent of the continent is free from human interference. That is a lower share than this map shows in orange, so the map is probably too generous here.",
+      "facts": [
+        {
+          "label": "First sighting",
+          "value": "27 or 28 January 1820, Bellingshausen and Lazarev"
+        },
+        {
+          "label": "First landing",
+          "value": "Probable 1821 (Davis), confirmed 1895 at Cape Adare"
+        },
+        {
+          "label": "People today",
+          "value": "About 4,000 to 5,000 in summer, about 1,000 in winter"
+        },
+        {
+          "label": "Untouched share",
+          "value": "Less than 32 percent free from human interference (Nature, 2020)"
+        },
+        {
+          "label": "Record low",
+          "value": "Minus 89.2 C at Vostok Station, 21 July 1983"
+        }
+      ],
+      "wikipedia": "History of Antarctica",
+      "search": "Antarctica human footprint wilderness Leihy 2020 Nature activity records",
+      "sources": [
+        {
+          "title": "History of Antarctica, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/History_of_Antarctica"
+        },
+        {
+          "title": "Antarctica, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Antarctica"
+        },
+        {
+          "title": "Research stations in Antarctica, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Research_stations_in_Antarctica"
+        },
+        {
+          "title": "Antarctica's wilderness fails to capture continent's biodiversity, Nature, 2020",
+          "url": "https://www.nature.com/articles/s41586-020-2506-3"
+        },
+        {
+          "title": "Pathways across Antarctica: 200 years of human impact, Manaaki Whenua Landcare Research",
+          "url": "https://www.landcareresearch.co.nz/news/pathways-across-antarctica-200-years-of-human-impact/"
+        }
+      ],
+      "lat": -80,
+      "lon": 30,
+      "zoom": 1.5
+    },
+    {
+      "id": "greenland",
+      "name": "Greenland",
+      "line": "Every town in Greenland sits on the coast. About 80 percent of the island is ice sheet, which people have crossed since 1888 and study from a few research camps.",
+      "people": "Saqqaq people lived in Greenland from about 2500 BC, followed by Dorset groups, Norse farmers in the south-west from the 980s, and the Thule ancestors of today's Inuit from about 1200 to 1300. The sources place all of them on the coast. Fridtjof Nansen's party of six made the first crossing of the inland ice in 1888.",
+      "empty": "The inland ice and the north and north-east are the least visited parts. Northeast Greenland National Park covers 972,000 square kilometres and has no permanent residents. Its interior is ice sheet, and almost no roads link towns anywhere in Greenland.",
+      "facts": [
+        {
+          "label": "Population",
+          "value": "About 56,500 in 2025, nearly all on the coast"
+        },
+        {
+          "label": "Ice sheet",
+          "value": "About 80 percent of Greenland, roughly 1.7 million square kilometres"
+        },
+        {
+          "label": "First crossing",
+          "value": "Nansen and five others, east coast to Nuuk, 1888"
+        },
+        {
+          "label": "Summit Station",
+          "value": "72°36′N, 38°25′W, about 3,200 metres up"
+        },
+        {
+          "label": "Roads between towns",
+          "value": "Almost none"
+        }
+      ],
+      "wikipedia": "Greenland",
+      "search": "Greenland ice sheet expeditions Summit Station history of settlement",
+      "sources": [
+        {
+          "title": "Greenland, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Greenland"
+        },
+        {
+          "title": "History of Greenland, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/History_of_Greenland"
+        },
+        {
+          "title": "ICECAPS Observatory at Summit Station, NOAA Physical Sciences Laboratory",
+          "url": "https://psl.noaa.gov/arctic/observatories/summit/index.html"
+        },
+        {
+          "title": "Summit Station, GEOSummit",
+          "url": "https://geo-summit.org/summit-station"
+        },
+        {
+          "title": "Northeast Greenland National Park, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Northeast_Greenland_National_Park"
+        },
+        {
+          "title": "Fridtjof Nansen, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Fridtjof_Nansen"
+        }
+      ],
+      "lat": 73,
+      "lon": -40,
+      "zoom": 2.6
+    },
+    {
+      "id": "arctic-canada",
+      "name": "Arctic Canada",
+      "line": "Paleo-Inuit and later Inuit hunters reached as far north as Ellesmere Island, mostly along coasts. Orange is left on ice caps and high mountain interiors.",
+      "people": "Paleo-Inuit people of the Pre-Dorset culture arrived about 4,500 to 5,000 years ago and left sites from the mainland Barren Grounds north to Ellesmere Island, most of them on the coast. The Dorset culture followed about 2,500 to 2,800 years ago. Thule people, the ancestors of today's Inuit, moved in from Alaska around 1000 CE and had spread over most of what is now Nunavut by about 1300.",
+      "empty": "The least visited parts are the ice caps and icefields and the high mountains of Ellesmere, Axel Heiberg, Devon and Baffin islands. Ice covers about 40 percent of Ellesmere Island alone. Extreme cold, months of winter darkness and almost no roads keep people out, and only 11 of the more than 36,000 islands have residents today.",
+      "facts": [
+        {
+          "label": "Nunavut population",
+          "value": "36,858 in the 2021 census, in 25 official communities"
+        },
+        {
+          "label": "Northernmost community",
+          "value": "Grise Fiord, Ellesmere Island, 144 people in 2021"
+        },
+        {
+          "label": "Populated islands",
+          "value": "11 of 36,563 islands in the Arctic Archipelago"
+        },
+        {
+          "label": "Ellesmere ice cover",
+          "value": "About 40 percent of the island"
+        },
+        {
+          "label": "Largest empty island",
+          "value": "Devon Island, 55,247 square kilometres, no residents"
+        }
+      ],
+      "wikipedia": "Arctic Archipelago",
+      "search": "Pre-Dorset Dorset Thule Inuit history Canadian Arctic Archipelago Ellesmere Island",
+      "sources": [
+        {
+          "title": "Arctic Archipelago, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Arctic_Archipelago"
+        },
+        {
+          "title": "Nunavut, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Nunavut"
+        },
+        {
+          "title": "Ellesmere Island, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Ellesmere_Island"
+        },
+        {
+          "title": "Pre-Dorset Culture, The Canadian Encyclopedia",
+          "url": "https://thecanadianencyclopedia.ca/en/article/pre-dorset-culture"
+        },
+        {
+          "title": "List of communities in Nunavut, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/List_of_communities_in_Nunavut"
+        },
+        {
+          "title": "Travel, Trails and Habitation, Qikiqtani Inuit Association",
+          "url": "https://www.qia.ca/travel-trails-and-habitation"
+        }
+      ],
+      "lat": 73,
+      "lon": -92,
+      "zoom": 2.2
+    },
+    {
+      "id": "siberia",
+      "name": "Siberia",
+      "line": "People have hunted in Arctic Siberia for about 32,000 years, and herding peoples ranged across the taiga and tundra. Only glaciated Arctic islands and roadless high mountains show little sign of visits.",
+      "people": "Hunters lived on the lower Yana River, north of the Arctic Circle, about 32,000 years ago, and people hunted polar bear and reindeer on Zhokhov Island about 8,000 years ago. The Evenki alone traditionally herded reindeer, hunted and fished across roughly 2.5 million square kilometres of taiga, and the region is also home to Even, Yukaghir, Chukchi, Nenets and Sakha people.",
+      "empty": "The least visited parts are the ice covered Arctic islands and the high mountain interiors. Severnaya Zemlya was first sighted in 1913, was first mapped in 1930 to 1932, and has no permanent residents, and the Byrranga Mountains have no people, roads or settlements. Ice, extreme cold, permafrost and the near absence of roads keep people out.",
+      "facts": [
+        {
+          "label": "Oldest Arctic site",
+          "value": "Yana River site, about 32,000 years old"
+        },
+        {
+          "label": "Sakha density",
+          "value": "About 0.32 people per square kilometre (2021 census)"
+        },
+        {
+          "label": "Chukotka density",
+          "value": "About 0.07 people per square kilometre, lowest in Russia"
+        },
+        {
+          "label": "Severnaya Zemlya",
+          "value": "First sighted 1913, first mapped 1930 to 1932"
+        },
+        {
+          "label": "Zhokhov Island",
+          "value": "Hunters camped there about 8,000 years ago"
+        }
+      ],
+      "wikipedia": "Siberia",
+      "search": "Yana Rhinoceros Horn Site earliest humans Arctic Siberia Severnaya Zemlya exploration",
+      "sources": [
+        {
+          "title": "Yana Rhinoceros Horn Site, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Yana_Rhinoceros_Horn_Site"
+        },
+        {
+          "title": "Severnaya Zemlya, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Severnaya_Zemlya"
+        },
+        {
+          "title": "Sakha Republic, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Sakha_Republic"
+        },
+        {
+          "title": "Chukotka Autonomous Okrug, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Chukotka_Autonomous_Okrug"
+        },
+        {
+          "title": "Evenks, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Evenks"
+        },
+        {
+          "title": "Byrranga Mountains, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Byrranga_Mountains"
+        }
+      ],
+      "lat": 66,
+      "lon": 125,
+      "zoom": 2
+    },
+    {
+      "id": "tibet",
+      "name": "Tibet",
+      "line": "Tibet has orange in the far north. Herders graze the south and east, but the northern Changtang and western Hoh Xil lie above 4,500 metres and have no residents.",
+      "people": "Stone tools at Nwya Devu, at about 4,600 metres, show people on the high plateau 30,000 to 40,000 years ago. Nomadic herders, called Changpa or Drokpa, graze yak, sheep and goats in the Changtang. Two cyclists crossed the Changtang without support in 2003, and George Schaller's team drove about 1,000 miles across the north in 2006 without seeing anyone.",
+      "empty": "The northern Changtang and the western part of Hoh Xil are the least visited, and UNESCO describes the Hoh Xil National Nature Reserve as completely uninhabited. The Changtang averages more than 5,000 metres, where the air holds about half the oxygen found at sea level, and it is too high and cold for permanent settlement.",
+      "facts": [
+        {
+          "label": "Oxygen at altitude",
+          "value": "About half of sea level pressure at 5,000 metres"
+        },
+        {
+          "label": "Plateau elevation",
+          "value": "Average above 4,500 metres, Changtang above 5,000 metres"
+        },
+        {
+          "label": "Hoh Xil listing",
+          "value": "3,735,632 hectares, over 4,500 metres, listed by UNESCO"
+        },
+        {
+          "label": "Earliest high site",
+          "value": "Nwya Devu, about 4,600 metres, 30,000 to 40,000 years old"
+        },
+        {
+          "label": "Schaller traverse 2006",
+          "value": "About 1,000 miles across the north, nobody seen"
+        }
+      ],
+      "wikipedia": "Changtang",
+      "search": "northern Changtang Hoh Xil uninhabited Tibetan Plateau Schaller traverse",
+      "sources": [
+        {
+          "title": "Qinghai Hoh Xil, UNESCO World Heritage Centre",
+          "url": "https://whc.unesco.org/en/list/1540/"
+        },
+        {
+          "title": "Changtang, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Changtang"
+        },
+        {
+          "title": "Tibetan Plateau, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Tibetan_Plateau"
+        },
+        {
+          "title": "Nwya Devu, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Nwya_Devu"
+        },
+        {
+          "title": "Effects of high altitude on humans, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Effects_of_high_altitude_on_humans"
+        },
+        {
+          "title": "In Tibet, Change Comes to the Once-Pristine Roof of the World, Yale Environment 360",
+          "url": "https://e360.yale.edu/features/in_tibet_change_comes_to_the_once-pristine_roof_of_the_world"
+        }
+      ],
+      "lat": 34,
+      "lon": 87,
+      "zoom": 3
+    },
+    {
+      "id": "sahara",
+      "name": "Sahara",
+      "line": "The Sahara was green and widely settled until about 5,000 years ago. Since then people have mostly kept to oases and caravan routes, and the driest cores have no wells or residents.",
+      "people": "During the African humid period, from about 14,500 to about 5,000 years ago, hunters, fishers and later herders lived across the Sahara and left rock art in places such as the Tassili n'Ajjer and a cemetery at Gobero in the Ténéré. Camel caravans later crossed the desert on fixed routes between oases, guided by Berber peoples including the Tuareg, who still run salt caravans to Bilma and Taoudenni.",
+      "empty": "The least visited parts are the Tanezrouft, which has no wells and no permanent residents, the Libyan Desert with its Great Sand Sea, and the Majabat al-Koubra, where Théodore Monod travelled by camel over stretches of up to 900 km with no water point. What keeps people out is the distance between wells, rainfall of 20 mm a year or less, and dune ridges that loaded camels could not climb.",
+      "facts": [
+        {
+          "label": "Area",
+          "value": "About 9.2 million square km"
+        },
+        {
+          "label": "People",
+          "value": "About 2.5 million, 0.4 per square km (Britannica)"
+        },
+        {
+          "label": "Green Sahara",
+          "value": "About 14,500 to 5,000 years ago"
+        },
+        {
+          "label": "Tanezrouft rainfall",
+          "value": "Much less than 20 mm a year, no wells"
+        },
+        {
+          "label": "Great Sand Sea",
+          "value": "About 72,000 square km, 650 km north to south"
+        }
+      ],
+      "wikipedia": "Sahara",
+      "search": "Sahara emptiest regions Tanezrouft Majabat al-Koubra Great Sand Sea history of crossings",
+      "sources": [
+        {
+          "title": "Sahara, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Sahara"
+        },
+        {
+          "title": "African humid period, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/African_humid_period"
+        },
+        {
+          "title": "Tanezrouft, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Tanezrouft"
+        },
+        {
+          "title": "Libyan Desert, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Libyan_Desert"
+        },
+        {
+          "title": "Trans-Saharan trade, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Trans-Saharan_trade"
+        },
+        {
+          "title": "Sahara, People, Encyclopaedia Britannica",
+          "url": "https://www.britannica.com/place/Sahara-desert-Africa/People"
+        }
+      ],
+      "lat": 22,
+      "lon": 8,
+      "zoom": 2.1
+    },
+    {
+      "id": "arabia",
+      "name": "Arabia",
+      "line": "Bedouin herders grazed and crossed the Empty Quarter long before outsiders did, and oil camps and a paved road now reach into it. The dune seas stay capped, not fully orange.",
+      "people": "Stone tools beside the old Mundafan lake bed show hunters there in the Middle Palaeolithic and again in the Neolithic, during wetter times. Bedouin such as the Al Murrah grazed camels in the sands, and Rashid guides led Bertram Thomas from Dhofar to Doha in 59 days from December 1930. St John Philby crossed in 1932, and Wilfred Thesiger crossed twice between 1946 and 1948 with Bedouin companions.",
+      "empty": "Britannica still calls the region largely unexplored and virtually uninhabited, and most former nomads have now settled in villages. It is one of the driest places on Earth, summer days at Shaybah reach about 50 degrees Celsius, and Philby had to cover more than 600 km between wells.",
+      "facts": [
+        {
+          "label": "Area",
+          "value": "About 650,000 square km, the largest continuous sand area on Earth"
+        },
+        {
+          "label": "Dune height",
+          "value": "Up to 250 m"
+        },
+        {
+          "label": "First outsider crossing",
+          "value": "Bertram Thomas, Dhofar to Doha, 59 days from 10 December 1930"
+        },
+        {
+          "label": "Shaybah oil field",
+          "value": "Producing since 1998, with an airstrip and housing for 1,000"
+        },
+        {
+          "label": "Oman Saudi road",
+          "value": "725 km from Ibri, opened 8 December 2021"
+        }
+      ],
+      "wikipedia": "Rub' al Khali",
+      "search": "Rub' al Khali Empty Quarter Bedouin Thomas Philby Thesiger crossings Shaybah road",
+      "sources": [
+        {
+          "title": "Rub' al Khali, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Rub%27_al_Khali"
+        },
+        {
+          "title": "Rub' al Khali, Encyclopaedia Britannica",
+          "url": "https://www.britannica.com/place/Rub-al-Khali"
+        },
+        {
+          "title": "A line in the sand: the European explorers who battled to claim the Empty Quarter, The National",
+          "url": "https://www.thenationalnews.com/arts-culture/books/a-line-in-the-sand-the-european-explorers-who-battled-to-claim-the-empty-quarter-1.879881"
+        },
+        {
+          "title": "New Oman-Saudi Arabia desert road opens, The National, 2021",
+          "url": "https://www.thenationalnews.com/gulf-news/2021/12/08/new-oman-saudi-arabia-desert-road-opens-cutting-16-hours-of-driving-time"
+        },
+        {
+          "title": "Middle Palaeolithic and Neolithic occupations around Mundafan palaeolake, PLoS ONE abstract",
+          "url": "https://doaj.org/article/fd2d59b4b7fb4cc08de7c3442efc49d3"
+        },
+        {
+          "title": "Shaybah oil field, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Shaybah_oil_field"
+        }
+      ],
+      "lat": 21,
+      "lon": 50,
+      "zoom": 3
+    },
+    {
+      "id": "amazon",
+      "name": "Amazon",
+      "line": "People have lived in the Amazon for at least 11,200 years. Earthworks show they settled land between rivers as well as riverbanks, though scholars disagree on how widely.",
+      "people": "Indigenous peoples have lived in the Amazon for at least 11,200 years, the age of the oldest layers at Caverna da Pedra Pintada in Brazil. Estimates of the population around 1492 range from about 5 million to more than 8 million. About 47 million people live there now, including nearly 2.2 million Indigenous people in about 410 groups.",
+      "empty": "The least visited land is forest far from rivers, which makes up most of the region. A 2012 soil study of western Amazonia found little sign of past human disturbance more than about 5 km from rivers, but other researchers argue that land between rivers held many people. Some Indigenous lands, such as the Javari Valley in Brazil, are closed to outsiders to protect peoples living in isolation.",
+      "facts": [
+        {
+          "label": "Earliest known site",
+          "value": "Caverna da Pedra Pintada, about 11,200 years old"
+        },
+        {
+          "label": "Population around 1492",
+          "value": "Estimates run from 5 million to over 8 million"
+        },
+        {
+          "label": "Hidden earthworks",
+          "value": "A 2023 study predicts 10,272 to 23,648 undiscovered"
+        },
+        {
+          "label": "People today",
+          "value": "About 47 million, with about 410 Indigenous groups"
+        },
+        {
+          "label": "Isolated peoples",
+          "value": "FUNAI lists 115 records in Brazil, 29 confirmed"
+        }
+      ],
+      "wikipedia": "Amazon rainforest",
+      "search": "pre-Columbian Amazon earthworks interfluves population debate",
+      "sources": [
+        {
+          "title": "Amazon rainforest, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Amazon_rainforest"
+        },
+        {
+          "title": "Sparse Pre-Columbian Human Habitation in Western Amazonia, McMichael et al., Science, 2012",
+          "url": "https://people.clas.ufl.edu/azimmer/files/Publication-pdf/McMichael12_Science-Sparse-Pre-Columbian-Human-Habitation-in-Western-Amazonia.pdf"
+        },
+        {
+          "title": "Pre-Columbian earth-builders settled along the entire southern rim of the Amazon, de Souza et al., Nature Communications, 2018",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5871619"
+        },
+        {
+          "title": "Ancient Amazon earthwork findings spotlight Indigenous land struggles today, Mongabay, 2023",
+          "url": "https://news.mongabay.com/2023/12/ancient-amazon-earthwork-findings-spotlight-indigenous-land-struggles-today"
+        },
+        {
+          "title": "Brazil has highest number of isolated tribes, Agência Brasil, 2025",
+          "url": "https://agenciabrasil.ebc.com.br/en/direitos-humanos/noticia/2025-12/brazil-has-highest-number-isolated-tribes-protection-patchy"
+        },
+        {
+          "title": "About the Amazon, Science Panel for the Amazon",
+          "url": "https://www.sp-amazon.org/about-the-amazon"
+        }
+      ],
+      "lat": -5,
+      "lon": -63,
+      "zoom": 2.4
+    },
+    {
+      "id": "australia",
+      "name": "Australia",
+      "line": "Aboriginal peoples have lived in Australia's deserts for at least 47,000 years, and one Pintupi family lived wholly on desert country until 1984. Stock and survey tracks have crossed the deserts since the early 1900s.",
+      "people": "Aboriginal peoples have lived in every part of the outback, including the driest parts, for about 50,000 years, and the Karnatukul rock shelter in the Little Sandy Desert was in use about 47,800 years ago. The Martu and Pintupi belong to the Great Sandy and Gibson deserts, the Pila Nguru to the Great Victoria Desert, and the Wangkangurru to the Simpson Desert, where they lived from hand dug wells called mikiri until around 1900.",
+      "empty": "About 800,000 people live across the 5.6 million square kilometres of the outback. No maintained road crosses the Simpson Desert, and the few desert tracks have fuel gaps of 500 to 900 kilometres. Lack of surface water, heat and distance from help keep most travellers on those few tracks.",
+      "facts": [
+        {
+          "label": "Oldest desert site",
+          "value": "Karnatukul, Little Sandy Desert, about 47,800 years (2018 study)"
+        },
+        {
+          "label": "Last first contact",
+          "value": "Pintupi family of nine, near Kiwirrkurra, October 1984"
+        },
+        {
+          "label": "Canning Stock Route",
+          "value": "Surveyed 1906, 48 wells finished 1910, about 1,850 km"
+        },
+        {
+          "label": "Gunbarrel Highway",
+          "value": "Built 1955 to 1958 by Len Beadell's party, 1,347 km"
+        },
+        {
+          "label": "Outback population",
+          "value": "About 800,000 people on 5.6 million square kilometres"
+        }
+      ],
+      "wikipedia": "Deserts of Australia",
+      "search": "Aboriginal occupation of Australian deserts Karnatukul Pintupi Wangkangurru mikiri wells",
+      "sources": [
+        {
+          "title": "Deserts of Australia, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Deserts_of_Australia"
+        },
+        {
+          "title": "Karnatukul, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Karnatukul"
+        },
+        {
+          "title": "Pintupi Nine, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Pintupi_Nine"
+        },
+        {
+          "title": "Simpson Desert, Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Simpson_Desert"
+        },
+        {
+          "title": "An oasis rediscovered: finding the lost wells of the Simpson Desert, inkl",
+          "url": "https://www.inkl.com/news/an-oasis-rediscovered-finding-the-lost-wells-of-the-simpson-desert"
+        },
+        {
+          "title": "Pew Study Identifies the Outback Among Earth's Strongholds of Nature",
+          "url": "https://www.pew.org/about/news-room/press-releases-and-statements/2014/10/15/pew-study-identifies-the-outback-among-earths-strongholds-of-nature"
+        }
+      ],
+      "lat": -25,
+      "lon": 134,
+      "zoom": 2.4
+    }
+  ]
+}

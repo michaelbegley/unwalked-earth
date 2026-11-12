@@ -1,60 +1,8 @@
 let META = null,
   NAMES = null;
-const LANDMARKS = [
-  {
-    name: "Gangkhar Puensum",
-    place: "Bhutan",
-    lat: 28.05,
-    lon: 90.45,
-    d: "About 7,570 m. Widely cited as the highest mountain never climbed.",
-  },
-  {
-    name: "Southern Pole of Inaccessibility",
-    place: "Antarctica",
-    lat: -82.1,
-    lon: 54.97,
-    d: "One calculation of the Antarctic point farthest from any coast. An old Soviet station stands here. Ski teams reached it in 2007 and 2011.",
-  },
-  {
-    name: "Lake Vostok",
-    place: "Antarctica",
-    lat: -77.5,
-    lon: 106,
-    d: "A lake under roughly 4 km of ice. Drilled into, never entered.",
-  },
-  {
-    name: "North Sentinel Island",
-    place: "India",
-    lat: 11.55,
-    lon: 92.24,
-    d: "The opposite case. People live here, and outsiders stay away.",
-  },
-  {
-    name: "Point Nemo",
-    place: "South Pacific",
-    lat: -48.88,
-    lon: -123.39,
-    d: "The ocean point farthest from land. Ships cross it. Nobody stays.",
-  },
-  {
-    name: "Challenger Deep",
-    place: "Mariana Trench",
-    lat: 11.37,
-    lon: 142.59,
-    d: "The deepest seafloor. Only a few dozen people have been down.",
-  },
-];
-const REGIONS = [
-  ["Antarctica", -80, 30, 1.5],
-  ["Greenland", 73, -40, 2.6],
-  ["Arctic Canada", 73, -92, 2.2],
-  ["Siberia", 66, 125, 2],
-  ["Tibet", 34, 87, 3],
-  ["Sahara", 22, 8, 2.1],
-  ["Arabia", 21, 50, 3],
-  ["Amazon", -5, -63, 2.4],
-  ["Australia", -25, 134, 2.4],
-];
+// researched notes for the dotted places and the named regions, loaded from data/places.json
+let LANDMARKS = [],
+  REGIONS = [];
 const $ = (id) => document.getElementById(id);
 const canvas = $("globe"),
   ctx = canvas.getContext("2d"),
@@ -789,18 +737,95 @@ function nameAt(lat, lon) {
   return [NAMES.r[r] || "", NAMES.c[c] || ""];
 }
 let promptText = "";
-function setPrompt(lines) {
+// Every card, anywhere on Earth, gets its three buttons from this one template.
+let spot = null;
+const QUESTIONS = {
+  land: [
+    "Has anyone actually been at or near this spot? Cover expeditions, surveys, and people who lived or travelled nearby.",
+    "What makes it hard to reach, and how would someone get there today?",
+    "What is the land like here?",
+  ],
+  water: [
+    "What is known about this stretch of water, and who passes through it?",
+    "What is the nearest land, and how far away is it?",
+    "Has anything notable happened here?",
+  ],
+};
+function brief(s) {
+  spot = s;
+  spot.records = "";
+  const at = s.lat === undefined ? "" : coords(s.lat, s.lon);
+  $("agoogle").href = "https://www.google.com/search?q=" + encodeURIComponent(s.query || s.place || at);
+  $("awiki").href = s.wiki
+    ? "https://en.wikipedia.org/wiki/" + encodeURIComponent(s.wiki.replace(/ /g, "_"))
+    : "https://en.wikipedia.org/wiki/Special:Search?search=" + encodeURIComponent(s.search || s.place || at);
+  const pinned = s.lat !== undefined;
+  $("plink").hidden = !pinned;
+  $("asat").hidden = !pinned;
+  if (pinned)
+    $("asat").href =
+      "https://www.google.com/maps/@" + s.lat.toFixed(4) + "," + s.lon.toFixed(4) + ",40000m/data=!3m1!1e3";
+  $("ptext").hidden = true;
+  $("aprompt").textContent = "Copy AI prompt";
+  writePrompt();
+}
+function writePrompt() {
+  const s = spot,
+    here = s.lat === undefined ? "" : "#" + s.lat.toFixed(3) + "," + s.lon.toFixed(3);
   promptText = [
     "I am looking at a spot on Unwalked Earth, a map that guesses where nobody has ever stood.",
     "",
-    ...lines,
+    "Place: " + s.place,
+    ...(s.lat === undefined ? [] : ["Coordinates: " + coords(s.lat, s.lon)]),
+    ...s.lines,
+    ...(s.records ? [s.records] : []),
+    "On the map: https://unwalked.earth/" + here,
     "",
-    "Tell me about this place. Has anyone actually been here? Cover expeditions, people who lived or travelled nearby, and what makes it hard to reach. Say what you are unsure about.",
+    "What I would like to know:",
+    ...s.ask.map((q, i) => i + 1 + ". " + q),
     "",
-    "https://unwalked.earth/",
+    "Say what you are unsure about, and name sources I can check.",
   ].join("\n");
-  $("ptext").hidden = true;
-  $("aprompt").textContent = "Copy AI prompt";
+}
+// the researched block shown for dotted places and regions
+function known(p, beenTitle, been, whyTitle, why) {
+  const k = $("kblock");
+  if (!p) {
+    k.hidden = true;
+    $("ksrcwrap").hidden = true;
+    return;
+  }
+  $("kfacts").replaceChildren(
+    ...p.facts.map((f) => {
+      const row = document.createElement("div"),
+        dt = document.createElement("dt"),
+        dd = document.createElement("dd");
+      dt.textContent = f.label;
+      dd.textContent = f.value;
+      row.append(dt, dd);
+      return row;
+    }),
+  );
+  $("kbeenh").textContent = beenTitle;
+  $("kbeen").textContent = been;
+  $("kwhyh").textContent = whyTitle;
+  $("kwhy").textContent = why;
+  $("kcaveat").textContent = p.caveat || "";
+  $("kcaveat").hidden = !p.caveat;
+  $("ksrc").replaceChildren(
+    ...p.sources.map((src) => {
+      const li = document.createElement("li"),
+        a = document.createElement("a");
+      a.textContent = src.title;
+      a.href = src.url;
+      a.target = "_blank";
+      a.rel = "noopener";
+      li.append(a);
+      return li;
+    }),
+  );
+  k.hidden = false;
+  $("ksrcwrap").hidden = false;
 }
 $("aprompt").onclick = async () => {
   const b = $("aprompt");
@@ -832,12 +857,6 @@ function show(which) {
     } catch (e) {}
   }
   if (world) size();
-}
-function links(query, wiki, lat, lon) {
-  $("agoogle").href = "https://www.google.com/search?q=" + encodeURIComponent(query);
-  $("awiki").href = "https://en.wikipedia.org/wiki/Special:Search?search=" + encodeURIComponent(wiki);
-  $("asat").href =
-    "https://www.google.com/maps/@" + lat.toFixed(4) + "," + lon.toFixed(4) + ",40000m/data=!3m1!1e3";
 }
 let request = 0,
   current = null;
@@ -1063,19 +1082,19 @@ function live(lat, lon, titles, score) {
           : hi
             ? "No photos, sightings or articles within 10 km. This one might be real."
             : "Nothing on record within 10 km, even this close to a way in.";
-    const v = (i) => (rs[i].status === "fulfilled" ? rs[i].value : "no answer");
-    promptText = promptText.replace(
-      "\n\nTell me about this place.",
-      "\nOn record within 10 km: " +
-        v(0) +
-        " photos on Wikimedia Commons, " +
-        v(1) +
-        " GBIF wildlife records, " +
-        v(2) +
-        " iNaturalist sightings, " +
-        v(3) +
-        " Wikipedia articles.\n\nTell me about this place.",
-    );
+    if (spot) {
+      const names = [
+          "photos on Wikimedia Commons",
+          "GBIF wildlife records",
+          "iNaturalist sightings",
+          "Wikipedia articles",
+        ],
+        found = names
+          .map((n, i) => (rs[i].status === "fulfilled" ? rs[i].value + " " + n : ""))
+          .filter(Boolean);
+      spot.records = found.length ? "On record within 10 km: " + found.join(", ") + "." : "";
+      writePrompt();
+    }
   });
 }
 function pick(mx, my) {
@@ -1095,18 +1114,27 @@ function pick(mx, my) {
     view.arc = null;
     view.sel = [hit.lat, hit.lon];
     $("pname").textContent = hit.name;
-    $("pcoords").textContent = hit.place + "  ·  " + coords(hit.lat, hit.lon);
+    $("pcoords").textContent = hit.where + "  ·  " + coords(hit.lat, hit.lon);
     $("pscored").hidden = true;
     $("pnote").hidden = false;
-    $("pnote").textContent = hit.d;
-    links(hit.name, hit.name, hit.lat, hit.lon);
-    setPrompt([
-      "Place: " + hit.name + ", " + hit.place,
-      "Coordinates: " + coords(hit.lat, hit.lon),
-      "Note from the map: " + hit.d,
-    ]);
+    $("pnote").textContent = hit.summary;
+    known(hit, "Who has been here", hit.been, "What keeps people out", hit.why);
+    brief({
+      place: hit.name + ", " + hit.where,
+      lat: hit.lat,
+      lon: hit.lon,
+      query: hit.search,
+      wiki: hit.wikipedia,
+      lines: [
+        "What the map says: " + hit.summary,
+        "Known visits: " + hit.been,
+        "What keeps people out: " + hit.why,
+        ...(hit.caveat ? ["Uncertain: " + hit.caveat] : []),
+      ],
+      ask: hit.ask.concat("Is anything in the notes above wrong or out of date?"),
+    });
     show("place");
-    live(hit.lat, hit.lon, [hit.name], null);
+    live(hit.lat, hit.lon, [hit.wikipedia, hit.name], null);
     return;
   }
   const g = unproj(mx, my);
@@ -1129,12 +1157,16 @@ function selectLL(la, lo, label) {
     $("pscored").hidden = true;
     $("pnote").hidden = false;
     $("pnote").textContent = "The oceans are not scored.";
-    links(coords(g[0], g[1]), "Ocean", g[0], g[1]);
-    setPrompt([
-      "Place: open water",
-      "Coordinates: " + coords(g[0], g[1]),
-      "The map does not score the oceans.",
-    ]);
+    known(null);
+    brief({
+      place: label || "Open water",
+      lat: g[0],
+      lon: g[1],
+      query: label || coords(g[0], g[1]),
+      search: label || "Ocean",
+      lines: ["The map does not score the oceans."],
+      ask: QUESTIONS.water,
+    });
     show("place");
     live(g[0], g[1], [], null);
     return;
@@ -1256,17 +1288,24 @@ function selectLL(la, lo, label) {
     }
   }
   const q = [label || nm[0], nm[1]].filter((v, i, a) => v && a.indexOf(v) === i).join(" ");
-  links(q || coords(g[0], g[1]), nm[0] || nm[1] || "", g[0], g[1]);
-  setPrompt([
-    "Place: " + [nm[0], nm[1]].filter((v, i, a) => v && a.indexOf(v) === i).join(", "),
-    "Coordinates: " + coords(g[0], g[1]),
-    "Unwalked score: " + s + " out of 100 (higher means less likely anyone has stood there)",
-    "Nearest way in, from the map's data: " +
-      $("pway").textContent +
-      ", " +
-      $("pfar").textContent.toLowerCase(),
-    "Ground: " + $("pground").textContent,
-  ]);
+  known(null);
+  brief({
+    place: [label, nm[0], nm[1]].filter((v, i, a) => v && a.indexOf(v) === i).join(", ") || "Unnamed land",
+    lat: g[0],
+    lon: g[1],
+    query: q || coords(g[0], g[1]),
+    search: nm[0] || nm[1] || "",
+    lines: [
+      "Unwalked score: " + s + " out of 100 (higher means less likely anyone has stood there)",
+      "Nearest way in, from the map's data: " +
+        $("pway").textContent +
+        ", " +
+        $("pfar").textContent.toLowerCase(),
+      "Ground: " + $("pground").textContent,
+      ...(s >= 50 ? [...$("pkeep").children].map((li) => "Kept people out: " + li.textContent) : []),
+    ],
+    ask: QUESTIONS.land,
+  });
   show("place");
   live(g[0], g[1], (label ? [label] : []).concat([nm[0], nm[1]]), s);
 }
@@ -1299,15 +1338,47 @@ function fillStat() {
   $("stat").textContent =
     `That is about ${Math.round(META.cum[50])}% of all land, or ${META.cumx[50].toFixed(1)}% without Antarctica.`;
 }
-$("go").innerHTML = REGIONS.map(
-  (v, i) => `<button class="chip" type="button" data-v="${i}">${v[0]}</button>`,
-).join("");
-$("go").addEventListener("click", (e) => {
-  const b = e.target.closest("button");
+function fillRegions() {
+  $("go").innerHTML = REGIONS.map(
+    (r, i) => `<button class="chip" type="button" data-v="${i}">${r.name}</button>`,
+  ).join("");
+  $("rlist").innerHTML = REGIONS.map(
+    (r, i) => `<li>${r.line} <button class="textlink" type="button" data-v="${i}">More</button></li>`,
+  ).join("");
+}
+function openRegion(e) {
+  const b = e.target.closest("button[data-v]");
   if (!b) return;
-  const v = REGIONS[+b.dataset.v];
-  fly(v[1], v[2], v[3]);
-});
+  const r = REGIONS[+b.dataset.v];
+  fly(r.lat, r.lon, r.zoom);
+  view.sel = null;
+  view.arc = null;
+  request++;
+  $("pname").textContent = r.name;
+  $("pcoords").textContent = "Region";
+  $("plink").hidden = true;
+  $("pscored").hidden = true;
+  $("pnote").hidden = false;
+  $("pnote").textContent = r.line;
+  for (const id of ["pnowwrap", "pwiki", "pev"]) $(id).hidden = true;
+  $("asat").hidden = true;
+  $("pcap").textContent = "";
+  known(r, "Who has lived here or crossed it", r.people, "The emptiest parts", r.empty);
+  brief({
+    place: r.name,
+    query: r.search,
+    wiki: r.wikipedia,
+    lines: ["What the map says: " + r.line, "People: " + r.people, "Emptiest parts: " + r.empty],
+    ask: [
+      "Which parts of this region have most likely never had a person stand on them, and why?",
+      "Who has lived in or crossed the emptiest parts, and what is the evidence?",
+      "Is anything in the notes above wrong or out of date?",
+    ],
+  });
+  show("place");
+}
+$("go").addEventListener("click", openRegion);
+$("rlist").addEventListener("click", openRegion);
 $("aboutlink").onclick = () => show("about");
 $("wherelink").onclick = () => show("where");
 function fillWhere() {
@@ -1469,8 +1540,13 @@ for (const id of ["tex", "ntex"]) {
 addEventListener("resize", () => {
   if (world) size();
 });
-Promise.all(["data/meta.json", "data/names.json"].map((u) => fetch(u).then((r) => r.json()))).then((d) => {
+Promise.all(
+  ["data/meta.json", "data/names.json", "data/places.json"].map((u) => fetch(u).then((r) => r.json())),
+).then((d) => {
   META = d[0];
   NAMES = d[1];
+  LANDMARKS = d[2].landmarks;
+  REGIONS = d[2].regions;
+  fillRegions();
   boot();
 });

@@ -28,9 +28,7 @@
     <aside id="card">
       <section id="intro">
         <h1>Unwalked Earth</h1>
-        <p class="lede">
-          Orange is land where probably nobody has ever stood. <span id="stat"></span>
-        </p>
+        <p class="lede">Orange is land where probably nobody has ever stood. <span id="stat"></span></p>
         <div class="key"><span>Walked</span><i></i><span>Never</span></div>
         <input
           class="find"
@@ -105,17 +103,24 @@
           </div>
         </dl>
         <p class="verdict" id="pnote" hidden></p>
+        <div id="kblock" hidden>
+          <dl id="kfacts"></dl>
+          <div class="near">
+            <b id="kbeenh"></b>
+            <p id="kbeen"></p>
+          </div>
+          <div class="near">
+            <b id="kwhyh"></b>
+            <p id="kwhy"></p>
+          </div>
+          <p class="cap" id="kcaveat"></p>
+        </div>
         <div class="acts">
           <a class="main" id="agoogle" target="_blank" rel="noopener">Search Google</a>
           <a id="awiki" target="_blank" rel="noopener">Wikipedia</a>
           <button id="aprompt" type="button">Copy AI prompt</button>
         </div>
-        <textarea
-          id="ptext"
-          readonly
-          hidden
-          aria-label="Prompt to paste into an AI chat"
-        ></textarea>
+        <textarea id="ptext" readonly hidden aria-label="Prompt to paste into an AI chat"></textarea>
         <div class="wiki" id="pwiki" hidden>
           <img id="pwimg" alt="" />
           <div><b id="pwtitle"></b><span id="pwtext"></span></div>
@@ -144,14 +149,16 @@
           <p class="cap">Everything on record within 10 km.</p>
           <div class="thumbs" id="pthumbs"></div>
         </div>
+        <div class="near" id="ksrcwrap" hidden>
+          <b>Sources</b>
+          <ul id="ksrc"></ul>
+        </div>
       </section>
 
       <section id="where" hidden>
         <button class="textlink back" type="button" data-back>&lsaquo; Unwalked Earth</button>
         <h2>Where the orange is</h2>
-        <p class="lede">
-          Land scoring 50 or more, by country. The bar is the share of that country.
-        </p>
+        <p class="lede">Land scoring 50 or more, by country. The bar is the share of that country.</p>
         <ol id="wlist"></ol>
       </section>
 
@@ -159,66 +166,38 @@
         <button class="textlink back" type="button" data-back>&lsaquo; Unwalked Earth</button>
         <h2>How places are marked</h2>
         <h3>What turns a place orange</h3>
+        <p>Two things. It is far from every way in, and the ground is somewhere people could not live.</p>
         <p>
-          Two things. It is far from every way in, and the ground is somewhere people could not
-          live.
-        </p>
-        <p>
-          A way in is a road, track, railway, town, airstrip, research station, mine, archaeological
-          site, river or coast. The map measures how far each patch of land, about 10 km across, is
-          from the nearest one. Around 100 km off counts as far. Past 300 km it hardly gets more
-          remote.
+          A way in is a road, track, railway, town, airstrip, research station, mine, archaeological site,
+          river or coast. The map measures how far each patch of land, about 10 km across, is from the nearest
+          one. Around 100 km off counts as far. Past 300 km it hardly gets more remote.
         </p>
         <h3>What holds a score down</h3>
         <p>
-          Ground people have used for a long time. Ice can reach 100, because nobody ever lived on
-          it. Open desert and very high country stop near 75. Forest, grassland and tundra stop near
-          55, because people have lived on or crossed that ground for thousands of years. Lights at
-          night pull a score down further.
+          Ground people have used for a long time. Ice can reach 100, because nobody ever lived on it. Open
+          desert and very high country stop near 75. Forest, grassland and tundra stop near 55, because people
+          have lived on or crossed that ground for thousands of years. Lights at night pull a score down
+          further.
         </p>
         <h3>Why each region looks the way it does</h3>
-        <ul>
-          <li>
-            Antarctica is almost solid orange. It is ice, it never had a native population, and the
-            stations are small dots on a continent.
-          </li>
-          <li>Greenland is orange inland. People live on the coast and the middle is ice sheet.</li>
-          <li>
-            The Sahara and Arabia are patchy. The big dune seas are far from any track, but nomads
-            crossed them, so they are capped.
-          </li>
-          <li>Tibet has some orange. It is high and far from roads, but herders use it.</li>
-          <li>
-            Siberia and Arctic Canada show orange only on remote mountains and islands. Hunters
-            ranged widely everywhere else.
-          </li>
-          <li>
-            The Amazon is barely marked. Rivers reach nearly all of it and people have lived along
-            them for thousands of years.
-          </li>
-          <li>
-            Australia is mostly unmarked. Tracks cross the deserts and people have lived there for
-            tens of thousands of years.
-          </li>
-        </ul>
+        <ul id="rlist"></ul>
         <h3>The evidence check</h3>
         <p>
-          The score is a guess from distance. When you tap a spot, the page also asks four public
-          sources what is on record within 10 km: photos, wildlife records, iNaturalist sightings
-          and Wikipedia articles. If any come back, somebody was there, whatever the score says.
+          The score is a guess from distance. When you tap a spot, the page also asks four public sources what
+          is on record within 10 km: photos, wildlife records, iNaturalist sightings and Wikipedia articles.
+          If any come back, somebody was there, whatever the score says.
         </p>
         <h3>Where it is wrong</h3>
         <p>
-          Nobody keeps a record of everywhere people have stood. The map only knows the camps, mines
-          and expedition routes that are in its data, and some are missing. Hunters, herders and
-          nomads went far beyond any road. The oceans are not scored.
+          Nobody keeps a record of everywhere people have stood. The map only knows the camps, mines and
+          expedition routes that are in its data, and some are missing. Hunters, herders and nomads went far
+          beyond any road. The oceans are not scored.
         </p>
         <h3>Sources</h3>
         <ul>
           <li>
-            <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener"
-              >Natural Earth</a
-            >: land, roads, rivers, ice
+            <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a>:
+            land, roads, rivers, ice
           </li>
           <li>
             <a
@@ -229,8 +208,8 @@
             >: travel time to cities
           </li>
           <li>
-            <a href="https://ourairports.com/data/" target="_blank" rel="noopener">OurAirports</a>:
-            airstrips, open and closed
+            <a href="https://ourairports.com/data/" target="_blank" rel="noopener">OurAirports</a>: airstrips,
+            open and closed
           </li>
           <li>
             <a
@@ -241,21 +220,19 @@
             >: Antarctic stations
           </li>
           <li>
-            <a href="https://www.wikidata.org/" target="_blank" rel="noopener">Wikidata</a>: mines
-            and archaeological sites
+            <a href="https://www.wikidata.org/" target="_blank" rel="noopener">Wikidata</a>: mines and
+            archaeological sites
           </li>
           <li>
-            <a href="https://www.geonames.org/" target="_blank" rel="noopener">GeoNames</a>: towns
-            of 1,000 or more
+            <a href="https://www.geonames.org/" target="_blank" rel="noopener">GeoNames</a>: towns of 1,000 or
+            more
           </li>
           <li>NASA: night lights</li>
           <li>
             On tap:
-            <a href="https://s2maps.eu/" target="_blank" rel="noopener"
-              >Sentinel-2 cloudless by EOX</a
-            >
-            and NASA Blue Marble pictures, Wikipedia, Wikimedia Commons, GBIF, iNaturalist,
-            Open-Meteo, OpenStreetMap search
+            <a href="https://s2maps.eu/" target="_blank" rel="noopener">Sentinel-2 cloudless by EOX</a>
+            and NASA Blue Marble pictures, Wikipedia, Wikimedia Commons, GBIF, iNaturalist, Open-Meteo,
+            OpenStreetMap search
           </li>
         </ul>
         <p style="margin-top: 16px">
