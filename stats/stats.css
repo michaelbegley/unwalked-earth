@@ -1,0 +1,89 @@
+:root {
+  --ink: #1d1d1f;
+  --soft: #6e6e73;
+  --line: rgba(0, 0, 0, 0.09);
+  --fill: #f0f0f3;
+  --orange: #e8590c;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: #fff;
+  color: var(--ink);
+  font:
+    15px/1.45 -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
+}
+main {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+h1 {
+  margin: 0;
+  font-size: 22px;
+}
+h2 {
+  margin: 32px 0 0;
+  font-size: 15px;
+}
+.soft {
+  margin: 4px 0 0;
+  color: var(--soft);
+  font-size: 13px;
+}
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 20px;
+}
+.tiles div {
+  padding: 16px 12px;
+  border-radius: 12px;
+  background: var(--fill);
+}
+.tiles b {
+  display: block;
+  font-size: 28px;
+  line-height: 1.1;
+}
+.tiles span {
+  color: var(--soft);
+  font-size: 12px;
+}
+ul {
+  list-style: none;
+  margin: 8px 0 20px;
+  padding: 0;
+}
+li {
+  display: grid;
+  grid-template-columns: 96px 1fr 56px;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 14px;
+}
+li i {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--fill);
+  overflow: hidden;
+}
+li u {
+  display: block;
+  height: 100%;
+  background: var(--orange);
+}
+li span {
+  text-align: right;
+}

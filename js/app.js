@@ -1725,3 +1725,21 @@ Promise.all(
   fillRegions();
   boot();
 });
+
+// One anonymous count per visit, so the site's owner can see how many people come by.
+// It adds one to a ten-minute tally. Nothing about the visitor is sent or kept, and
+// browsers that ask not to be tracked are not counted.
+const TALLY = "https://cpzhsztczixiidxypvmb.supabase.co/rest/v1/rpc/hit",
+  TALLY_KEY = "sb_publishable_M8UMcKf1BrHMbCuCVJ1P3g_-Bwnwd2W";
+try {
+  const asked = navigator.doNotTrack === "1" || navigator.globalPrivacyControl === true;
+  if (!asked && location.hostname === "unwalked.earth" && !sessionStorage.getItem("unwalked.counted")) {
+    sessionStorage.setItem("unwalked.counted", "1");
+    fetch(TALLY, {
+      method: "POST",
+      headers: { apikey: TALLY_KEY, "Content-Type": "application/json" },
+      body: "{}",
+      keepalive: true,
+    }).catch(() => {});
+  }
+} catch (e) {}

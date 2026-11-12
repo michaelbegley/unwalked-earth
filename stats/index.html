@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; connect-src https://cpzhsztczixiidxypvmb.supabase.co; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'"
+    />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Unwalked Earth visits</title>
+    <link rel="stylesheet" href="stats.css" />
+  </head>
+  <body>
+    <main>
+      <h1>Unwalked Earth visits</h1>
+      <p class="soft" id="when">Loading.</p>
+      <div class="tiles">
+        <div><b id="now">0</b><span>last 30 minutes</span></div>
+        <div><b id="today">0</b><span>today</span></div>
+        <div><b id="all">0</b><span>all time</span></div>
+      </div>
+      <h2>Last 30 days</h2>
+      <ul id="days"></ul>
+      <p class="soft">
+        A visit is one browser tab opening the site. Reloads in the same tab are not counted again, and
+        neither are browsers that ask not to be tracked. Days are Central time.
+      </p>
+    </main>
+    <script src="stats.js" defer></script>
+  </body>
+</html>
