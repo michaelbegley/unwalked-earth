@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /stats/
+Disallow: /v1/
+
+Sitemap: https://unwalked.earth/sitemap.xml
