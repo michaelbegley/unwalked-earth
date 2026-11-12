@@ -694,8 +694,9 @@ function nearest(lat, lon) {
   const v = vec(lat, lon);
   let best = -2,
     bi = -1;
-  for (const list of [polarSpots, otherSpots])
+  for (const list of spotGroups.values())
     for (let j = 0; j < list.length; j++) {
+      if (shown[list[j]] < 179) continue;
       const i = list[j],
         y = (i / WORLD_W) | 0,
         x = i - y * WORLD_W,
@@ -952,6 +953,9 @@ function live(lat, lon, titles, score) {
         $("pwtext").textContent = d.extract;
         const wi = $("pwimg");
         if (d.thumbnail && d.thumbnail.source) {
+          wi.onerror = () => {
+            wi.hidden = true;
+          };
           wi.src = d.thumbnail.source;
           wi.hidden = false;
         } else wi.hidden = true;
@@ -990,6 +994,7 @@ function live(lat, lon, titles, score) {
         i.src = p.imageinfo[0].thumburl;
         i.alt = "";
         i.loading = "lazy";
+        i.onerror = () => a.remove();
         a.appendChild(i);
         thumbs.appendChild(a);
       }
@@ -1417,22 +1422,34 @@ $("plink").onclick = async () => {
     b.textContent = "Copy link";
   }, 2500);
 };
-let polarSpots = [],
-  otherSpots = [];
+// unwalked spots grouped by patch of the world, so the random button does not keep landing on the same ice
+const spotGroups = new Map(),
+  recentGroups = [];
 function candidates() {
   for (let y = 0; y < WORLD_H; y += 3) {
     const lat = 90 - ((y + 0.5) * 180) / WORLD_H,
       o = y * WORLD_W;
     for (let x = 0; x < WORLD_W; x += 3) {
-      if (shown[o + x] >= 179) (lat < -60 ? polarSpots : otherSpots).push(o + x);
+      if (shown[o + x] < 128) continue; // 50 or more, the same line the orange is drawn at
+      const lon = -180 + ((x + 0.5) * 360) / WORLD_W,
+        key =
+          lat < -60
+            ? "south" + Math.floor((lon + 180) / 120)
+            : Math.floor(lat / 20) + ":" + Math.floor(lon / 30);
+      if (!spotGroups.has(key)) spotGroups.set(key, []);
+      spotGroups.get(key).push(o + x);
     }
   }
 }
 function lucky() {
   if (spinning) return;
-  const list =
-    Math.random() < 0.6 && otherSpots.length ? otherSpots : polarSpots.length ? polarSpots : otherSpots;
-  if (!list.length) return;
+  let keys = [...spotGroups.keys()].filter((k) => !recentGroups.includes(k));
+  if (!keys.length) keys = [...spotGroups.keys()];
+  if (!keys.length) return;
+  const key = keys[(Math.random() * keys.length) | 0],
+    list = spotGroups.get(key);
+  recentGroups.push(key);
+  if (recentGroups.length > 6) recentGroups.shift();
   const i = list[(Math.random() * list.length) | 0],
     y = (i / WORLD_W) | 0,
     x = i - y * WORLD_W;
