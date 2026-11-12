@@ -19,7 +19,7 @@
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content="https://unwalked.earth/og.png" />
-    <link rel="stylesheet" href="css/style.css?v=4" />
+    <link rel="stylesheet" href="css/style.css?v=5" />
   </head>
   <body>
     <canvas id="sky" aria-hidden="true"></canvas>
@@ -40,7 +40,7 @@
         />
         <ul class="findlist" id="findlist" hidden></ul>
         <p class="note" id="findnote" hidden></p>
-        <button class="primary" id="lucky" type="button">Take me somewhere unwalked</button>
+        <button class="primary" id="lucky" type="button">Random unwalked spot</button>
         <p class="hint">Or tap anywhere on the globe. Jump to</p>
         <div class="chips" id="go"></div>
         <div id="savedwrap" hidden>
@@ -55,15 +55,21 @@
 
       <section id="place" hidden>
         <div class="top">
-          <button class="textlink back" type="button" data-back>&lsaquo; Unwalked Earth</button
-          ><button class="textlink" id="again" type="button">Another unwalked spot</button>
+          <button class="pill back" type="button" data-back>&lsaquo; Back</button
+          ><button class="pill go" id="again" type="button">Random unwalked spot</button>
         </div>
         <h2 id="pname"></h2>
         <p class="coords">
-          <span id="pcoords"></span> &nbsp;<button class="textlink" id="plink" type="button">
-            Copy link
-          </button>
-          &nbsp;<button class="textlink" id="psave" type="button" hidden>Save</button>
+          <span id="pcoords"></span> &nbsp;<span class="pair"
+            ><button class="textlink" id="plink" type="button">Copy link</button> &nbsp;<button
+              class="textlink"
+              id="psave"
+              type="button"
+              hidden
+            >
+              Save
+            </button></span
+          >
         </p>
         <a id="asat" target="_blank" rel="noopener" aria-label="Open satellite view"
           ><img class="sat" id="psat" alt="Satellite picture of this spot"
@@ -162,14 +168,14 @@
       </section>
 
       <section id="where" hidden>
-        <button class="textlink back" type="button" data-back>&lsaquo; Unwalked Earth</button>
+        <button class="pill back" type="button" data-back>&lsaquo; Back</button>
         <h2>Where the orange is</h2>
         <p class="lede">Land scoring 50 or more, by country. The bar is the share of that country.</p>
         <ol id="wlist"></ol>
       </section>
 
       <section id="about" hidden>
-        <button class="textlink back" type="button" data-back>&lsaquo; Unwalked Earth</button>
+        <button class="pill back" type="button" data-back>&lsaquo; Back</button>
         <h2>How places are marked</h2>
         <h3>What turns a place orange</h3>
         <p>Two things. It is far from every way in, and the ground is somewhere people could not live.</p>
@@ -256,6 +262,6 @@
 
     <img id="tex" alt="" style="display: none" src="data/world.png" />
     <img id="ntex" alt="" style="display: none" src="data/names.png" />
-    <script src="js/app.js?v=4" defer></script>
+    <script src="js/app.js?v=5" defer></script>
   </body>
 </html>

@@ -183,12 +183,27 @@ p {
   padding-top: 16px;
   border-top: 1px solid var(--line);
 }
-.back {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  margin: -4px 0 8px -4px;
-  padding: 4px;
+.pill {
+  border: 0;
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.pill.back {
+  background: var(--fill);
+  color: var(--ink);
+  margin-bottom: 12px;
+}
+.pill.back:hover {
+  background: #e4e4e9;
+}
+.pill.go {
+  background: var(--blue);
+  color: #fff;
+}
+.pill.go:hover {
+  filter: brightness(1.08);
 }
 .coords {
   margin-top: 4px;
@@ -362,6 +377,7 @@ dd {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  gap: 8px;
 }
 .near dl {
   margin-top: 12px;
@@ -545,10 +561,13 @@ dd {
     padding-top: 8px;
     padding-bottom: 8px;
   }
+  .pill {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
   .foot .textlink,
-  .back,
-  #again,
   #plink,
+  #psave,
   #fargo {
     padding: 12px 0;
     margin: -12px 0;
@@ -638,4 +657,12 @@ dd {
   font: inherit;
   font-size: 12px;
   cursor: pointer;
+}
+
+#card {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+.pair {
+  white-space: nowrap;
 }
