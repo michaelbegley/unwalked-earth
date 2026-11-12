@@ -94,6 +94,9 @@ for n in ('ne_10m_airports', 'ne_10m_ports'):
     for f in load(n):
         x, y = f['geometry']['coordinates'][:2]
         cities.append((x, y)); names.append((f['properties'].get('name') or n, '', 0))
+# places confirmed by the 11 Nov 2026 fact check that the source lists miss
+for nm, cc, x, y in [('Plateau Station (closed 1969)', 'AQ', 40.5, -79.25), ('Moomba', 'AU', 140.203, -28.108)]:
+    cities.append((x, y)); names.append((nm, cc, 0))
 towns = np.array(cities)
 print('town pts', len(towns))
 rivers = densify(list(lines(load('ne_10m_rivers_lake_centerlines'))) + list(lines(load('ne_10m_rivers_north_america'))) + list(lines(load('ne_10m_rivers_europe'))))

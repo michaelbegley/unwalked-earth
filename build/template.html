@@ -135,12 +135,13 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--ochre);outline-
     <h2>Where it is wrong</h2>
     <ul class="notes">
       <li>It is a model, with no record of real footsteps behind it. Nobody keeps that record.</li>
+      <li>Places that closed, or are too small for a towns list, are missing: old research stations, mines, gas fields, camps. A fact check on 11 Nov 2026 found two near the top spots, Plateau Station in Antarctica and the Moomba gas town in Australia, and added them.</li>
       <li>The road layer skips desert tracks and logging roads, so central Australia and the Sahara score too high.</li>
       <li>Hunters, herders and nomads ranged far from any town. The ground ceilings only roughly allow for that.</li>
       <li>Most expedition routes across Antarctica and Greenland are missing. Only the supply track to the South Pole is drawn.</li>
       <li>Oceans are left out. Almost none of the seafloor has been visited in person.</li>
     </ul>
-    <p class="statline" style="margin-top:10px">Data: Natural Earth 1:10m layers, GeoNames towns, a NASA night-lights image and a coarse elevation image. Version 1, built 11 Nov 2026.</p>
+    <p class="statline" style="margin-top:10px">Data: Natural Earth 1:10m layers, GeoNames towns, a NASA night-lights image and a coarse elevation image. Version 1.1, 11 Nov 2026.</p>
   </section>
 </aside>
 
@@ -247,7 +248,7 @@ function read(mx,my){
   el.innerHTML=`<span class="k">${ll(g[0],g[1])}</span><br><span class="k">Unwalked score </span><span class="s">${s} / 100</span><br><span class="k">Nearest way in </span>${acc<8?'under 10':'about '+fmt(Math.round(acc/(acc>100?10:5))*(acc>100?10:5))} km<br><span class="k">That way in is a </span>${WAYS[b&3]}<br><span class="k">Ground </span>${ice?'permanent ice':'ice-free'}${elev>=300?', about '+fmt(elev)+' m up':', low'}`;
 }
 function spotName(s){return tc(s.region||s.country)+(s.region&&s.country&&tc(s.region)!==s.country?', '+s.country:'')}
-function spotHTML(s,i){return `<b>${i+1}. ${spotName(s)}</b>Unwalked score ${s.score} / 100<br><span class="d">${fmt(s.access)} km from any way in. Nearest named place: ${s.town}, ${fmt(s.town_km)} km. ${ll(s.lat,s.lon)}</span>`}
+function spotHTML(s,i){return `<b>${i+1}. ${spotName(s)}</b>Unwalked score ${s.score} / 100<br><span class="d">${fmt(s.access)} km from anything in the map's data. Nearest named place: ${s.town}, ${fmt(s.town_km)} km. ${ll(s.lat,s.lon)}</span>`}
 function refHTML(s){return `<b>${s.name}</b><span class="d">${s.d} ${ll(s.lat,s.lon)}</span>`}
 function showPop(h){const p=document.getElementById('pop');if(h){p.innerHTML=h;p.style.display='block';document.getElementById('read').innerHTML=h}else p.style.display='none'}
 function pick(mx,my){let best=null,bd=18*dpr;
@@ -263,7 +264,7 @@ function stat(){const t=st.thr,p=META.cum[t],px=META.cumx[t];document.getElement
   document.getElementById('pctline').innerHTML=`scores ${t} or more. That is about <b>${(META.land_km2*p/100/1e6).toFixed(1)} million km²</b>. Leave out Antarctica and it drops to <b>${px.toFixed(1)}%</b>.`}
 document.getElementById('thr').addEventListener('input',e=>{st.thr=+e.target.value;buildLUT();stat();kick()});
 var tc=s=>s.replace(/\b([A-Z’'])([A-Z’'.]+)\b/g,(m,a,b)=>a+b.toLowerCase());
-document.getElementById('spots').innerHTML=META.spots.map((s,i)=>`<li><button class="spot" type="button" data-i="${i}"><span class="n">${i+1}</span><span>${tc(s.region||s.country)}${s.region&&s.country&&tc(s.region)!==s.country?', '+s.country:''}<span class="d">${fmt(s.access)} km from any way in. Nearest named place: ${s.town}, ${fmt(s.town_km)} km.</span></span><span class="sc">${s.score}</span></button></li>`).join('');
+document.getElementById('spots').innerHTML=META.spots.map((s,i)=>`<li><button class="spot" type="button" data-i="${i}"><span class="n">${i+1}</span><span>${tc(s.region||s.country)}${s.region&&s.country&&tc(s.region)!==s.country?', '+s.country:''}<span class="d">${fmt(s.access)} km from anything in the map's data. Nearest named place: ${s.town}, ${fmt(s.town_km)} km.</span></span><span class="sc">${s.score}</span></button></li>`).join('');
 document.getElementById('refs').innerHTML=REFS.map((s,i)=>`<li><button class="spot" type="button" data-r="${i}"><span class="n">&#9671;</span><span>${s.name}<span class="d">${s.d}</span></span><span class="sc"></span></button></li>`).join('');
 document.querySelector('aside').addEventListener('click',e=>{const b=e.target.closest('.spot');if(!b)return;const s=b.dataset.i!==undefined?META.spots[+b.dataset.i]:REFS[+b.dataset.r];fly(s.lat,s.lon,Math.max(st.k,2.2));showPop(b.dataset.i!==undefined?spotHTML(s,+b.dataset.i):refHTML(s));if(matchMedia('(max-width:860px)').matches)stage.scrollIntoView({behavior:'smooth'})});
 
