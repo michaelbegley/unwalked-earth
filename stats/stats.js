@@ -78,5 +78,20 @@ async function load() {
     $("when").textContent = "Could not load the numbers. " + e.message;
   }
 }
+async function notes() {
+  try {
+    const r = await fetch(STATS.replace(/visit_stats$/, "feedback_count"), {
+        method: "POST",
+        headers: { apikey: KEY, "Content-Type": "application/json" },
+        body: "{}",
+      }),
+      d = await r.json();
+    if (r.ok) $("notes").textContent = number(d.all_time);
+  } catch (e) {}
+}
 load();
-setInterval(load, 60000);
+notes();
+setInterval(() => {
+  load();
+  notes();
+}, 60000);

@@ -435,6 +435,13 @@ dd {
   justify-content: space-between;
   align-items: flex-start;
   gap: 8px;
+  /* stays in view while the card scrolls */
+  position: sticky;
+  top: -20px;
+  z-index: 2;
+  margin: -20px -20px 0;
+  padding: 20px 20px 0;
+  background: var(--card);
 }
 .near dl {
   margin-top: 12px;
@@ -566,6 +573,11 @@ dd {
     max-height: 66%;
     padding: 16px 16px 16px;
     border-radius: 20px;
+  }
+  .top {
+    top: -16px;
+    margin: -16px -16px 0;
+    padding: 16px 16px 0;
   }
   #card.tall {
     height: 66%;

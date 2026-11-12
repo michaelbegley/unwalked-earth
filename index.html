@@ -59,7 +59,7 @@
         "description": "A map of where probably nobody has ever stood."
       }
     </script>
-    <link rel="stylesheet" href="css/style.css?v=19" />
+    <link rel="stylesheet" href="css/style.css?v=20" />
   </head>
   <body>
     <canvas id="sky" aria-hidden="true"></canvas>
@@ -105,7 +105,7 @@
         </div>
         <p class="count" id="count" hidden></p>
         <p class="count">
-          <span id="version">v0.45</span> &nbsp;<button
+          <span id="version">v0.46</span> &nbsp;<button
             class="textlink"
             id="feedbacklink"
             type="button"
@@ -244,14 +244,22 @@
       </section>
 
       <section id="where" hidden>
-        <button class="pill back" type="button" data-back>&lsaquo; Back</button>
+        <div class="top">
+          <button class="pill back" type="button" data-back>
+            &lsaquo; Back
+          </button>
+        </div>
         <h2>Top countries</h2>
         <p class="lede">Orange land by country.</p>
         <ol id="wlist"></ol>
       </section>
 
       <section id="feedback" hidden>
-        <button class="pill back" type="button" data-back>&lsaquo; Back</button>
+        <div class="top">
+          <button class="pill back" type="button" data-back>
+            &lsaquo; Back
+          </button>
+        </div>
         <h2>Feedback</h2>
         <textarea
           class="find"
@@ -265,7 +273,11 @@
       </section>
 
       <section id="about" hidden>
-        <button class="pill back" type="button" data-back>&lsaquo; Back</button>
+        <div class="top">
+          <button class="pill back" type="button" data-back>
+            &lsaquo; Back
+          </button>
+        </div>
         <h2>How it works</h2>
         <h3>What turns a place orange</h3>
         <p>It is far from any way in, and nobody could live on the ground.</p>
@@ -402,6 +414,6 @@
 
     <img id="tex" alt="" style="display: none" src="data/world.png" />
     <img id="ntex" alt="" style="display: none" src="data/names.png" />
-    <script src="js/app.js?v=21" defer></script>
+    <script src="js/app.js?v=22" defer></script>
   </body>
 </html>

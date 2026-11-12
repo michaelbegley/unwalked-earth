@@ -1378,15 +1378,31 @@ function selectLL(la, lo, label) {
     acc < 8
       ? "Under 10 km"
       : "About " + number(Math.round(acc / step) * step) + " km";
-  $("pground").textContent =
-    (b & 4 ? "Permanent ice" : "Ice-free") +
-    (elev >= 300 ? ", about " + number(elev) + " m up" : "");
   {
     const icy = !!(b & 4) || g[0] < -60,
       L = icy ? 80 : 120,
       reach = 1 - Math.exp(-Math.pow(acc / L, 1.2)),
       ds = Math.round(100 * reach),
       ratio = reach > 0.15 ? s / (100 * reach) : 0;
+    {
+      const kind =
+          b & 4
+            ? "Permanent ice"
+            : reach < 0.15
+              ? ""
+              : ratio >= 0.88
+                ? "High, steep ground"
+                : ratio >= 0.68
+                  ? elev >= 3500
+                    ? "High country"
+                    : "Open desert"
+                  : ratio >= 0.45
+                    ? "Forest, grassland or tundra"
+                    : "",
+        up = elev >= 300 ? "about " + number(elev) + " m up" : "",
+        text = kind && up ? kind + ", " + up : kind || up || "Low ground";
+      $("pground").textContent = text[0].toUpperCase() + text.slice(1);
+    }
     const way = [
       "The nearest road, railway or track",
       "The nearest town, airstrip, mine or other known site",
@@ -1548,7 +1564,7 @@ function fillRegions() {
   ).join("");
   $("rlist").innerHTML = REGIONS.map(
     (r, i) =>
-      `<li>${r.line} <button class="textlink" type="button" data-v="${i}">More</button></li>`,
+      `<li>${r.line.split(/(?<=\.)\s/)[0]} <button class="textlink" type="button" data-v="${i}">More</button></li>`,
   ).join("");
 }
 function openRegion(e) {
@@ -1925,7 +1941,10 @@ function fromHash() {
   return true;
 }
 card.addEventListener("click", (e) => {
-  if (e.target.closest("[data-back]")) show("intro");
+  if (e.target.closest("[data-back]")) {
+    show("intro");
+    if (view.k > 1.5) zoomTo(1);
+  }
 });
 addEventListener("keydown", (e) => {
   if (e.key === "Escape") show("intro");

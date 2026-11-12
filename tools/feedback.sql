@@ -26,3 +26,20 @@ $$;
 
 revoke all on function public.send_feedback(text, text) from public;
 grant execute on function public.send_feedback(text, text) to anon;
+
+-- The stats page shows how many notes there are, never the notes themselves.
+create or replace function public.feedback_count()
+returns json
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select json_build_object(
+    'all_time', (select count(*) from public.feedback),
+    'last_7_days', (select count(*) from public.feedback where sent > now() - interval '7 days')
+  );
+$$;
+
+revoke all on function public.feedback_count() from public;
+grant execute on function public.feedback_count() to anon;
