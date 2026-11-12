@@ -124,7 +124,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--ochre);outline-
   <section>
     <h2>How the score works</h2>
     <ul class="notes">
-      <li><b>Way in.</b> Distance to the nearest road, railway, town of 1,000+ people, airport, port or research station. Rivers and coasts count as slower ways in.</li>
+      <li><b>Way in.</b> Distance to the nearest road, railway, town of 1,000+ people, airport, port or research station. Rivers and coasts count as slower ways in. A published travel-time map adds smaller roads and tracks: land more than a long walk from any fast route scores higher.</li>
       <li><b>Ground.</b> Ice sheets and Antarctica can reach 100. Sand desert tops out near 75, very high ground near 85, forest, steppe and tundra near 55, because people have lived on or crossed that ground for thousands of years.</li>
       <li><b>Lights.</b> Any glow at night pulls the score down.</li>
       <li><b>Grain.</b> Each cell is about 10 km across. The score is about the cell, so a walked valley and an unclimbed cliff beside it share one number.</li>
@@ -136,12 +136,12 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--ochre);outline-
     <ul class="notes">
       <li>It is a model, with no record of real footsteps behind it. Nobody keeps that record.</li>
       <li>Places that closed, or are too small for a towns list, are missing: old research stations, mines, gas fields, camps. A fact check on 11 Nov 2026 found five near the top spots and added them: Plateau Station and Byrd Station in Antarctica, the EastGRIP camp in Greenland, the Moomba gas town in Australia and the Veladero gold mine in Argentina. More are certainly missing.</li>
-      <li>The road layer skips desert tracks and logging roads, so central Australia and the Sahara score too high.</li>
+      <li>Tracks made after 2015, and ones nobody has mapped, are still missing.</li>
       <li>Hunters, herders and nomads ranged far from any town. The ground ceilings only roughly allow for that.</li>
       <li>Most expedition routes across Antarctica and Greenland are missing. Only the supply track to the South Pole is drawn.</li>
       <li>Oceans are left out. Almost none of the seafloor has been visited in person.</li>
     </ul>
-    <p class="statline" style="margin-top:10px">Data: Natural Earth 1:10m layers, GeoNames towns, a NASA night-lights image and a coarse elevation image. Version 1.2, 11 Nov 2026.</p>
+    <p class="statline" style="margin-top:10px">Data: Natural Earth 1:10m layers, GeoNames towns, the Malaria Atlas Project travel-time map (Weiss et al. 2018), the COMNAP Antarctic facilities list, a NASA night-lights image and a coarse elevation image. Version 2.0, 11 Nov 2026.</p>
   </section>
 </aside>
 
@@ -237,7 +237,7 @@ cv.addEventListener('wheel',e=>{e.preventDefault();stopSpin();st.k=Math.min(7,Ma
 document.getElementById('zin').onclick=()=>{stopSpin();st.k=Math.min(7,st.k*1.5);draw(1)};
 document.getElementById('zout').onclick=()=>{stopSpin();st.k=Math.max(.8,st.k/1.5);draw(1)};
 
-const WAYS=['road or railway','town, airport or station','coast','river'];
+const WAYS=['road, railway or track','town, airport or station','coast','river'];
 const fmt=n=>Math.round(n).toLocaleString('en-US');
 function ll(lat,lon){return Math.abs(lat).toFixed(2)+'°'+(lat<0?'S':'N')+'  '+Math.abs(lon).toFixed(2)+'°'+(lon<0?'W':'E')}
 function read(mx,my){

@@ -10,14 +10,14 @@ An interactive globe that guesses where no person has ever stood. Each ~10 km pa
 - **Ground.** Ice sheets and Antarctica can reach 100. Sand desert tops out near 75, very high ground near 85, everything else near 55.
 - **Lights.** Any glow at night pulls the score down.
 
-It is a model. Nobody keeps a record of real footsteps. The road layer skips desert tracks, so central Australia and the Sahara score too high. Oceans are not scored.
+It is a model. Nobody keeps a record of real footsteps. A fact check found stations, mines and camps near several top spots that the data lacked; those were added, and more are certainly missing. Oceans are not scored.
 
 ## Rebuild
 
-`build/build.py` makes the score grid, `build/export.py` makes the texture and stats, and both get inlined into `build/template.html` to produce `index.html`.
+`build/build.py` makes the base score grid, `build/tt.py` shrinks the travel-time map to the same grid, `build/score2.py` folds in travel time and the Antarctic facilities list, `build/export.py` makes the texture and stats, and both get inlined into `build/template.html` to produce `index.html`.
 
 ## Data
 
-Natural Earth 1:10m vectors, GeoNames towns (npm `all-the-cities`), and the elevation, night-lights and land-colour textures from the three-globe examples.
+Natural Earth 1:10m vectors, the Malaria Atlas Project travel-time-to-cities map (Weiss et al. 2018), the COMNAP Antarctic facilities list, GeoNames towns (npm `all-the-cities`), and the elevation, night-lights and land-colour textures from the three-globe examples.
 
-Version 1, 11 Nov 2026.
+Version 2.0, 11 Nov 2026.
