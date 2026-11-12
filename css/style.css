@@ -643,6 +643,10 @@ dd {
 
 /* fingers need bigger targets than a mouse, and iOS zooms the page on inputs under 16px */
 @media (pointer: coarse) {
+  .time input {
+    height: 28px;
+    margin-top: 4px;
+  }
   #find {
     font-size: 16px;
   }
