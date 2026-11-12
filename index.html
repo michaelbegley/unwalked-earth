@@ -14,6 +14,10 @@
       content="A globe showing the land where probably nobody has ever stood, with a score for every place on Earth."
     />
     <link rel="canonical" href="https://unwalked.earth/" />
+    <link rel="icon" href="favicon.ico" sizes="48x48" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+    <meta name="theme-color" content="#05060b" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Unwalked Earth" />
     <meta property="og:description" content="A map of where probably nobody has ever stood." />
@@ -32,7 +36,9 @@
     <aside id="card">
       <section id="intro">
         <h1>Unwalked Earth</h1>
-        <p class="lede">Orange is land where probably nobody has ever stood. <span id="stat"></span></p>
+        <p class="lede">
+          Orange is land where probably nobody has ever stood. <span id="stat">Loading.</span>
+        </p>
         <div class="key"><span>Walked</span><i></i><span>Never</span></div>
         <input
           class="find"
@@ -251,7 +257,18 @@
             OpenStreetMap search
           </li>
         </ul>
+        <h3>Privacy</h3>
+        <p>No cookies. No accounts. Saved places stay on your device.</p>
+        <p>Each visit adds one to a count. Nothing about you is kept.</p>
+        <p>
+          When you tap a place, your browser asks Wikipedia, Wikimedia Commons, GBIF, iNaturalist, Open-Meteo,
+          EOX and NASA about that spot. Search asks OpenStreetMap.
+        </p>
         <p style="margin-top: 16px">
+          <a href="https://github.com/michaelbegley/unwalked-earth/issues" target="_blank" rel="noopener"
+            >Report a wrong spot</a
+          >
+          &nbsp;
           <a href="https://github.com/michaelbegley/unwalked-earth" target="_blank" rel="noopener"
             >Code on GitHub</a
           >
