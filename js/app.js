@@ -2100,7 +2100,8 @@ function setTime(p, moving) {
 }
 function stopPlay() {
   playing = 0;
-  $("timeplay").textContent = "Play";
+  $("timeplay").classList.remove("on");
+  $("timeplay").setAttribute("aria-label", "Play");
 }
 $("time").oninput = (e) => {
   stopPlay();
@@ -2117,7 +2118,8 @@ $("timeplay").onclick = () => {
     from = +$("time").value >= 100 ? 0 : +$("time").value,
     began = performance.now(),
     length = 14000 * (1 - from / 100);
-  $("timeplay").textContent = "Stop";
+  $("timeplay").classList.add("on");
+  $("timeplay").setAttribute("aria-label", "Pause");
   (function tick(now) {
     if (id !== playing) return;
     const t = Math.min(1, (now - began) / length),

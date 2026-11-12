@@ -59,7 +59,7 @@
         "description": "A map of where nobody has stood, probably."
       }
     </script>
-    <link rel="stylesheet" href="css/style.css?v=23" />
+    <link rel="stylesheet" href="css/style.css?v=25" />
   </head>
   <body>
     <canvas id="sky" aria-hidden="true"></canvas>
@@ -77,18 +77,30 @@
         </p>
         <div class="key"><span>Walked</span><i></i><span>Never</span></div>
         <div class="time" id="timebox" hidden>
-          <div class="timehead">
-            <span id="timelabel">Today</span>
-            <button class="textlink" id="timeplay" type="button">Play</button>
+          <span id="timelabel">Today</span>
+          <div class="timerow">
+            <button
+              class="playbtn"
+              id="timeplay"
+              type="button"
+              aria-label="Play"
+            >
+              <svg class="iplay" viewBox="0 0 16 16" aria-hidden="true">
+                <path d="M5.5 3.4v9.2L13 8z" />
+              </svg>
+              <svg class="ipause" viewBox="0 0 16 16" aria-hidden="true">
+                <path d="M4.5 3.5h2.6v9H4.5zM8.9 3.5h2.6v9H8.9z" />
+              </svg>
+            </button>
+            <input
+              id="time"
+              type="range"
+              min="0"
+              max="100"
+              value="100"
+              aria-label="Time"
+            />
           </div>
-          <input
-            id="time"
-            type="range"
-            min="0"
-            max="100"
-            value="100"
-            aria-label="Time"
-          />
         </div>
         <input
           class="find"
@@ -120,12 +132,9 @@
         <p class="count" id="count" hidden>
           <i class="live"></i><span id="online"></span>
         </p>
-        <p class="count">
-          <span id="version">v0.51</span> &nbsp;<button
-            class="textlink"
-            id="feedbacklink"
-            type="button"
-          >
+        <p class="count ends">
+          <span id="version">v0.52</span>
+          <button class="textlink" id="feedbacklink" type="button">
             Feedback
           </button>
         </p>
@@ -451,6 +460,6 @@
 
     <img id="tex" alt="" style="display: none" src="data/world.png" />
     <img id="ntex" alt="" style="display: none" src="data/names.png" />
-    <script src="js/app.js?v=24" defer></script>
+    <script src="js/app.js?v=25" defer></script>
   </body>
 </html>

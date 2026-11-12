@@ -128,18 +128,48 @@ p {
 .time {
   margin-top: 12px;
 }
-.timehead {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
+.time {
   font-size: 13px;
   color: var(--soft);
 }
+.timerow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
 .time input {
-  display: block;
-  width: 100%;
-  margin: 8px 0 0;
+  flex: 1;
+  min-width: 0;
+  margin: 0;
   accent-color: var(--blue);
+}
+.playbtn {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--blue);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+.playbtn:hover {
+  background: #0077ed;
+}
+.playbtn svg {
+  width: 14px;
+  height: 14px;
+  fill: #fff;
+}
+.playbtn .ipause,
+.playbtn.on .iplay {
+  display: none;
+}
+.playbtn.on .ipause {
+  display: block;
 }
 .hint {
   margin-top: 12px;
@@ -220,6 +250,11 @@ p {
   margin-top: 16px;
   padding-top: 16px;
   border-top: 1px solid var(--line);
+}
+.count.ends {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
 }
 .count + .count {
   margin-top: 4px;
@@ -664,7 +699,14 @@ dd {
 @media (pointer: coarse) {
   .time input {
     height: 28px;
-    margin-top: 4px;
+  }
+  .playbtn {
+    width: 36px;
+    height: 36px;
+  }
+  .playbtn svg {
+    width: 16px;
+    height: 16px;
   }
   #find {
     font-size: 16px;
