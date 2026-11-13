@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'none'; img-src 'self' https://upload.wikimedia.org https://thumb.wikimedia.org https://gibs.earthdata.nasa.gov https://tiles.maps.eox.at; connect-src 'self' https://en.wikipedia.org https://commons.wikimedia.org https://api.open-meteo.com https://api.gbif.org https://api.inaturalist.org https://nominatim.openstreetmap.org https://cpzhsztczixiidxypvmb.supabase.co; style-src 'self' 'unsafe-inline'; script-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'"
+      content="default-src 'none'; img-src 'self' https://upload.wikimedia.org https://thumb.wikimedia.org https://gibs.earthdata.nasa.gov https://tiles.maps.eox.at; connect-src 'self' https://en.wikipedia.org https://commons.wikimedia.org https://api.open-meteo.com https://api.gbif.org https://api.inaturalist.org https://nominatim.openstreetmap.org https://cpzhsztczixiidxypvmb.supabase.co https://cloudflareinsights.com; style-src 'self' 'unsafe-inline'; script-src 'self' https://static.cloudflareinsights.com; manifest-src 'self'; base-uri 'none'; form-action 'none'"
     />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <title>unwalked.earth: a map of where nobody has ever stood</title>
@@ -475,5 +475,6 @@
     <img id="tex" alt="" style="display: none" src="data/world.png" />
     <img id="ntex" alt="" style="display: none" src="data/names.png" />
     <script src="js/app.js?v=31" defer></script>
-  </body>
+  <!-- Cloudflare Web Analytics: counts visits for the console, no cookies --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "71261f79b99f4a49809c2d4cc6772905"}'></script>
+</body>
 </html>
