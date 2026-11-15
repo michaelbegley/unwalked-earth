@@ -745,6 +745,7 @@ dd {
 @media (pointer: coarse) {
   /* small text links get a taller area to tap, without moving */
   #feedbacklink,
+  #today,
   #savedlist button {
     padding-top: 12px;
     padding-bottom: 12px;
@@ -883,4 +884,35 @@ dl + .near,
   #card::-webkit-scrollbar {
     display: none;
   }
+}
+
+/* least walked list and the note under a verdict */
+h2.sub {
+  margin-top: 24px;
+}
+.least {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+}
+.least button {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  padding: 8px 0;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: none;
+  font-size: 14px;
+  text-align: left;
+  color: inherit;
+}
+.least span {
+  color: var(--soft);
+  white-space: nowrap;
+}
+.hint .textlink {
+  font-size: inherit;
 }

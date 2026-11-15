@@ -59,7 +59,7 @@
         "description": "A map of where nobody has stood, probably."
       }
     </script>
-    <link rel="stylesheet" href="css/style.css?v=63" />
+    <link rel="stylesheet" href="css/style.css?v=64" />
   </head>
   <body>
     <canvas id="sky" aria-hidden="true"></canvas>
@@ -123,7 +123,10 @@
         <button class="primary" id="lucky" type="button">
           Random unwalked spot
         </button>
-        <p class="hint">Tap the globe or pick a region</p>
+        <p class="hint">
+          Tap the globe, pick a region, or see
+          <button class="textlink" id="today" type="button">today's spot</button>
+        </p>
         <div class="chips" id="go"></div>
         <div id="savedwrap" hidden>
           <p class="hint">Saved on this device</p>
@@ -141,7 +144,7 @@
           <i class="live"></i><span id="online"></span>
         </p>
         <p class="count ends">
-          <span id="version">v0.63</span>
+          <span id="version">v0.64</span>
           <button class="textlink" id="feedbacklink" type="button">
             Feedback
           </button>
@@ -166,6 +169,9 @@
             ><button class="textlink" id="plink" type="button">
               Copy link
             </button>
+            &nbsp;<button class="textlink" id="ppic" type="button">
+              Picture
+            </button>
             &nbsp;<button class="textlink" id="psave" type="button" hidden>
               Save
             </button></span
@@ -184,6 +190,7 @@
           <div class="meter"><i id="pbar"></i></div>
           <p class="verdict" id="pverdict"></p>
           <p class="verdict" id="pthen" hidden></p>
+          <p class="verdict" id="pnote2" hidden></p>
           <dl>
             <div>
               <dt>Nearest way in</dt>
@@ -294,6 +301,14 @@
         <h2>Top countries</h2>
         <p class="lede">Orange land by country.</p>
         <ol class="wlist" id="wlist"></ol>
+        <div id="leastwrap" hidden>
+          <h2 class="sub">Least walked spot in each state</h2>
+          <p class="lede">
+            The most remote point in every US state. Search any country or
+            state for its own.
+          </p>
+          <ol class="least" id="least"></ol>
+        </div>
       </section>
 
       <section id="feedback" hidden>
@@ -500,9 +515,9 @@
       ><button id="zout" type="button" aria-label="Zoom out">&minus;</button>
     </div>
 
-    <img id="texs" alt="" style="display: none" src="data/world-s.png?v=63" fetchpriority="high" />
-    <img id="ntex" alt="" style="display: none" src="data/names.png?v=63" />
-    <img id="tex" alt="" style="display: none" src="data/world.png?v=63" fetchpriority="low" />
-    <script src="js/app.js?v=63" defer></script>
+    <img id="texs" alt="" style="display: none" src="data/world-s.png?v=64" fetchpriority="high" />
+    <img id="ntex" alt="" style="display: none" src="data/names.png?v=64" />
+    <img id="tex" alt="" style="display: none" src="data/world.png?v=64" fetchpriority="low" />
+    <script src="js/app.js?v=64" defer></script>
 </body>
 </html>

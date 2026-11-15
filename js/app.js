@@ -1503,6 +1503,7 @@ function openMark(hit) {
     ],
     ask: hit.ask.concat("Is anything in the notes above wrong or out of date?"),
   });
+  stampNote();
   show("place");
   live(hit.lat, hit.lon, [hit.wikipedia, hit.name], null);
 }
@@ -1583,6 +1584,7 @@ function selectLL(la, lo, label) {
       lines: ["The map does not score the oceans."],
       ask: QUESTIONS.water,
     });
+    stampNote();
     show("place");
     live(g[0], g[1], [], null);
     return;
@@ -1783,6 +1785,7 @@ function selectLL(la, lo, label) {
     ],
     ask: QUESTIONS.land,
   });
+  stampNote();
   show("place");
   live(g[0], g[1], (label ? [label] : []).concat([nm[0], nm[1]]), s);
 }
@@ -1870,6 +1873,7 @@ function openRegion(e) {
       "Is anything in the notes above wrong or out of date?",
     ],
   });
+  stampNote();
   show("place");
 }
 $("go").addEventListener("click", openRegion);
@@ -2052,6 +2056,194 @@ function offer(rows) {
   );
   list.hidden = !rows.length;
 }
+// The least walked spot in each country and state, and one spot a day that everyone shares.
+let SPOTS = null,
+  cardNote = "";
+function leastWalked(p) {
+  cardNote =
+    "The least walked spot in " +
+    p.name +
+    (p.score < 50 ? ". Even here, people have been." : ".");
+  goTo(p.lat, p.lon);
+}
+function todaysSpot() {
+  // the same pick for everyone until midnight UTC: an area by the date, then a spot in it
+  const day = Math.floor(Date.now() / 864e5),
+    mix = (n) => {
+      let x = (n ^ 0x9e3779b9) >>> 0;
+      x = Math.imul(x ^ (x >>> 16), 0x85ebca6b) >>> 0;
+      x = Math.imul(x ^ (x >>> 13), 0xc2b2ae35) >>> 0;
+      return (x ^ (x >>> 16)) >>> 0;
+    },
+    area = (k) => k.split("|")[0],
+    areas = [...new Set([...spotGroups.keys()].map(area))].sort();
+  if (!areas.length) return;
+  const pick = areas[mix(day) % areas.length],
+    cells = [...spotGroups.entries()]
+      .filter(([k]) => area(k) === pick)
+      .flatMap(([, v]) => v)
+      .sort((a, b) => a - b),
+    i = cells[mix(day * 31 + 7) % cells.length],
+    y = (i / WORLD_W) | 0,
+    x = i - y * WORLD_W;
+  cardNote = "Today's spot. Everyone gets the same one until midnight UTC.";
+  ev("Today");
+  goTo(90 - ((y + 0.5) * 180) / WORLD_H, -180 + ((x + 0.5) * 360) / WORLD_W);
+}
+$("today").onclick = todaysSpot;
+function loadSpots() {
+  fetch("data/spots.json?v=64")
+    .then((r) => r.json())
+    .then((d) => {
+      SPOTS = d.countries
+        .map((p) => Object.assign({ kind: "Least walked spot" }, p))
+        .concat(
+          d.states.map((p) =>
+            Object.assign({ kind: "Least walked spot, " + p.country }, p),
+          ),
+        );
+      const us = d.states
+        .filter((p) => p.country === "United States")
+        .sort((a, b) => b.score - a.score || b.km - a.km);
+      $("least").replaceChildren(
+        ...us.map((p) => {
+          const li = document.createElement("li"),
+            b = document.createElement("button"),
+            n = document.createElement("b"),
+            v = document.createElement("span");
+          b.type = "button";
+          n.textContent = p.name;
+          v.textContent = p.score + " out of 100";
+          b.append(n, v);
+          b.onclick = () => {
+            if (sheet.matches) setStop("rest", true);
+            leastWalked(p);
+          };
+          li.append(b);
+          return li;
+        }),
+      );
+      $("leastwrap").hidden = false;
+    })
+    .catch(() => {});
+}
+function stampNote() {
+  const n = $("pnote2");
+  n.textContent = cardNote;
+  n.hidden = !cardNote;
+  cardNote = "";
+}
+// A picture of the place to share: the globe as it is drawn now, the name, and one line about it.
+async function sharePicture() {
+  const W = 1200,
+    H = 630,
+    c = document.createElement("canvas"),
+    x = c.getContext("2d"),
+    globe = $("globe"),
+    name = $("pname").textContent,
+    score = $("pscore").textContent,
+    far = $("far").hidden ? "" : $("fartext").textContent,
+    font = (px, w) =>
+      `${w} ${px}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+  c.width = W;
+  c.height = H;
+  x.fillStyle = "#fff";
+  x.fillRect(0, 0, W, H);
+  // the globe, cut square around its centre, on the right
+  const side = Math.min(
+      globe.width,
+      globe.height,
+      baseRadius * view.k * 2.2 * dpr,
+    ),
+    gx = Math.max(0, Math.min(globe.width - side, centerX * dpr - side / 2)),
+    gy = Math.max(0, Math.min(globe.height - side, centerY * dpr - side / 2)),
+    box = 454;
+  x.save();
+  x.beginPath();
+  x.arc(W - 88 - box / 2, H / 2, box / 2, 0, Math.PI * 2);
+  x.clip();
+  x.fillStyle = "#000";
+  x.fillRect(W - 88 - box, H / 2 - box / 2, box, box);
+  x.drawImage(
+    globe,
+    gx,
+    gy,
+    side,
+    side,
+    W - 88 - box,
+    H / 2 - box / 2,
+    box,
+    box,
+  );
+  x.restore();
+  // words on the left, wrapped to the space beside the globe
+  const wide = W - 88 * 3 - box,
+    wrap = (text, px, w, max) => {
+      x.font = font(px, w);
+      const lines = [];
+      let line = "";
+      for (const word of text.split(" ")) {
+        const next = line ? line + " " + word : word;
+        if (x.measureText(next).width > wide && line) {
+          lines.push(line);
+          line = word;
+        } else line = next;
+      }
+      lines.push(line);
+      return lines.slice(0, max);
+    },
+    title = wrap(name, 56, 600, 2),
+    about = wrap(
+      +score >= 50
+        ? "Probably nobody has ever stood here. It scores " +
+            score +
+            " out of 100."
+        : far
+          ? "People have been here. " +
+            far.replace(/^About/, "The nearest unwalked ground is about")
+          : "People have been here. It scores " + score + " out of 100.",
+      30,
+      400,
+      4,
+    );
+  let y = H / 2 - (title.length * 64 + 24 + about.length * 42) / 2 + 48;
+  x.fillStyle = "#1d1d1f";
+  x.font = font(56, 600);
+  for (const l of title) {
+    x.fillText(l, 88, y);
+    y += 64;
+  }
+  y += 8;
+  x.fillStyle = "#6e6e73";
+  x.font = font(30, 400);
+  for (const l of about) {
+    x.fillText(l, 88, y);
+    y += 42;
+  }
+  x.fillStyle = "#e37200";
+  x.font = font(28, 500);
+  x.fillText("unwalked.earth", 88, H - 64);
+  const b = $("ppic"),
+    blob = await new Promise((done) => c.toBlob(done, "image/png")),
+    file = new File([blob], "unwalked-earth.png", { type: "image/png" });
+  ev("Share", { how: "picture" });
+  try {
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], url: location.href });
+      return;
+    }
+  } catch (e) {
+    if (e && e.name === "AbortError") return;
+  }
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "unwalked-earth.png";
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  b.textContent = "Saved";
+  setTimeout(() => (b.textContent = "Picture"), 1600);
+}
+$("ppic").onclick = sharePicture;
 function goTo(lat, lon, name) {
   $("find").value = "";
   openAt(lat, lon, name);
@@ -2072,6 +2264,11 @@ $("find").addEventListener("input", (e) => {
         name: m.name,
         kind: m.where,
         go: () => goTo(m.lat, m.lon),
+      })),
+      ...(SPOTS || []).map((p) => ({
+        name: p.name,
+        kind: p.kind,
+        go: () => leastWalked(p),
       })),
       ...REGIONS.map((r, i) => ({
         name: r.name,
@@ -2254,6 +2451,7 @@ function boot(what) {
     candidates();
     size();
     fromHash();
+    loadSpots();
     addEventListener("hashchange", () => {
       if (fromHash()) draw(1);
     });
@@ -2298,12 +2496,12 @@ let TIME = null,
 // asked for once the globe is up, so it does not slow the first draw
 const loadTime = () =>
   Promise.all([
-    fetch("data/time.json?v=63").then((r) => r.json()),
+    fetch("data/time.json?v=64").then((r) => r.json()),
     new Promise((done, fail) => {
       const im = new Image();
       im.onload = () => done(im);
       im.onerror = fail;
-      im.src = "data/time.png?v=63";
+      im.src = "data/time.png?v=64";
     }),
   ])
     .then(([meta, im]) => {
@@ -2408,7 +2606,7 @@ $("timeplay").onclick = () => {
 };
 Promise.all(
   ["data/meta.json", "data/names.json", "data/places.json"].map((u) =>
-    fetch(u + "?v=63").then((r) => r.json()),
+    fetch(u + "?v=64").then((r) => r.json()),
   ),
 )
   .then((d) => {
