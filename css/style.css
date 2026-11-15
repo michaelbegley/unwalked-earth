@@ -746,6 +746,7 @@ dd {
   /* small text links get a taller area to tap, without moving */
   #feedbacklink,
   #today,
+  #pclaimjump,
   #savedlist button {
     padding-top: 12px;
     padding-bottom: 12px;
@@ -929,4 +930,8 @@ h2.sub {
 }
 #pclaimform .find {
   width: 100%;
+}
+
+#pclaimjump {
+  margin-top: 4px;
 }

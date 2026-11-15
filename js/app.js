@@ -1725,6 +1725,7 @@ function selectLL(la, lo, label) {
     $("pkeepwrap").hidden = !keep.length;
     // only orange places ask whether someone has been there
     $("pclaimwrap").hidden = s < 50;
+    $("pclaimjump").hidden = s < 50;
     $("pclaim").hidden = false;
     $("pclaimform").hidden = true;
     $("pclaimnote").hidden = true;
@@ -2101,7 +2102,7 @@ function todaysSpot() {
 }
 $("today").onclick = todaysSpot;
 function loadSpots() {
-  fetch("data/spots.json?v=67")
+  fetch("data/spots.json?v=68")
     .then((r) => r.json())
     .then((d) => {
       SPOTS = d.countries
@@ -2254,6 +2255,19 @@ async function sharePicture() {
 }
 $("ppic").onclick = sharePicture;
 // "I have stood here": the spot and an optional note go to a list the owner reads. Nothing is shown publicly.
+// the link under the verdict opens the same form further down the card
+$("pclaimjump").onclick = () => {
+  if (sheet.matches) setStop("full", true);
+  $("pclaim").click();
+  setTimeout(
+    () =>
+      $("pclaimwrap").scrollIntoView({
+        behavior: calm ? "auto" : "smooth",
+        block: "center",
+      }),
+    sheet.matches ? 320 : 0,
+  );
+};
 let claimHere = false;
 $("pclaim").onclick = () => {
   $("pclaim").hidden = true;
@@ -2582,12 +2596,12 @@ let TIME = null,
 // asked for once the globe is up, so it does not slow the first draw
 const loadTime = () =>
   Promise.all([
-    fetch("data/time.json?v=67").then((r) => r.json()),
+    fetch("data/time.json?v=68").then((r) => r.json()),
     new Promise((done, fail) => {
       const im = new Image();
       im.onload = () => done(im);
       im.onerror = fail;
-      im.src = "data/time.png?v=67";
+      im.src = "data/time.png?v=68";
     }),
   ])
     .then(([meta, im]) => {
@@ -2692,7 +2706,7 @@ $("timeplay").onclick = () => {
 };
 Promise.all(
   ["data/meta.json", "data/names.json", "data/places.json"].map((u) =>
-    fetch(u + "?v=67").then((r) => r.json()),
+    fetch(u + "?v=68").then((r) => r.json()),
   ),
 )
   .then((d) => {
