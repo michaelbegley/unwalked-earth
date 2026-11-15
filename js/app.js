@@ -1729,6 +1729,9 @@ function selectLL(la, lo, label) {
     $("pclaimform").hidden = true;
     $("pclaimnote").hidden = true;
     $("pclaimtext").value = "";
+    $("pclaimproof").value = "";
+    $("pclaimherenote").hidden = true;
+    claimHere = false;
     view.arc = null;
     $("far").hidden = true;
     if (s < 50) {
@@ -2098,7 +2101,7 @@ function todaysSpot() {
 }
 $("today").onclick = todaysSpot;
 function loadSpots() {
-  fetch("data/spots.json?v=65")
+  fetch("data/spots.json?v=66")
     .then((r) => r.json())
     .then((d) => {
       SPOTS = d.countries
@@ -2251,15 +2254,51 @@ async function sharePicture() {
 }
 $("ppic").onclick = sharePicture;
 // "I have stood here": the spot and an optional note go to a list the owner reads. Nothing is shown publicly.
+let claimHere = false;
 $("pclaim").onclick = () => {
   $("pclaim").hidden = true;
   $("pclaimform").hidden = false;
-  $("pclaimtext").focus();
+};
+// The check runs on this device. Only "was within 25 km" is sent, never where the visitor is.
+$("pclaimhere").onclick = () => {
+  const at = view.sel,
+    say = (t) => {
+      $("pclaimherenote").textContent = t;
+      $("pclaimherenote").hidden = false;
+    };
+  if (!at || !navigator.geolocation)
+    return say("This device cannot check that.");
+  say("Checking.");
+  navigator.geolocation.getCurrentPosition(
+    (p) => {
+      const R = Math.PI / 180,
+        a =
+          Math.sin(((p.coords.latitude - at[0]) * R) / 2) ** 2 +
+          Math.cos(at[0] * R) *
+            Math.cos(p.coords.latitude * R) *
+            Math.sin(((p.coords.longitude - at[1]) * R) / 2) ** 2,
+        km = 2 * 6371 * Math.asin(Math.sqrt(a));
+      claimHere = km <= 25;
+      say(
+        claimHere
+          ? "You are here. Your location stays on this device."
+          : "You are about " + number(Math.round(km)) + " km from this spot.",
+      );
+    },
+    () => say("Could not get your location."),
+    { enableHighAccuracy: true, timeout: 15000 },
+  );
 };
 $("pclaimsend").onclick = () => {
   const at = view.sel,
     note = $("pclaimnote");
   if (!at) return;
+  const proof = $("pclaimproof").value.trim();
+  if (!claimHere && !/^https?:\/\/\S+\.\S+/i.test(proof)) {
+    note.textContent = "Add a link, or check that you are here.";
+    note.hidden = false;
+    return;
+  }
   $("pclaimsend").disabled = true;
   fetch(TALLY.replace(/hit$/, "send_claim"), {
     method: "POST",
@@ -2269,6 +2308,8 @@ $("pclaimsend").onclick = () => {
       lon: +at[1].toFixed(3),
       note: $("pclaimtext").value.trim().slice(0, 500),
       ver: $("version").textContent,
+      here: claimHere,
+      proof: proof.slice(0, 300),
     }),
   })
     .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
@@ -2541,12 +2582,12 @@ let TIME = null,
 // asked for once the globe is up, so it does not slow the first draw
 const loadTime = () =>
   Promise.all([
-    fetch("data/time.json?v=65").then((r) => r.json()),
+    fetch("data/time.json?v=66").then((r) => r.json()),
     new Promise((done, fail) => {
       const im = new Image();
       im.onload = () => done(im);
       im.onerror = fail;
-      im.src = "data/time.png?v=65";
+      im.src = "data/time.png?v=66";
     }),
   ])
     .then(([meta, im]) => {
@@ -2651,7 +2692,7 @@ $("timeplay").onclick = () => {
 };
 Promise.all(
   ["data/meta.json", "data/names.json", "data/places.json"].map((u) =>
-    fetch(u + "?v=65").then((r) => r.json()),
+    fetch(u + "?v=66").then((r) => r.json()),
   ),
 )
   .then((d) => {

@@ -916,3 +916,11 @@ h2.sub {
 .hint .textlink {
   font-size: inherit;
 }
+
+/* proof for "I have stood here" */
+#pclaimform > * {
+  margin-top: 8px;
+}
+#pclaimform .find {
+  width: 100%;
+}
