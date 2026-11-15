@@ -260,7 +260,7 @@ p {
   justify-content: space-between;
   align-items: baseline;
 }
-.count + .count {
+.count:not([hidden]) + .count {
   margin-top: 4px;
 }
 textarea.find {
@@ -272,7 +272,7 @@ textarea.find {
   display: inline-block;
   width: 8px;
   height: 8px;
-  margin-right: 6px;
+  margin-right: 8px;
   border-radius: 50%;
   background: #34c759;
   animation: live 1.6s ease-in-out infinite;
@@ -810,6 +810,7 @@ dd {
 #rlist button {
   display: inline;
 }
+dl + .near,
 #kblock dl + .near {
   border-top: 0;
   padding-top: 0;

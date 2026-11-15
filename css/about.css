@@ -1,0 +1,12 @@
+.about {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 32px 20px 64px;
+  font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #1d1d1f;
+}
+.about h1 { font-size: 28px; font-weight: 600; margin: 16px 0; }
+.about h2, .about h3 { font-size: 17px; font-weight: 600; margin: 32px 0 8px; }
+.about p, .about ul { margin: 8px 0; }
+.about ul { padding-left: 20px; }
+.about a { color: #0071e3; }

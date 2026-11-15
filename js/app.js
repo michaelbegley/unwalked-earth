@@ -1,3 +1,42 @@
+// Counts of what people do here, sent to Vercel Web Analytics. Only an action name and the kind of
+// site the visit came from are sent: never a place, a search or anything typed. Off with Do Not Track.
+const QUIET =
+  location.hostname !== "unwalked.earth" ||
+  navigator.doNotTrack === "1" ||
+  navigator.globalPrivacyControl === true;
+let cameVia = "";
+let hush = false;
+function ev(name, data, key) {
+  if (QUIET || hush) return;
+  try {
+    if (key) {
+      if (sessionStorage.getItem("unwalked.ev." + key)) return;
+      sessionStorage.setItem("unwalked.ev." + key, "1");
+    }
+    cameVia = cameVia || cameFrom();
+    window.va("event", { name, data: Object.assign({ src: cameVia }, data) });
+  } catch (e) {}
+}
+if (!QUIET) {
+  window.va =
+    window.va ||
+    function () {
+      (window.vaq = window.vaq || []).push(arguments);
+    };
+  // keep the place (the part after #) and any link tag out of what is sent
+  window.va("beforeSend", (e) =>
+    Object.assign({}, e, { url: location.origin + location.pathname }),
+  );
+  const tag = document.createElement("script");
+  tag.defer = true;
+  tag.src = "/_vercel/insights/script.js";
+  document.head.appendChild(tag);
+  const cf = document.createElement("script");
+  cf.defer = true;
+  cf.src = "https://static.cloudflareinsights.com/beacon.min.js";
+  cf.dataset.cfBeacon = '{"token": "71261f79b99f4a49809c2d4cc6772905"}';
+  document.head.appendChild(cf);
+}
 let META = null,
   NAMES = null;
 // researched notes for the dotted places and the named regions, loaded from data/places.json
@@ -738,6 +777,7 @@ canvas.addEventListener(
     stopSpin();
     coasting = 0;
     motion++;
+    spinning = false;
     const p = pos(e),
       g = unproj(p[0], p[1]);
     zoomTo(
@@ -916,7 +956,7 @@ function writePrompt() {
         ? ""
         : "#" + s.lat.toFixed(3) + "," + s.lon.toFixed(3);
   promptText = [
-    "I am looking at a spot on Unwalked Earth (https://unwalked.earth/" +
+    "I am looking at a spot on unwalked.earth (https://unwalked.earth/" +
       here +
       "), a map that guesses where nobody has ever stood.",
     "",
@@ -975,6 +1015,7 @@ $("aprompt").onclick = async () => {
   const b = $("aprompt");
   try {
     await navigator.clipboard.writeText(promptText);
+    ev("Share", { how: "prompt" });
     b.textContent = "Copied";
     setTimeout(() => {
       b.textContent = "Copy AI prompt";
@@ -1161,6 +1202,7 @@ function show(which) {
 }
 let request = 0,
   current = null;
+const lookups = new Map();
 const getJSON = (u) =>
   fetch(u).then((r) => (r.ok ? r.json() : Promise.reject(r.status)));
 const big = (n) => (n >= 1e6 ? (n / 1e6).toFixed(1) + " million" : number(n));
@@ -1168,7 +1210,11 @@ function live(lat, lon, titles, score) {
   const id = ++request;
   current = { lat, lon };
   try {
-    history.replaceState(null, "", "#" + lat.toFixed(3) + "," + lon.toFixed(3));
+    history.replaceState(
+      null,
+      "",
+      location.pathname + "#" + lat.toFixed(3) + "," + lon.toFixed(3),
+    );
   } catch (e) {}
   // satellite picture: sharp one first, NASA's as the fallback
   const cosl = Math.max(Math.cos(lat * RAD), 0.03),
@@ -1193,7 +1239,7 @@ function live(lat, lon, titles, score) {
     im.classList.add("on");
     cap.textContent = tried
       ? "NASA Blue Marble. About 220 km across."
-      : "Sentinel-2, EOX. About 45 km across.";
+      : "Sentinel-2 cloudless by EOX. About 45 km across.";
   };
   im.onerror = () => {
     if (id !== request) return;
@@ -1433,6 +1479,8 @@ function live(lat, lon, titles, score) {
   });
 }
 function openMark(hit) {
+  ev("Place");
+  ev("Explored", null, "explored");
   view.arc = null;
   view.sel = [hit.lat, hit.lon];
   $("pname").textContent = hit.name;
@@ -1509,6 +1557,8 @@ function pick(mx, my) {
 }
 function selectLL(la, lo, label) {
   if (!world || !nameTex) return;
+  ev("Place");
+  ev("Explored", null, "explored");
   const g = [la, lo];
   view.sel = g;
   const tx = Math.min(WORLD_W - 1, (((g[1] + 180) / 360) * WORLD_W) | 0),
@@ -1727,7 +1777,7 @@ function selectLL(la, lo, label) {
           ]),
       ...(s >= 50
         ? [...$("pkeep").children].map(
-            (li) => "Kept people out: " + li.textContent,
+            (li) => "What keeps people out: " + li.textContent,
           )
         : []),
     ],
@@ -1778,7 +1828,7 @@ function fillRegions() {
   ).join("");
   $("rlist").innerHTML = REGIONS.map(
     (r, i) =>
-      `<li>${r.line.split(/(?<=\.)\s/)[0]} <button class="textlink" type="button" data-v="${i}">More</button></li>`,
+      `<li>${r.line.split(/\.\s/)[0].replace(/\.?$/, ".")} <button class="textlink" type="button" data-v="${i}">More</button></li>`,
   ).join("");
 }
 function openRegion(e) {
@@ -1847,6 +1897,7 @@ $("fbsend").onclick = () => {
       if (!r.ok) throw new Error(r.status);
       $("fbtext").value = "";
       note.textContent = "Sent.";
+      ev("Feedback");
     })
     .catch(() => {
       note.textContent = "Could not send.";
@@ -1876,6 +1927,7 @@ $("plink").onclick = async () => {
   const b = $("plink");
   try {
     await navigator.clipboard.writeText(location.href);
+    ev("Share", { how: "link" });
     b.textContent = "Link copied";
   } catch (e) {
     b.textContent = "Copy it from the address bar";
@@ -1921,6 +1973,7 @@ function candidates() {
 }
 function lucky() {
   if (spinning) return;
+  ev("Random");
   const area = (k) => k.split("|")[0],
     all = [...new Set([...spotGroups.keys()].map(area))];
   let areas = all.filter((a) => !recentGroups.includes(a));
@@ -2043,10 +2096,17 @@ $("find").addEventListener("keydown", async (e) => {
   n.hidden = false;
   n.textContent = "Looking.";
   try {
-    const d = await getJSON(
-      "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&q=" +
-        encodeURIComponent(q),
-    );
+    // the same search is only sent once per visit: the lookup service allows one request a second
+    const key = q.toLowerCase();
+    if (!lookups.has(key))
+      lookups.set(
+        key,
+        await getJSON(
+          "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&q=" +
+            encodeURIComponent(q),
+        ),
+      );
+    const d = lookups.get(key);
     if (!d.length) {
       n.textContent = "Nothing found.";
       return;
@@ -2171,26 +2231,62 @@ function pixels(img, w, h) {
   c.width = w;
   c.height = h;
   const x = c.getContext("2d", { willReadFrequently: true });
-  x.drawImage(img, 0, 0);
+  // the small first copy of the map is stretched to full size, keeping each value exact
+  x.imageSmoothingEnabled = false;
+  x.drawImage(img, 0, 0, w, h);
   return x.getImageData(0, 0, w, h).data;
 }
-let ready = 0;
-function boot() {
-  if (++ready < 3) return;
-  fillStat();
-  fillWhere();
-  world = pixels($("tex"), WORLD_W, WORLD_H);
-  nameTex = pixels($("ntex"), NAMES_W, NAMES_H);
-  smooth();
-  candidates();
-  size();
-  fromHash();
-  if (view.spin) requestAnimationFrame(spin);
+// The map arrives twice: a small copy first so the globe shows quickly, then the full one.
+const got = {};
+let booted = false,
+  sharp = false;
+function boot(what) {
+  got[what] = true;
+  if (!got.json || !got.ntex || !(got.tex || got.texs)) return;
+  if (!booted) {
+    booted = true;
+    sharp = !!got.tex;
+    fillStat();
+    fillWhere();
+    world = pixels($(sharp ? "tex" : "texs"), WORLD_W, WORLD_H);
+    nameTex = pixels($("ntex"), NAMES_W, NAMES_H);
+    smooth();
+    candidates();
+    size();
+    fromHash();
+    addEventListener("hashchange", () => {
+      if (fromHash()) draw(1);
+    });
+    if (view.spin) requestAnimationFrame(spin);
+    loadTime();
+  } else if (got.tex && !sharp) {
+    sharp = true;
+    setTimeout(() => {
+      const at = view.sel,
+        cell = (g) =>
+          (Math.min(WORLD_H - 1, (((90 - g[0]) / 180) * WORLD_H) | 0) *
+            WORLD_W +
+            Math.min(WORLD_W - 1, (((g[1] + 180) / 360) * WORLD_W) | 0)) *
+          4,
+        before = at ? world[cell(at)] : 0;
+      world = pixels($("tex"), WORLD_W, WORLD_H);
+      smooth();
+      spotGroups.clear();
+      candidates();
+      size();
+      // a place opened from the small copy is read again if its score changed
+      if (at && !$("place").hidden && world[cell(at)] !== before) {
+        hush = true;
+        selectLL(at[0], at[1]);
+        hush = false;
+      }
+    }, 0);
+  }
 }
-for (const id of ["tex", "ntex"]) {
+for (const id of ["texs", "tex", "ntex"]) {
   const im = $(id);
-  if (im.complete && im.naturalWidth) boot();
-  else im.addEventListener("load", boot);
+  if (im.complete && im.naturalWidth) boot(id);
+  else im.addEventListener("load", () => boot(id));
 }
 addEventListener("resize", () => {
   if (world) size();
@@ -2199,28 +2295,32 @@ addEventListener("resize", () => {
 let TIME = null,
   timeMap = null,
   eraCode = 0;
-Promise.all([
-  fetch("data/time.json").then((r) => r.json()),
-  new Promise((done, fail) => {
-    const im = new Image();
-    im.onload = () => done(im);
-    im.onerror = fail;
-    im.src = "data/time.png";
-  }),
-])
-  .then(([meta, im]) => {
-    const c = document.createElement("canvas");
-    c.width = meta.w;
-    c.height = meta.h;
-    const x = c.getContext("2d", { willReadFrequently: true });
-    x.drawImage(im, 0, 0);
-    const d = x.getImageData(0, 0, meta.w, meta.h).data;
-    timeMap = new Uint8Array(meta.w * meta.h);
-    for (let i = 0; i < timeMap.length; i++) timeMap[i] = d[i * 4];
-    TIME = meta;
-    $("timebox").hidden = false;
-  })
-  .catch(() => {});
+// asked for once the globe is up, so it does not slow the first draw
+const loadTime = () =>
+  Promise.all([
+    fetch("data/time.json?v=63").then((r) => r.json()),
+    new Promise((done, fail) => {
+      const im = new Image();
+      im.onload = () => done(im);
+      im.onerror = fail;
+      im.src = "data/time.png?v=63";
+    }),
+  ])
+    .then(([meta, im]) => {
+      const c = document.createElement("canvas");
+      c.width = meta.w;
+      c.height = meta.h;
+      const x = c.getContext("2d", { willReadFrequently: true });
+      x.drawImage(im, 0, 0);
+      const d = x.getImageData(0, 0, meta.w, meta.h).data;
+      // red is the whole part of the date code, green the eighths
+      timeMap = new Float32Array(meta.w * meta.h);
+      for (let i = 0; i < timeMap.length; i++)
+        timeMap[i] = d[i * 4] + d[i * 4 + 1] / 256;
+      TIME = meta;
+      $("timebox").hidden = false;
+    })
+    .catch(() => {});
 // years ago for a spot, or 0 when unknown
 function firstPeople(lat, lon) {
   if (!TIME) return 0;
@@ -2251,12 +2351,14 @@ function setTime(p, moving) {
   if (p >= 100) {
     eraCode = 0;
     $("timelabel").textContent = "Today";
+    $("time").setAttribute("aria-valuetext", "Today");
     stat.textContent = todayStat;
   } else {
     const step = Math.min(TIME.steps - 1, Math.round(p));
     eraCode = TIME.top - (p * (TIME.top - TIME.low)) / (TIME.steps - 1);
     const text = whenText(Math.pow(10, eraCode / TIME.scale));
     $("timelabel").textContent = text[0].toUpperCase() + text.slice(1);
+    $("time").setAttribute("aria-valuetext", text);
     stat.textContent =
       (/ago$/.test(text)
         ? text[0].toUpperCase() + text.slice(1)
@@ -2278,8 +2380,12 @@ $("time").oninput = (e) => {
   stopPlay();
   setTime(+e.target.value, true);
 };
-$("time").onchange = (e) => setTime(+e.target.value, false);
+$("time").onchange = (e) => {
+  ev("Time", null, "time");
+  setTime(+e.target.value, false);
+};
 $("timeplay").onclick = () => {
+  ev("Time", null, "time");
   if (playing) {
     stopPlay();
     setTime(+$("time").value, false);
@@ -2302,16 +2408,26 @@ $("timeplay").onclick = () => {
 };
 Promise.all(
   ["data/meta.json", "data/names.json", "data/places.json"].map((u) =>
-    fetch(u).then((r) => r.json()),
+    fetch(u + "?v=63").then((r) => r.json()),
   ),
-).then((d) => {
-  META = d[0];
-  NAMES = d[1];
-  LANDMARKS = d[2].landmarks;
-  REGIONS = d[2].regions;
-  fillRegions();
-  boot();
-});
+)
+  .then((d) => {
+    META = d[0];
+    NAMES = d[1];
+    LANDMARKS = d[2].landmarks;
+    REGIONS = d[2].regions;
+    fillRegions();
+    boot("json");
+  })
+  .catch(stuck);
+function stuck() {
+  if (!booted)
+    $("stat").textContent = "The map did not load. Reload to try again.";
+}
+for (const id of ["texs", "tex", "ntex"])
+  $(id).addEventListener("error", () => {
+    if (id !== "texs" && !(id === "tex" && got.texs)) stuck();
+  });
 
 // One anonymous count per visit, so the site's owner can see how many people come by and
 // roughly where from. It adds one to a tally for a group of sites (x, reddit, hn, google,
@@ -2396,13 +2512,19 @@ function showCount() {
 try {
   const asked =
     navigator.doNotTrack === "1" || navigator.globalPrivacyControl === true;
+  // note where the visit came from, then take the tag off the address so a copied link does not carry it
+  cameVia = sessionStorage.getItem("unwalked.src") || cameFrom();
+  sessionStorage.setItem("unwalked.src", cameVia);
+  if (new URLSearchParams(location.search).has("from"))
+    history.replaceState(null, "", location.pathname + location.hash);
   if (location.hostname !== "unwalked.earth") {
   } else if (!asked && !sessionStorage.getItem("unwalked.counted")) {
     sessionStorage.setItem("unwalked.counted", "1");
+    ev("Visit");
     fetch(TALLY, {
       method: "POST",
       headers: { apikey: TALLY_KEY, "Content-Type": "application/json" },
-      body: JSON.stringify({ src: cameFrom() }),
+      body: JSON.stringify({ src: cameVia }),
       keepalive: true,
     })
       .catch(() => {})

@@ -32,9 +32,9 @@ ANCHORS = [  # lat, lon, years ago, place
     (48.4, 9.8, 42500, "Geissenkloesterle"), (55.7, 21.4, 42000, "Snaukstai"), (45.0, 21.8, 40000, "Pestera cu Oase"),
     (66.6, 62.4, 37500, "Mamontovaya Kurya"), (52.9, -9.0, 12500, "Gwendoline Cave"),
     (34.6, 32.9, 12500, "Aetokremnos"), (62.8, 6.9, 11000, "Aukra"), (58.4, 24.7, 11000, "Pulli"), (55.97, -3.3, 10500, "Cramond"),
-    (35.8, 14.5, 7250, "Ghar Dalam"), (62, -6.8, 1500, "Faroe Islands"), (64.1, -21.9, 1076, "Reykjavik"),
+    (35.8, 14.5, 7250, "Ghar Dalam"), (62, -6.8, 1500, "Faroe Islands"), (64.1, -21.9, ce(874), "Reykjavik"),
     (79.7, 11.0, ce(1619), "Smeerenburg"), (72.4, 52.7, ce(1870), "Malye Karmakuly"), (71.0, -8.3, ce(1921), "Jan Mayen"),
-    (76.2, 152.7, 8300, "Zhokhov Island"), (71.0, -179.6, 3400, "Wrangel Island"), (79.3, 101.6, ce(1974), "Severnaya Zemlya"),
+    (76.2, 152.7, 8300, "Zhokhov Island"), (71.0, -179.6, 3400, "Wrangel Island"), (79.3, 101.6, ce(1930), "Severnaya Zemlya"),
     (55.2, 166.0, ce(1825), "Commander Islands"),
     # Australia
     (-12.5, 132.9, 57500, "Madjedbebe"), (-42.7, 147.3, 41000, "Jordan River Levee"),
@@ -110,7 +110,14 @@ def main():
     near = ndi.distance_transform_edt(~land, return_distances=False, return_indices=True)
     full = code[near[0], near[1]]
     soft = ndi.gaussian_filter(full, 1.2, mode=("nearest", "wrap"))
-    img = np.clip(np.round(soft), LOW, 255).astype(np.uint8)
+    # softening drags a dated place toward its neighbours: put each one back on its own date (within about 50 km)
+    G = xyz(lat[:, None] + 0 * lon[None, :], lon[None, :] + 0 * lat[:, None])
+    for (la, lo, _, _), v, c in zip(ANCHORS, AV, acomp):
+        if not c: continue
+        soft[(np.linalg.norm(G - xyz(la, lo), axis=-1) < 0.008) & (lab == c)] = v * SCALE
+    # red holds the whole part of the code and green the eighths, so recent dates land on the right year
+    fine = np.clip(np.round(soft * 8), LOW * 8, 255 * 8 + 7).astype(np.int32)
+    img = np.stack([fine // 8, (fine % 8) * 32, np.zeros_like(fine)], -1).astype(np.uint8)
     Image.fromarray(img).save("data/time.png", optimize=True)
     # share of land still unwalked at each slider step
     S = (world[..., 0].astype(np.float32) - 1) / 2.54

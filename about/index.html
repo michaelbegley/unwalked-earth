@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>How unwalked.earth works</title>
+    <meta name="description" content="How the map scores every 10 km of land for whether anyone has ever stood there, where it is wrong, and where the data comes from." />
+    <link rel="canonical" href="https://unwalked.earth/about/" />
+    <link rel="icon" href="/favicon.ico?v=5" sizes="48x48" />
+    <link rel="icon" href="/icon.svg?v=5" type="image/svg+xml" />
+    <link rel="stylesheet" href="/css/about.css?v=1" />
+  </head>
+  <body>
+    <main class="about">
+      <p><a href="/">unwalked.earth</a></p>
+      <h1>How it works</h1>
+      <p>A map of where nobody has stood, probably. Orange is land where probably nobody has ever stood. Every 10 km of land has a score from 0 to 100.</p>
+
+        
+        
+        <h3>What turns a place orange</h3>
+        <p>It is far from any way in, and nobody could live on the ground.</p>
+        <p>
+          A way in is a road, track, railway, town, airstrip, research station,
+          mine, archaeological site, river or coast. In Antarctica any recorded
+          visit counts too. The map measures how far each patch of land, about
+          10 km across, is from the nearest one. 100 km counts as far. Past 300
+          km it stops mattering. Orange starts at a score of 50 out of 100.
+        </p>
+        <h3>What holds a score down</h3>
+        <p>
+          Ground people have used for a long time. Ice can reach 100, because
+          nobody ever lived on it. Open desert and very high country stop near
+          75. Forest, grassland and tundra stop near 55, because people have
+          lived on or crossed that ground for thousands of years. Lights at
+          night pull a score down further.
+        </p>
+        <h3>Regions</h3>
+        <ul>
+          <li><b>Antarctica.</b> The least visited ground is in the central interior, away from the coast and the Antarctic Peninsula where most stations sit. A 2020 study in Nature of about 2.7 million activity records found that less than 32 percent of the continent is free from human interference. This map uses the same records. Land within about 60 km of one is not orange, which leaves about 23 percent of the continent.</li>
+          <li><b>Greenland.</b> The inland ice and the north and north-east are the least visited parts. Northeast Greenland National Park covers 972,000 square kilometres and has no permanent residents. Its interior is ice sheet, and almost no roads link towns anywhere in Greenland.</li>
+          <li><b>Arctic Canada.</b> The least visited parts are the ice caps and icefields and the high mountains of Ellesmere, Axel Heiberg, Devon and Baffin islands. Ice covers about 40 percent of Ellesmere Island alone. Extreme cold, months of winter darkness and almost no roads keep people out, and only 11 of the more than 36,000 islands have residents today.</li>
+          <li><b>Siberia.</b> The least visited parts are the ice covered Arctic islands and the high mountain interiors. Severnaya Zemlya was first sighted in 1913, was first mapped in 1930 to 1932, and has no permanent residents, and the Byrranga Mountains have no people, roads or settlements. Ice, extreme cold, permafrost and the near absence of roads keep people out.</li>
+          <li><b>Tibet.</b> The northern Changtang and the western part of Hoh Xil are the least visited, and UNESCO describes the Hoh Xil National Nature Reserve as completely uninhabited. The Changtang averages more than 5,000 metres, where the air holds about half the oxygen found at sea level, and it is too high and cold for permanent settlement.</li>
+          <li><b>Sahara.</b> The least visited parts are the Tanezrouft, which has no wells and no permanent residents, the Libyan Desert with its Great Sand Sea, and the Majabat al-Koubra, where Théodore Monod travelled by camel over stretches of up to 900 km with no water point. What keeps people out is the distance between wells, rainfall of 20 mm a year or less, and dune ridges that loaded camels could not climb.</li>
+          <li><b>Arabia.</b> Britannica still calls the region largely unexplored and virtually uninhabited, and most former nomads have now settled in villages. It is one of the driest places on Earth, summer days at Shaybah reach about 50 degrees Celsius, and Philby had to cover more than 600 km between wells.</li>
+          <li><b>Amazon.</b> The least visited land is forest far from rivers, which makes up most of the region. A 2012 soil study of western Amazonia found little sign of past human disturbance more than about 5 km from rivers, but other researchers argue that land between rivers held many people. Some Indigenous lands, such as the Javari Valley in Brazil, are closed to outsiders to protect peoples living in isolation.</li>
+          <li><b>Australia.</b> About 800,000 people live across the 5.6 million square kilometres of the outback. No maintained road crosses the Simpson Desert, and the few desert tracks have fuel gaps of 500 to 900 kilometres. Lack of surface water, heat and distance from help keep most travellers on those few tracks.</li>
+        </ul>
+        <h3>Records</h3>
+        <p>
+          The score is a guess from distance. When you tap a spot, the page also
+          asks four public sources what is on record within 10 km: photos,
+          wildlife records, iNaturalist sightings and Wikipedia articles. Three
+          or more records, a sighting or an article means somebody was there.
+          One or two is a maybe. Photos from orbit and maps are not counted.
+        </p>
+        <h3>Time</h3>
+        <p>
+          The slider goes back 200,000 years. Land our species had not reached
+          yet is orange. Dates come from the earliest known site or settlement
+          in each region and are argued over. Africa counts as walked from the
+          start. Inside a region people had reached, the slider shows today's
+          orange, so the past looks more walked than it was.
+        </p>
+        <h3>Where it is wrong</h3>
+        <p>
+          Nobody keeps a record of everywhere people have stood. The map only
+          knows the camps, mines and expedition routes that are in its data, and
+          some are missing. Hunters, herders and nomads went far beyond any
+          road. The oceans are not scored.
+        </p>
+        <h3>Sources</h3>
+        <ul>
+          <li>
+            <a
+              href="https://www.naturalearthdata.com/"
+              target="_blank"
+              rel="noopener"
+              >Natural Earth</a
+            >: land, roads, rivers, ice
+          </li>
+          <li>
+            <a
+              href="https://malariaatlas.org/project-resources/accessibility-to-healthcare/"
+              target="_blank"
+              rel="noopener"
+              >Malaria Atlas Project</a
+            >: travel time to cities
+          </li>
+          <li>
+            <a
+              href="https://ourairports.com/data/"
+              target="_blank"
+              rel="noopener"
+              >OurAirports</a
+            >: airstrips, open and closed
+          </li>
+          <li>
+            <a
+              href="https://github.com/PolarGeospatialCenter/comnap-antarctic-facilities"
+              target="_blank"
+              rel="noopener"
+              >COMNAP</a
+            >: Antarctic stations, © COMNAP 2024
+          </li>
+          <li>
+            <a
+              href="https://en.wikipedia.org/wiki/List_of_first_human_settlements"
+              target="_blank"
+              rel="noopener"
+              >Wikipedia, first human settlements</a
+            >: dates for the time slider
+          </li>
+          <li>
+            <a
+              href="https://doi.org/10.26180/5c32bf1b041ea"
+              target="_blank"
+              rel="noopener"
+              >Leihy and others, 2020</a
+            >: recorded visits in Antarctica, CC BY-NC 4.0
+          </li>
+          <li>
+            <a href="https://www.wikidata.org/" target="_blank" rel="noopener"
+              >Wikidata</a
+            >: mines and archaeological sites
+          </li>
+          <li>
+            <a href="https://www.geonames.org/" target="_blank" rel="noopener"
+              >GeoNames</a
+            >: towns of 1,000 or more
+          </li>
+          <li>NASA: night lights and Blue Marble pictures, through NASA GIBS</li>
+          <li>
+            Satellite pictures:
+            <a href="https://s2maps.eu/" target="_blank" rel="noopener"
+              >Sentinel-2 cloudless</a
+            >
+            by EOX IT Services GmbH (contains modified Copernicus Sentinel
+            data 2016 and 2017)
+          </li>
+          <li>
+            <a href="https://open-meteo.com/" target="_blank" rel="noopener"
+              >Weather data by Open-Meteo.com</a
+            >
+          </li>
+          <li>
+            Search: ©
+            <a
+              href="https://www.openstreetmap.org/copyright"
+              target="_blank"
+              rel="noopener"
+              >OpenStreetMap</a
+            >
+            contributors
+          </li>
+          <li>
+            Text from Wikipedia. Photos from Wikimedia Commons, each under
+            its own licence. Record counts from GBIF and iNaturalist.
+          </li>
+        </ul>
+        <h3>Privacy</h3>
+        <p>No cookies. No accounts. Saved places stay on your device.</p>
+        <p>
+          Each visit adds one to a count, and one to the kind of site it came
+          from, like Reddit or Google. Nothing about you is kept. The number
+          online is visits in the last 30 minutes. The counts and feedback
+          sit in a Supabase database.
+        </p>
+        <p>
+          Cloudflare and Vercel Web Analytics count page views for the site
+          owner. Vercel also counts presses of buttons like Random and Copy
+          link. Neither sets cookies. With Do Not Track on, none of these
+          counts run.
+        </p>
+        <p>
+          Feedback is stored as the text you send. No name or address goes with
+          it.
+        </p>
+        <p>
+          When you open a place, by a tap or a link, your browser asks Wikipedia, Wikimedia Commons,
+          GBIF, iNaturalist, Open-Meteo, EOX and NASA about that spot. Search
+          asks OpenStreetMap.
+        </p>
+        <p style="margin-top: 16px">
+          <a
+            href="https://github.com/michaelbegley/unwalked-earth/issues"
+            target="_blank"
+            rel="noopener"
+            >Report a wrong spot</a
+          >
+          &nbsp;
+          <a
+            href="https://github.com/michaelbegley/unwalked-earth"
+            target="_blank"
+            rel="noopener"
+            >Code on GitHub</a
+          >
+        </p>
+      
+      <p><a href="/">Open the globe</a></p>
+    </main>
+  </body>
+</html>

@@ -8,10 +8,10 @@
       content="default-src 'none'; img-src 'self' https://upload.wikimedia.org https://thumb.wikimedia.org https://gibs.earthdata.nasa.gov https://tiles.maps.eox.at; connect-src 'self' https://en.wikipedia.org https://commons.wikimedia.org https://api.open-meteo.com https://api.gbif.org https://api.inaturalist.org https://nominatim.openstreetmap.org https://cpzhsztczixiidxypvmb.supabase.co https://cloudflareinsights.com; style-src 'self' 'unsafe-inline'; script-src 'self' https://static.cloudflareinsights.com; manifest-src 'self'; base-uri 'none'; form-action 'none'"
     />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
-    <title>unwalked.earth: a map of where nobody has ever stood</title>
+    <title>unwalked.earth: a map of where nobody has stood, probably</title>
     <meta
       name="description"
-      content="A globe showing the land where probably nobody has ever stood, with a score for every place on Earth."
+      content="A map of where nobody has stood, probably. A score for every 10 km of land."
     />
     <link rel="canonical" href="https://unwalked.earth/" />
     <link rel="icon" href="favicon.ico?v=5" sizes="48x48" />
@@ -59,7 +59,7 @@
         "description": "A map of where nobody has stood, probably."
       }
     </script>
-    <link rel="stylesheet" href="css/style.css?v=29" />
+    <link rel="stylesheet" href="css/style.css?v=63" />
   </head>
   <body>
     <canvas id="sky" aria-hidden="true"></canvas>
@@ -119,7 +119,7 @@
           autocomplete="off"
         />
         <ul class="findlist" id="findlist" hidden></ul>
-        <p class="note" id="findnote" hidden></p>
+        <p class="note" id="findnote" role="status" hidden></p>
         <button class="primary" id="lucky" type="button">
           Random unwalked spot
         </button>
@@ -141,7 +141,7 @@
           <i class="live"></i><span id="online"></span>
         </p>
         <p class="count ends">
-          <span id="version">v0.62</span>
+          <span id="version">v0.63</span>
           <button class="textlink" id="feedbacklink" type="button">
             Feedback
           </button>
@@ -215,11 +215,11 @@
             </button>
           </div>
           <div class="near" id="pkeepwrap" hidden>
-            <b>What has kept people out</b>
+            <b>What keeps people out</b>
             <ul id="pkeep"></ul>
           </div>
         </div>
-        <dl id="pnowwrap" hidden style="margin-top: 0; border-top: 0">
+        <dl id="pnowwrap" hidden>
           <div>
             <dt>Right now</dt>
             <dd id="pnow"></dd>
@@ -311,7 +311,7 @@
           aria-label="Feedback"
         ></textarea>
         <button class="primary" id="fbsend" type="button">Send</button>
-        <p class="note" id="fbnote" hidden></p>
+        <p class="note" id="fbnote" role="status" hidden></p>
       </section>
 
       <section id="about" hidden>
@@ -395,7 +395,7 @@
               target="_blank"
               rel="noopener"
               >COMNAP</a
-            >: Antarctic stations
+            >: Antarctic stations, © COMNAP 2024
           </li>
           <li>
             <a
@@ -423,14 +423,33 @@
               >GeoNames</a
             >: towns of 1,000 or more
           </li>
-          <li>NASA: night lights</li>
+          <li>NASA: night lights and Blue Marble pictures, through NASA GIBS</li>
           <li>
-            On tap:
+            Satellite pictures:
             <a href="https://s2maps.eu/" target="_blank" rel="noopener"
-              >Sentinel-2 cloudless by EOX</a
+              >Sentinel-2 cloudless</a
             >
-            and NASA Blue Marble pictures, Wikipedia, Wikimedia Commons, GBIF,
-            iNaturalist, Open-Meteo, OpenStreetMap search
+            by EOX IT Services GmbH (contains modified Copernicus Sentinel
+            data 2016 and 2017)
+          </li>
+          <li>
+            <a href="https://open-meteo.com/" target="_blank" rel="noopener"
+              >Weather data by Open-Meteo.com</a
+            >
+          </li>
+          <li>
+            Search: ©
+            <a
+              href="https://www.openstreetmap.org/copyright"
+              target="_blank"
+              rel="noopener"
+              >OpenStreetMap</a
+            >
+            contributors
+          </li>
+          <li>
+            Text from Wikipedia. Photos from Wikimedia Commons, each under
+            its own licence. Record counts from GBIF and iNaturalist.
           </li>
         </ul>
         <h3>Privacy</h3>
@@ -438,18 +457,21 @@
         <p>
           Each visit adds one to a count, and one to the kind of site it came
           from, like Reddit or Google. Nothing about you is kept. The number
-          online is visits in the last 30 minutes.
+          online is visits in the last 30 minutes. The counts and feedback
+          sit in a Supabase database.
         </p>
         <p>
-          Cloudflare Web Analytics counts page views for the site owner. It
-          sets no cookies.
+          Cloudflare and Vercel Web Analytics count page views for the site
+          owner. Vercel also counts presses of buttons like Random and Copy
+          link. Neither sets cookies. With Do Not Track on, none of these
+          counts run.
         </p>
         <p>
           Feedback is stored as the text you send. No name or address goes with
           it.
         </p>
         <p>
-          When you tap a place, your browser asks Wikipedia, Wikimedia Commons,
+          When you open a place, by a tap or a link, your browser asks Wikipedia, Wikimedia Commons,
           GBIF, iNaturalist, Open-Meteo, EOX and NASA about that spot. Search
           asks OpenStreetMap.
         </p>
@@ -460,6 +482,8 @@
             rel="noopener"
             >Report a wrong spot</a
           >
+          &nbsp;
+          <a href="/about/">This page on its own</a>
           &nbsp;
           <a
             href="https://github.com/michaelbegley/unwalked-earth"
@@ -476,9 +500,9 @@
       ><button id="zout" type="button" aria-label="Zoom out">&minus;</button>
     </div>
 
-    <img id="tex" alt="" style="display: none" src="data/world.png" />
-    <img id="ntex" alt="" style="display: none" src="data/names.png" />
-    <script src="js/app.js?v=31" defer></script>
-  <!-- Cloudflare Web Analytics: counts visits for the console, no cookies --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "71261f79b99f4a49809c2d4cc6772905"}'></script>
+    <img id="texs" alt="" style="display: none" src="data/world-s.png?v=63" fetchpriority="high" />
+    <img id="ntex" alt="" style="display: none" src="data/names.png?v=63" />
+    <img id="tex" alt="" style="display: none" src="data/world.png?v=63" fetchpriority="low" />
+    <script src="js/app.js?v=63" defer></script>
 </body>
 </html>
