@@ -1,4 +1,4 @@
-# <img src="icon.svg" alt="" height="24"> Unwalked Earth
+# <img src="icon.svg" alt="" height="24"> unwalked.earth
 
 A globe that guesses where nobody has ever stood.
 
@@ -9,6 +9,14 @@ Plain land has been walked. Orange land probably hasn't. Tap anywhere to see the
 ## Time slider
 
 Drag it back as far as 200,000 years. Land our species had not reached yet at that date is orange. Dates are the earliest known site or settlement in each region, from Wikipedia's list of first human settlements, and are rough.
+
+## Other things on the page
+
+- **Least walked spot.** Search a country, a US state or a province of Canada, Australia, Brazil, Russia, China or India for its most remote point.
+- **Today's spot.** One unwalked place a day, the same for everyone until midnight UTC.
+- **Picture.** A share image of any place.
+- **I have stood here.** On orange places. It needs proof: a link, or a check on your device that you are within 25 km. Claims are read by a person before the map changes.
+- **How it works** is also a page of its own at https://unwalked.earth/about/
 
 ## How a place gets its score
 
@@ -31,8 +39,9 @@ index.html      the page
 css/style.css   styles
 js/app.js       the globe and the card
 data/           score map, place names, researched place cards, first-arrival dates
+about/          How it works as a page of its own
 stats/          visit totals
-tools/          scripts that build data/, and the SQL for the visit count and feedback box
+tools/          scripts that build data/, and the SQL for the visit count, feedback box and claims
 v1/             the first version, kept for comparison
 ```
 

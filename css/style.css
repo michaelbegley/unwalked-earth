@@ -916,6 +916,12 @@ h2.sub {
 .hint .textlink {
   font-size: inherit;
 }
+.hint.pair {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
 
 /* proof for "I have stood here" */
 #pclaimform > * {

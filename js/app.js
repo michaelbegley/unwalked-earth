@@ -1831,7 +1831,7 @@ function fly(lat, lon, k) {
 
 function fillStat() {
   $("stat").textContent =
-    `That is about ${Math.round(META.cum[50])}% of all land, or ${META.cumx[50].toFixed(1)}% without Antarctica.`;
+    `That is about ${META.cum[50].toFixed(1)}% of all land, or ${META.cumx[50].toFixed(1)}% without Antarctica.`;
 }
 function fillRegions() {
   $("go").innerHTML = REGIONS.map(
@@ -2101,7 +2101,7 @@ function todaysSpot() {
 }
 $("today").onclick = todaysSpot;
 function loadSpots() {
-  fetch("data/spots.json?v=66")
+  fetch("data/spots.json?v=67")
     .then((r) => r.json())
     .then((d) => {
       SPOTS = d.countries
@@ -2582,12 +2582,12 @@ let TIME = null,
 // asked for once the globe is up, so it does not slow the first draw
 const loadTime = () =>
   Promise.all([
-    fetch("data/time.json?v=66").then((r) => r.json()),
+    fetch("data/time.json?v=67").then((r) => r.json()),
     new Promise((done, fail) => {
       const im = new Image();
       im.onload = () => done(im);
       im.onerror = fail;
-      im.src = "data/time.png?v=66";
+      im.src = "data/time.png?v=67";
     }),
   ])
     .then(([meta, im]) => {
@@ -2692,7 +2692,7 @@ $("timeplay").onclick = () => {
 };
 Promise.all(
   ["data/meta.json", "data/names.json", "data/places.json"].map((u) =>
-    fetch(u + "?v=66").then((r) => r.json()),
+    fetch(u + "?v=67").then((r) => r.json()),
   ),
 )
   .then((d) => {
