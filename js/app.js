@@ -1723,6 +1723,12 @@ function selectLL(la, lo, label) {
       ul.appendChild(li);
     }
     $("pkeepwrap").hidden = !keep.length;
+    // only orange places ask whether someone has been there
+    $("pclaimwrap").hidden = s < 50;
+    $("pclaim").hidden = false;
+    $("pclaimform").hidden = true;
+    $("pclaimnote").hidden = true;
+    $("pclaimtext").value = "";
     view.arc = null;
     $("far").hidden = true;
     if (s < 50) {
@@ -2092,7 +2098,7 @@ function todaysSpot() {
 }
 $("today").onclick = todaysSpot;
 function loadSpots() {
-  fetch("data/spots.json?v=64")
+  fetch("data/spots.json?v=65")
     .then((r) => r.json())
     .then((d) => {
       SPOTS = d.countries
@@ -2244,6 +2250,45 @@ async function sharePicture() {
   setTimeout(() => (b.textContent = "Picture"), 1600);
 }
 $("ppic").onclick = sharePicture;
+// "I have stood here": the spot and an optional note go to a list the owner reads. Nothing is shown publicly.
+$("pclaim").onclick = () => {
+  $("pclaim").hidden = true;
+  $("pclaimform").hidden = false;
+  $("pclaimtext").focus();
+};
+$("pclaimsend").onclick = () => {
+  const at = view.sel,
+    note = $("pclaimnote");
+  if (!at) return;
+  $("pclaimsend").disabled = true;
+  fetch(TALLY.replace(/hit$/, "send_claim"), {
+    method: "POST",
+    headers: { apikey: TALLY_KEY, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      lat: +at[0].toFixed(3),
+      lon: +at[1].toFixed(3),
+      note: $("pclaimtext").value.trim().slice(0, 500),
+      ver: $("version").textContent,
+    }),
+  })
+    .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+    .then((ok) => {
+      note.textContent = ok
+        ? "Sent. Thank you."
+        : "Too many right now. Try again later.";
+      if (ok) {
+        $("pclaimform").hidden = true;
+        ev("Claim");
+      }
+    })
+    .catch(() => {
+      note.textContent = "Could not send.";
+    })
+    .then(() => {
+      note.hidden = false;
+      $("pclaimsend").disabled = false;
+    });
+};
 function goTo(lat, lon, name) {
   $("find").value = "";
   openAt(lat, lon, name);
@@ -2496,12 +2541,12 @@ let TIME = null,
 // asked for once the globe is up, so it does not slow the first draw
 const loadTime = () =>
   Promise.all([
-    fetch("data/time.json?v=64").then((r) => r.json()),
+    fetch("data/time.json?v=65").then((r) => r.json()),
     new Promise((done, fail) => {
       const im = new Image();
       im.onload = () => done(im);
       im.onerror = fail;
-      im.src = "data/time.png?v=64";
+      im.src = "data/time.png?v=65";
     }),
   ])
     .then(([meta, im]) => {
@@ -2606,7 +2651,7 @@ $("timeplay").onclick = () => {
 };
 Promise.all(
   ["data/meta.json", "data/names.json", "data/places.json"].map((u) =>
-    fetch(u + "?v=64").then((r) => r.json()),
+    fetch(u + "?v=65").then((r) => r.json()),
   ),
 )
   .then((d) => {

@@ -59,7 +59,7 @@
         "description": "A map of where nobody has stood, probably."
       }
     </script>
-    <link rel="stylesheet" href="css/style.css?v=64" />
+    <link rel="stylesheet" href="css/style.css?v=65" />
   </head>
   <body>
     <canvas id="sky" aria-hidden="true"></canvas>
@@ -144,7 +144,7 @@
           <i class="live"></i><span id="online"></span>
         </p>
         <p class="count ends">
-          <span id="version">v0.64</span>
+          <span id="version">v0.65</span>
           <button class="textlink" id="feedbacklink" type="button">
             Feedback
           </button>
@@ -224,6 +224,27 @@
           <div class="near" id="pkeepwrap" hidden>
             <b>What keeps people out</b>
             <ul id="pkeep"></ul>
+          </div>
+          <div class="near" id="pclaimwrap" hidden>
+            <b>Have you stood here?</b>
+            <p>Tell us and we will check it and fix the map.</p>
+            <button class="textlink" id="pclaim" type="button">
+              I have stood here
+            </button>
+            <div id="pclaimform" hidden>
+              <textarea
+                class="find"
+                id="pclaimtext"
+                rows="3"
+                maxlength="500"
+                aria-label="When were you here, and how did you get there?"
+                placeholder="When, and how did you get there?"
+              ></textarea>
+              <button class="primary" id="pclaimsend" type="button">
+                Send
+              </button>
+            </div>
+            <p class="note" id="pclaimnote" role="status" hidden></p>
           </div>
         </div>
         <dl id="pnowwrap" hidden>
@@ -483,7 +504,7 @@
         </p>
         <p>
           Feedback is stored as the text you send. No name or address goes with
-          it.
+          it. "I have stood here" stores the spot and your note, nothing else.
         </p>
         <p>
           When you open a place, by a tap or a link, your browser asks Wikipedia, Wikimedia Commons,
@@ -515,9 +536,9 @@
       ><button id="zout" type="button" aria-label="Zoom out">&minus;</button>
     </div>
 
-    <img id="texs" alt="" style="display: none" src="data/world-s.png?v=64" fetchpriority="high" />
-    <img id="ntex" alt="" style="display: none" src="data/names.png?v=64" />
-    <img id="tex" alt="" style="display: none" src="data/world.png?v=64" fetchpriority="low" />
-    <script src="js/app.js?v=64" defer></script>
+    <img id="texs" alt="" style="display: none" src="data/world-s.png?v=65" fetchpriority="high" />
+    <img id="ntex" alt="" style="display: none" src="data/names.png?v=65" />
+    <img id="tex" alt="" style="display: none" src="data/world.png?v=65" fetchpriority="low" />
+    <script src="js/app.js?v=65" defer></script>
 </body>
 </html>
